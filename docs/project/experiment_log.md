@@ -1600,3 +1600,49 @@ python -B scripts/benchmarks/run_spider_smoke.py --limit 20 --output data/benchm
 
 - 开题材料中可以加入 Spider smoke test，证明本课题不只在自建数据集上可行，也具备公开 benchmark 子集迁移可行性。
 - 后续应扩展到多数据库 Spider 子集，并逐步支持更多 SQL 结构。
+
+## 2026-06-04 项目记忆与留痕工作流优化
+
+目的：
+
+- 将“关键测试、关键修改、项目进展、方向调整必须留痕”的要求固化为项目级规则。
+- 保证后续在另一台 Windows、macOS 或新 Codex/Agent 会话中，也能通过仓库文件恢复当前研究状态和工作流程。
+
+涉及文件：
+
+- `AGENTS.md`
+- `.codex/skills/nl2sql-experiment-tracker/SKILL.md`
+- `.codex/skills/nl2sql-sqlplus-research/SKILL.md`
+- `.codex/skills/nl2sql-repair-skill-lab/SKILL.md`
+- `docs/project/workflow_traceability.md`
+- `docs/project/experiment_outline.md`
+- `docs/README.md`
+- `README.md`
+
+执行命令：
+
+```powershell
+Get-Content -Raw AGENTS.md
+Get-Content -Raw .codex\skills\nl2sql-experiment-tracker\SKILL.md
+Get-Content -Raw .codex\skills\nl2sql-repair-skill-lab\SKILL.md
+Get-Content -Raw docs\project\experiment_outline.md
+Get-ChildItem -Recurse -Depth 2 docs | Select-Object FullName
+git status --short
+```
+
+结果：
+
+- 新增 `docs/project/workflow_traceability.md`，定义关键事件、开始前检查、完成后文档同步、日志模板、GitHub 同步和跨电脑恢复流程。
+- 强化 `AGENTS.md` 的 Project Memory and Traceability Protocol，明确项目记忆以仓库文件为准，不依赖聊天记录。
+- 强化三个项目 skill 的触发规则，要求实验、repair skill、SQL+ 研究表述和工作流变化都同步留痕。
+- 更新文档索引和 README，使新电脑或新 agent 能快速找到留痕协议。
+
+问题与观察：
+
+- 此次为文档和流程调整，未运行新的 SQL+、agent 或 benchmark 实验。
+- 后续每次关键工作结束前，应检查实验日志、大纲、领域报告、开题材料和 README 是否需要同步更新。
+
+方向调整：
+
+- 项目后续采用“实验/修改 -> 结果记录 -> 大纲调整 -> 报告同步 -> skill/AGENTS 更新 -> GitHub 提交推送”的闭环工作流。
+- 工作流本身也纳入实验留痕范围，避免跨设备协作时丢失研究判断。

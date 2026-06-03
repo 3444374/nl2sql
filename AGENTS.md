@@ -54,6 +54,40 @@ Natural language
 6. Do not present gold-derived diagnostics as real autonomous repair results.
 7. Prefer small, reproducible scripts over one-off notebook logic.
 
+## Project Memory and Traceability Protocol
+
+This repo treats project memory as tracked files, not chat history. After every key test,
+code change, project progress update, or direction adjustment, update the relevant files
+in the same working session.
+
+Key changes include:
+
+- New or modified experiment scripts, prompts, agents, tools, repair skills, or datasets.
+- Any model run, benchmark run, smoke test, failed experiment, or metric change.
+- Any result that changes the next research step, experiment priority, or opening-report claim.
+- Any cross-machine setup, reproducibility, GitHub sync, or workflow/process change.
+- Any new portable skill or update to an existing `.codex/skills/*/SKILL.md`.
+
+Default traceability updates:
+
+- Always append a dated entry to `docs/project/experiment_log.md`.
+- Update `docs/project/experiment_outline.md` when phase status, direction, or priorities change.
+- Update the specific report under `docs/sqlplus/`, `docs/baseline/`, `docs/agents/`,
+  or `docs/benchmarks/` when the result belongs to that area.
+- Update `docs/opening/` and `docs/project/opening_preliminary_results.md` when the result
+  affects opening-report claims.
+- Update `README.md` or `docs/README.md` when reproducibility commands, headline metrics,
+  or document locations change.
+- Update `AGENTS.md` and the relevant project skill when the workflow itself changes.
+
+End-of-turn checklist:
+
+- Commands run are reproducible or documented.
+- Metrics and failure cases are recorded.
+- Direction changes are reflected in the outline.
+- Affected reports and opening materials are synchronized when needed.
+- `git status --short` has been checked before the final response.
+
 ## Common Commands
 
 ```powershell
@@ -93,4 +127,3 @@ If the machine has not installed repo skills globally, run:
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/setup/install_project_skills.ps1
 ```
-

@@ -49,6 +49,8 @@ q006 projection mismatch: extra product_id column.
 8. Write a report under `docs/agents/tools/` or `docs/agents/pipeline/`.
 9. Append `docs/project/experiment_log.md`.
 10. Update `docs/project/experiment_outline.md` if the direction changes.
+11. Update `README.md`, `docs/README.md`, or opening materials if a headline repair metric changes.
+12. If a reusable repair workflow changes, update this skill and `docs/project/workflow_traceability.md`.
 
 ## Evaluation Terms
 
@@ -62,4 +64,4 @@ q006 projection mismatch: extra product_id column.
 - Keep skill actions local and explainable.
 - Prefer candidate generation plus execution verification over full LLM rewrite.
 - Record failed versions, because they justify direction changes.
-
+- Keep repair-skill changes traceable: input cases, router decisions, commands, metrics, and remaining failures must be documented.

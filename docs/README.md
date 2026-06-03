@@ -8,6 +8,7 @@ Project-level planning and experiment traceability.
 - `project/experiment_log.md`: chronological experiment log.
 - `project/experiment_plan.md`: early experiment plan.
 - `project/cross_machine_setup.md`: GitHub sync and cross-machine setup guide.
+- `project/workflow_traceability.md`: required workflow for experiment logging, project memory, and cross-agent traceability.
 
 ## opening
 

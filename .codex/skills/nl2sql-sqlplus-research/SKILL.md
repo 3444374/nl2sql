@@ -47,6 +47,17 @@ When writing opening materials, include:
 6. Preliminary experiments.
 7. Limitations and future work.
 
+When a research-facing claim changes, update the claim in all relevant places:
+
+- `docs/project/experiment_log.md`
+- `docs/project/experiment_outline.md`
+- `docs/project/opening_preliminary_results.md`
+- `docs/opening/opening_report.md`
+- `docs/opening/opening_ppt.md`
+- `README.md` when it is a headline project result
+
+Do not leave opening-report conclusions ahead of the measured evidence.
+
 ## Benchmark Scope
 
 Spider smoke test is a public benchmark subset validation. State it as:
@@ -60,4 +71,3 @@ Do not present it as:
 ```text
 完整 Spider benchmark 跑分。
 ```
-

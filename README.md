@@ -8,6 +8,7 @@
 
 - `AGENTS.md`：给 Codex/Agent 的项目级工作规则。
 - `docs/project/cross_machine_setup.md`：GitHub 同步、另一台电脑初始化、API key 和 project skills 安装说明。
+- `docs/project/workflow_traceability.md`：关键实验、代码修改、项目进展和方向调整的留痕规则。
 - `scripts/setup/install_project_skills.ps1`：将本仓库 `.codex/skills/` 下的项目 skills 安装到当前电脑的 Codex skills 目录。
 
 新机器克隆后建议先执行：
