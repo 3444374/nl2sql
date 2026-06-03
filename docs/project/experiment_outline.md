@@ -1,0 +1,198 @@
+﻿# 实验大纲与方向调整记录
+
+## 课题定位
+
+课题名称暂定为：面向 SQL+ 简化查询表达的多智能体自然语言数据库查询生成与反馈修正方法研究。
+
+核心实验问题：
+
+1. SQL+ 是否能降低复杂 SQL 查询的表达复杂度。
+2. SQL+ 是否适合作为自然语言到 SQL 的中间表示。
+3. SQL+ 层反馈修正是否比最终 SQL 层整体重生成更容易定位和修复错误。
+4. 多智能体流程是否能提升生成、验证和修正的成功率。
+
+## 当前实验主线
+
+当前采用从小到大的实验路线：
+
+1. 构造小型业务数据库和 SQL+ 样例，验证 SQL+ 到 SQL 的可执行闭环。
+2. 构造错误 SQL+ 样例，验证执行反馈能否映射到 SQL+ 局部步骤并完成修正。
+3. 扩充样例规模和查询复杂度，形成开题阶段可展示的数据集。
+4. 加入单 Agent baseline，对比自然语言直接生成 SQL 与自然语言生成 SQL+。
+5. 加入多 Agent 框架，对比标准 SQL 多智能体与 SQL+ 多智能体。
+6. 引入公开数据集 Spider/BIRD 的子集，验证方法在公开 benchmark 上的可迁移性。
+
+## 实验留痕机制
+
+已创建项目级 Codex skill：
+
+- `.codex/skills/nl2sql-experiment-tracker`
+
+使用规则：
+
+- 每次规划、运行或复盘 NL2SQL+ 实验时，优先使用该 skill。
+- 每次实验后必须追加 `docs/project/experiment_log.md`。
+- 当实验结果影响下一步方向时，必须同步更新本文件。
+- 失败实验也要记录，尤其要记录失败命令、错误信息、原因判断和下一步调整。
+
+## 实验阶段规划
+
+### 阶段一：SQL+ 表达与转换验证
+
+目标：
+
+- 定义 SQL+ 最小语法子集。
+- 实现 SQL+ parser 和 SQL converter。
+- 验证 SQL+ 能覆盖常见查询操作。
+- 对比 SQL+ 转换 SQL 与人工标准 SQL 的执行结果。
+
+当前状态：已完成初版。
+
+产物：
+
+- `data/schema.sql`
+- `data/sqlplus_cases.jsonl`
+- `src/sqlplus.py`
+- `scripts/sqlplus/run_experiment.py`
+- `docs/sqlplus/pre_experiment_report.md`
+
+### 阶段二：SQL+ 层反馈修正验证
+
+目标：
+
+- 构造 schema 错误、字段错误、join 错误等错误样例。
+- 收集数据库执行错误。
+- 将错误映射回 SQL+ 的局部步骤。
+- 验证局部修正后是否可以重新执行成功。
+
+当前状态：已完成字段错误修正初版。
+
+产物：
+
+- `data/repair_cases.jsonl`
+- `scripts/sqlplus/run_repair_experiment.py`
+- `docs/sqlplus/repair_experiment_report.md`
+
+### 阶段三：样例扩充与复杂度分层
+
+目标：
+
+- 将 SQL+ 样例扩充到 30 条以上。
+- 按 simple、medium、hard 标注查询复杂度。
+- 覆盖单表查询、多表 join、聚合、having、top-k、时间范围、子查询替代表达。
+- 将错误样例扩充到 15 条以上。
+
+当前状态：已完成初版。
+
+建议产物：
+
+- `data/sqlplus_cases.jsonl`
+- `data/repair_cases.jsonl`
+- `docs/sqlplus/dataset_summary.md`
+
+### 阶段四：单 Agent baseline
+
+目标：
+
+- 设计自然语言直接生成 SQL 的 prompt。
+- 设计自然语言生成 SQL+ 的 prompt。
+- 比较两种路线的 SQL 可执行率、执行一致率、错误类型。
+
+当前状态：已完成 prompt 设计、评估框架和 OpenAI API 运行脚本，已完成 `gpt-5-mini` Direct baseline、SQL+ prompt v1、SQL+ prompt v2 对比。
+
+建议产物：
+
+- `prompts/baseline/direct_sql.md`
+- `prompts/baseline/sqlplus_generation.md`
+- `scripts/baseline/run_llm_baseline.py`
+- `docs/baseline/baseline_report.md`
+
+### 阶段五：多智能体原型
+
+目标：
+
+- 实现 Intent Agent、Schema Agent、Planner Agent、SQL+ Generator Agent、Translator Agent、Validator/Refiner Agent。
+- 记录各 Agent 的中间输出。
+- 对比单 Agent 与多 Agent 的生成质量。
+- 引入 Tool/RAG/Skill 增强机制，使 Agent 不只依赖 prompt，而能查询 schema、字段值、执行候选 patch 并验证结果。
+
+当前状态：进行中。已完成 Refiner Agent、Schema-Critic-Refiner 初版、Step-wise Critic 和 ORDER/value-linking 分治实验。下一步转向 Tool/RAG/Skill-assisted Agent，优先实现 value lookup tool 和 value_linking_repair_skill。
+
+建议产物：
+
+- `src/agents/`
+- `scripts/agents/run_multi_agent.py`
+- `docs/agents/multi_agent_report.md`
+- `prompts/agents/sqlplus_refiner.md`
+- `scripts/agents/run_openai_refiner.py`
+- `docs/agents/refiner_model_report.md`
+- `src/tools/`
+- `src/skills/`
+- `scripts/agents/tools/`
+- `docs/agents/tools/`
+
+### 阶段六：公开数据集适配
+
+目标：
+
+- 选取 Spider 或 BIRD 的小规模子集。
+- 将部分标准 SQL 改写为 SQL+。
+- 验证 SQL+ 转换和反馈修正在公开数据集样例上的适用性。
+
+当前状态：已启动。已完成 Spider dev 小规模受支持子集 smoke test。
+
+建议产物：
+
+- `data/spider_subset/`
+- `data/bird_subset/`
+- `docs/sqlplus/public_dataset_report.md`
+- `data/benchmarks/spider/`
+- `scripts/benchmarks/run_spider_smoke.py`
+- `docs/benchmarks/spider_smoke_report_20.md`
+
+## 当前方向判断
+
+当前阶段优先级：
+
+1. 引入 Tool/RAG/Skill-assisted Agent，先实现 value lookup tool 和 value_linking_repair_skill。
+2. 做按错误类型分治实验：value linking、ORDER、aggregation、join。
+3. 设计 Schema Agent / Planner Agent 的最小原型，减少初始生成语义偏差。
+4. 准备 Spider/BIRD 小子集适配，但不做大规模 benchmark。
+
+暂不优先处理：
+
+- 完整多智能体工程化框架。
+- 大规模公开 benchmark 跑分。
+- 达梦数据库真实驱动适配。
+
+原因：
+
+开题阶段更需要证明研究方向可行、实验路径清晰、后续工作可落地。完整系统可以作为中后期实现目标。
+
+最新方向判断：
+
+- 诊断辅助 Refiner Agent 已在 13 条 SQL+ prompt v2 失败样例上达到 13/13 修复成功，说明结构化诊断可以驱动 SQL+ 层局部修正。
+- 非 gold 执行反馈 Refiner Agent v2 在同样 13 条失败样例上达到 SQL+ 有效 13/13、SQL 可执行 12/13、修复成功 4/13，说明真实反馈修正难度明显更高。
+- Direct SQL 非 gold 执行反馈 Refiner 在 14 条 Direct NL2SQL 失败样例上达到 SQL 可执行 14/14、修复成功 6/14，是当前 SQL+ 非 gold 单 Refiner 的必要对照组。
+- SQL+ Schema-Critic-Refiner 初版已跑通，SQL+ 有效 13/13、SQL 可执行 13/13，但修复成功 3/13，低于单 Refiner 的 4/13。
+- SQL+ Step-wise Critic-Refiner 已跑通，Critic 能输出逐步骤诊断，SQL+ 有效 13/13、SQL 可执行 12/13，但修复成功仍为 3/13。
+- 诊断辅助实验使用了 gold-derived differences，应作为“反馈修正链路可行性验证”；非 gold 实验应作为“真实反馈修正挑战”的证据。
+- 开题报告中应把当前结果表述为“反馈修正链路可行性验证”，不要表述为最终真实系统性能。
+- 当前 Direct SQL 单 Refiner 暂时高于 SQL+ 单 Refiner，说明 SQL+ 的优势不能只靠粗粒度反馈 prompt 体现，下一步应从单 Refiner prompt 转向 `Schema Agent + Critic Agent + Refiner Agent`，先提升非 gold 错误定位质量。
+- 当前多智能体初版说明：Agent 串联本身不会自动提升效果，Critic Agent 必须按 SQL+ 局部步骤输出更准确的诊断，否则会误导 Refiner。
+- Step-wise Critic 提高了诊断粒度，但未提高修复成功率，说明下一步应做按错误类型分治和反事实执行，而不是继续扩大 prompt。
+- ORDER/value-linking 分治实验已完成：ORDER-only 为 2/3，value-linking-only 为 3/3，说明按错误类型限制局部修复范围是有效方向。
+- 仅依赖 prompt 的 Agent 已暴露出上限。下一步需要引入工具增强：Schema/value lookup、SQL+ parser、SQL executor、candidate patch executor，以及面向错误类型的 repair skill。
+- Tool/Skill 辅助 value-linking 修复已完成初版：value lookup tool + value_linking_repair_skill 在 3 条 value-linking 样例上达到 SQL+ 有效 3/3、SQL 可执行 3/3、修复成功 3/3。
+- 该结果说明 Agent 不应只依赖 prompt。对值链接、日期边界、候选 patch 选择等问题，应让 Agent 调用 schema/value 检索工具和执行验证工具，再由 repair skill 选择可执行候选。
+- Tool/Skill 辅助 ORDER 修复已完成初版：ORDER repair skill 在 3 条 ORDER-only 样例上达到 SQL+ 有效 3/3、SQL 可执行 3/3、修复成功 3/3，高于此前 prompt-only ORDER Refiner 的 2/3。
+- 该结果进一步支持“错误类型路由 + 局部 repair skill”的实验路线。下一步应将 aggregation 和 join 也设计成可执行候选生成与验证的 skill。
+- Tool/Skill 辅助 aggregation 修复已完成初版：aggregation repair skill 在 3 条聚合样例上达到 SQL+ 有效 3/3、SQL 可执行 3/3、修复成功 3/3，覆盖冗余 id 分组、COUNT 口径、缺 GROUP 维度、AGG 别名和 ORDER 聚合别名引用。
+- 当前 value-linking、ORDER、aggregation 三类局部 skill 均达到 3/3，小样例结果支持后续构建 `Critic Agent -> Skill Router -> Repair Skill -> Executor` 的闭环。
+- Tool/Skill 辅助 join 修复已完成初版：join repair skill 在 3 条 join 相关样例上达到 SQL+ 有效 3/3、SQL 可执行 3/3、修复成功 3/3，覆盖 JOIN 方向规范化、冗余 JOIN 删除、缺失 JOIN 补全、缺少 paid 过滤和 join 影响的投影/聚合修复。
+- 当前四类 repair skill（value-linking、ORDER、aggregation、join）均在小样例上达到 3/3。下一步应把这些 skill 串入统一的 Skill Router，并用 Critic Agent 的错误类型输出自动路由。
+- Skill Router 端到端实验已完成初版：基于 Critic Agent 的 `likely_error_type`、局部步骤诊断和 SQL+ 结构特征自动路由四类 repair skill，在 13 条 SQL+ 失败样例上达到 SQL+ 有效 13/13、SQL 可执行 13/13、修复成功 12/13。
+- Router 相比 SQL+ 非 gold 单 Refiner v2 的 4/13、Schema-Critic-Refiner 初版的 3/13 有明显提升。唯一未修复样例 q006 属于 projection mismatch，需要后续补充 projection repair skill。
+- Spider 小规模公开 benchmark smoke test 已完成：在 Spider dev 的 `concert_singer` 数据库中筛选 20 条当前 SQL+ 子集可覆盖的查询，达到 SQL+ 有效 20/20、SQL 可执行 20/20、执行一致 20/20。
+- 该结果只能作为公开 benchmark 子集迁移可行性证据，不应表述为完整 Spider benchmark 跑分。后续需要扩展到多数据库、多难度和更多 SQL 结构。
+

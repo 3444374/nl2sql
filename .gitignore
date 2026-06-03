@@ -1,0 +1,24 @@
+# Python / runtime caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Local environments and secrets
+.env
+.env.*
+*.key
+*.pem
+secrets.*
+
+# Editor and OS noise
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Downloaded external repos or temporary raw mirrors
+data/benchmarks/spider_raw/
+
+# Large or local-only experiment scratch areas
+tmp/
+temp/
+

@@ -1,0 +1,3 @@
+display_name: NL2SQL Experiment Tracker
+short_description: Record NL2SQL+ experiment progress.
+default_prompt: Use this skill to update the NL2SQL+ experiment outline and append an experiment log after each experiment.
