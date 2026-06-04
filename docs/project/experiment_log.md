@@ -1951,3 +1951,47 @@ lark-cli docs +update --api-version v2 --as user --doc https://www.feishu.cn/doc
 方向调整：
 
 - 本次为飞书文档归属和协作流程调整，不改变实验指标和研究方向。
+
+## 2026-06-05 开题报告按学校模板与学术写作规则修订
+
+目的：
+
+- 根据学校开题通知和硕士生开题报告模板，调整当前开题报告结构。
+- 参照 `academic-research-suite` 的 academic-paper workflow 检查学术结构、引用数量、格式输出和局限性表述。
+- 参照 `humanizer` 清理机械化、口号化和过度拔高的文字，使报告更像研究生本人撰写的正式开题文本。
+
+涉及文件：
+
+- `docs/opening/opening_report.md`
+- `docs/opening/opening_report_template_aligned.md`
+- `docs/opening/opening_report_template_aligned.docx`
+- `docs/opening/opening_report_revision_notes.md`
+- `docs/opening/source_requirements/opening_notice_2025.pdf`
+- `docs/opening/source_requirements/opening_report_template_0604.docx`
+- `docs/opening/source_requirements/requirements_summary.md`
+- `docs/opening/README.md`
+
+执行命令：
+
+```powershell
+Copy-Item 'D:\开题\关于做好2025级硕士研究生论文开题答辩工作通知.pdf' docs\opening\source_requirements\opening_notice_2025.pdf
+Copy-Item 'D:\开题\硕士生开题报告模板0604.docx' docs\opening\source_requirements\opening_report_template_0604.docx
+pandoc docs\opening\opening_report.md -o docs\opening\opening_report_template_aligned.docx --reference-doc=docs\opening\source_requirements\opening_report_template_0604.docx
+```
+
+结果：
+
+- 开题报告已按模板栏目重组：课题背景、国内外研究现状、研究目标与内容、研究方案与可行性、进度安排、预期成果、创新点、精读文献清单和参考文献。
+- 报告中补充 15 篇精读文献清单和 40 篇主要参考文献，用于满足开题通知中的文献阅读要求。
+- 报告新增“已有工作局限”，明确自建数据集、Spider smoke test、Skill Router v3 和达梦 SQL 方言适配的边界。
+- 生成 `opening_report_template_aligned.docx`，使用学校 Word 模板作为 pandoc reference-doc。
+
+问题与观察：
+
+- PDF 和 Word 模板抽取文本在 PowerShell 中出现编码乱码，因此保留原始文件，并用 `requirements_summary.md` 手工记录要求摘要。
+- 当前参考文献数量满足开题形式要求，但定稿前仍建议补 DOI、页码、会议/期刊完整信息并由本人确认精读状态。
+
+方向调整：
+
+- 开题材料后续以 `opening_report.md` 和 `opening_report_template_aligned.docx` 为主线维护。
+- 若导师要求正式提交 Word 版，应在 WPS/Word 中人工检查字体、行距、页边距和签字页。

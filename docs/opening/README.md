@@ -5,6 +5,10 @@
 ## 文件说明
 
 - `opening_report.md`：开题报告草稿，包含课题背景、研究意义、国内外研究现状、研究内容、技术路线、初步实验和参考资料。
+- `opening_report_template_aligned.md`：按学校开题报告模板栏目重组后的 Markdown 版本。
+- `opening_report_template_aligned.docx`：使用学校 Word 模板作为 reference-doc 生成的 Word 版本。
+- `opening_report_revision_notes.md`：本轮按学校通知、academic-research-suite 和 humanizer 修订的说明。
+- `source_requirements/`：学校开题通知、开题报告模板和要求摘要。
 - `opening_ppt.md`：开题汇报 PPT 稿，按页组织，可直接复制到 PowerPoint / WPS 中制作幻灯片。
 - `opening_ppt.pptx`：由 `opening_ppt.md` 生成的 16:9 开题汇报幻灯片。
 - `opening_ppt_final.pptx`：WPS 实际打开验证通过的最终开题汇报 PPT。
