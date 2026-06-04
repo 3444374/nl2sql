@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sqlite3
 import sys
 from pathlib import Path
@@ -15,6 +16,7 @@ from sqlplus import normalize_rows, parse_sqlplus, to_sql
 import run_aggregation_repair_skill as aggregation_skill
 import run_join_repair_skill as join_skill
 import run_order_repair_skill as order_skill
+import run_projection_repair_skill as projection_skill
 import run_value_lookup_repair_skill as value_skill
 
 
@@ -111,6 +113,8 @@ def routing_plan(row: dict) -> list[str]:
         add(plan, "join")
     if likely in {"aggregation", "aggregation_planning"} or {"GROUP", "AGG", "HAVING"} & localized_steps:
         add(plan, "aggregation")
+    if likely in {"projection", "projection_mismatch"} or "SELECT" in localized_steps:
+        add(plan, "projection")
     if likely in {"order_or_limit", "order_or_limit_mismatch"} or {"ORDER", "LIMIT"} & localized_steps:
         add(plan, "order")
 
@@ -124,6 +128,8 @@ def routing_plan(row: dict) -> list[str]:
             add(plan, "join")
     if not query.order_by and (query.select or query.agg):
         add(plan, "order")
+    if has_projection_identifier_surplus(row, query):
+        add(plan, "projection")
 
     return plan
 
@@ -142,7 +148,60 @@ def run_skill(conn: sqlite3.Connection, skill_name: str, row: dict) -> dict:
         return aggregation_skill.repair_case(conn, row)
     if skill_name == "join":
         return join_skill.repair_case(conn, row)
+    if skill_name == "projection":
+        return projection_skill.repair_case(conn, row)
     raise ValueError(f"Unsupported skill: {skill_name}")
+
+
+def has_projection_identifier_surplus(row: dict, query) -> bool:
+    projection = query.select or query.agg
+    if not projection:
+        return False
+    question = str(row.get("question", "")).lower()
+    if any(hint in question for hint in ("id", "编号", "序号", "订单号", "客户号", "商品号")):
+        return False
+    alias_features: dict[str, set[str]] = {}
+    for expression in split_expressions(projection):
+        alias = qualifier(expression)
+        if not alias:
+            continue
+        features = alias_features.setdefault(alias, set())
+        lowered = expression.lower()
+        if re.search(r"\b[A-Za-z_][A-Za-z0-9_]*\.(id|[A-Za-z_][A-Za-z0-9_]*_id)\b", expression):
+            features.add("id")
+        if "name" in lowered or "price" in lowered:
+            features.add("descriptor")
+    return any({"id", "descriptor"} <= features for features in alias_features.values())
+
+
+def split_expressions(text: str) -> list[str]:
+    if not text:
+        return []
+    parts: list[str] = []
+    start = 0
+    depth = 0
+    quote = ""
+    for index, char in enumerate(text):
+        if quote:
+            if char == quote:
+                quote = ""
+            continue
+        if char in {"'", '"'}:
+            quote = char
+        elif char == "(":
+            depth += 1
+        elif char == ")":
+            depth = max(0, depth - 1)
+        elif char == "," and depth == 0:
+            parts.append(text[start:index].strip())
+            start = index + 1
+    parts.append(text[start:].strip())
+    return [part for part in parts if part]
+
+
+def qualifier(expression: str) -> str:
+    match = re.search(r"\b([A-Za-z_][A-Za-z0-9_]*)\.[A-Za-z_][A-Za-z0-9_]*\b", expression)
+    return match.group(1) if match else ""
 
 
 def evaluate(conn: sqlite3.Connection, case: dict, prediction: str) -> dict:

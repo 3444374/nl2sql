@@ -115,12 +115,14 @@
 
 目标：
 
-- 实现 Intent Agent、Schema Agent、Planner Agent、SQL+ Generator Agent、Translator Agent、Validator/Refiner Agent。
+- 形成 `Critic Agent -> Skill Router -> Repair Skill -> Executor` 的 SQL+ 反馈修正闭环。
+- 保留 Intent Agent、Schema Agent、Planner Agent、SQL+ Generator Agent、Translator Agent 等组件作为初始生成和上下文组织模块。
 - 记录各 Agent 的中间输出。
-- 对比单 Agent 与多 Agent 的生成质量。
+- 对比单 Agent、prompt-only 多 Agent、SQL+ Skill Router + Repair Skills 的生成和修复质量。
 - 引入 Tool/RAG/Skill 增强机制，使 Agent 不只依赖 prompt，而能查询 schema、字段值、执行候选 patch 并验证结果。
+- 参考 CHESS、CHASE-SQL、Tool-Assisted Agent、SQLCritic 等工作，重点验证多阶段诊断、候选生成、局部修复和执行验证是否能提升真实反馈修正能力。
 
-当前状态：进行中。已完成 Refiner Agent、Schema-Critic-Refiner 初版、Step-wise Critic 和 ORDER/value-linking 分治实验。下一步转向 Tool/RAG/Skill-assisted Agent，优先实现 value lookup tool 和 value_linking_repair_skill。
+当前状态：进行中。已完成 Refiner Agent、Schema-Critic-Refiner 初版、Step-wise Critic、ORDER/value-linking 分治实验、五类 repair skill 初版和 Skill Router v3 端到端实验。下一步优先扩展无报错但结果语义不匹配的诊断与复合修复能力。
 
 建议产物：
 
@@ -142,6 +144,7 @@
 - 选取 Spider 或 BIRD 的小规模子集。
 - 将部分标准 SQL 改写为 SQL+。
 - 验证 SQL+ 转换和反馈修正在公开数据集样例上的适用性。
+- 从单一数据库 smoke test 扩展到多数据库、多难度和更多 SQL 结构，但开题阶段不追求完整排行榜成绩。
 
 当前状态：已启动。已完成 Spider dev 小规模受支持子集 smoke test。
 
@@ -158,16 +161,18 @@
 
 当前阶段优先级：
 
-1. 引入 Tool/RAG/Skill-assisted Agent，先实现 value lookup tool 和 value_linking_repair_skill。
-2. 做按错误类型分治实验：value linking、ORDER、aggregation、join。
-3. 设计 Schema Agent / Planner Agent 的最小原型，减少初始生成语义偏差。
-4. 准备 Spider/BIRD 小子集适配，但不做大规模 benchmark。
+1. 扩展 `Critic Agent -> Skill Router -> Repair Skill -> Executor` 闭环，覆盖无报错但结果语义不匹配和复合错误场景。
+2. 强化 projection/SELECT 诊断，处理结果列多、列少、列顺序和明细标识保留等问题。
+3. 强化 Schema/value lookup、SQL+ parser、SQL executor、candidate patch executor 等工具，让 Agent 的修复决策由检索和执行验证支撑。
+4. 扩展 Spider/BIRD 小子集适配到多数据库、多难度和更多 SQL 结构，但不做完整 benchmark 排行榜目标。
+5. 参考 SQL-Factory 的多智能体 SQL 数据生成思路，作为后续扩充 SQL+ 样例和错误样例的数据构造参考，不把它作为当前核心方法替代路线。
 
 暂不优先处理：
 
 - 完整多智能体工程化框架。
 - 大规模公开 benchmark 跑分。
 - 达梦数据库真实驱动适配。
+- 大规模 SQL 工作负载自动生成系统。
 
 原因：
 
@@ -194,9 +199,11 @@
 - Tool/Skill 辅助 aggregation 修复已完成初版：aggregation repair skill 在 3 条聚合样例上达到 SQL+ 有效 3/3、SQL 可执行 3/3、修复成功 3/3，覆盖冗余 id 分组、COUNT 口径、缺 GROUP 维度、AGG 别名和 ORDER 聚合别名引用。
 - 当前 value-linking、ORDER、aggregation 三类局部 skill 均达到 3/3，小样例结果支持后续构建 `Critic Agent -> Skill Router -> Repair Skill -> Executor` 的闭环。
 - Tool/Skill 辅助 join 修复已完成初版：join repair skill 在 3 条 join 相关样例上达到 SQL+ 有效 3/3、SQL 可执行 3/3、修复成功 3/3，覆盖 JOIN 方向规范化、冗余 JOIN 删除、缺失 JOIN 补全、缺少 paid 过滤和 join 影响的投影/聚合修复。
-- 当前四类 repair skill（value-linking、ORDER、aggregation、join）均在小样例上达到 3/3。下一步应把这些 skill 串入统一的 Skill Router，并用 Critic Agent 的错误类型输出自动路由。
-- Skill Router 端到端实验已完成初版：基于 Critic Agent 的 `likely_error_type`、局部步骤诊断和 SQL+ 结构特征自动路由四类 repair skill，在 13 条 SQL+ 失败样例上达到 SQL+ 有效 13/13、SQL 可执行 13/13、修复成功 12/13。
-- Router 相比 SQL+ 非 gold 单 Refiner v2 的 4/13、Schema-Critic-Refiner 初版的 3/13 有明显提升。唯一未修复样例 q006 属于 projection mismatch，需要后续补充 projection repair skill。
+- 当前五类 repair skill（value-linking、ORDER、aggregation、join、projection）已完成初版。projection repair skill 在 q006 projection mismatch 上达到 SQL+ 有效 1/1、SQL 可执行 1/1、修复成功 1/1。
+- Skill Router v3 端到端实验已完成：基于 Critic Agent 的 `likely_error_type`、局部步骤诊断和 SQL+ 结构特征自动路由五类 repair skill，在 13 条 SQL+ 失败样例上达到 SQL+ 有效 13/13、SQL 可执行 13/13、修复成功 13/13。
+- Router v3 相比 SQL+ 非 gold 单 Refiner v2 的 4/13、Schema-Critic-Refiner 初版的 3/13 有明显提升。需要注意该结果仍是 13 条已知失败样例上的小规模验证，下一步应扩展无报错语义错和公开子集样例。
 - Spider 小规模公开 benchmark smoke test 已完成：在 Spider dev 的 `concert_singer` 数据库中筛选 20 条当前 SQL+ 子集可覆盖的查询，达到 SQL+ 有效 20/20、SQL 可执行 20/20、执行一致 20/20。
 - 该结果只能作为公开 benchmark 子集迁移可行性证据，不应表述为完整 Spider benchmark 跑分。后续需要扩展到多数据库、多难度和更多 SQL 结构。
-
+- 开题报告新增 SQL-Factory、CHESS、CHASE-SQL、Tool-Assisted Agent、ReFoRCE、XiYan-SQL、SQLCritic 等文献后，实验路线不做大改。新增文献主要用于支撑多阶段、多智能体、执行反馈和候选验证的合理性。
+- SQL-Factory 更适合作为后续数据扩充和 SQL 样例生成的参考，不替代本课题当前的 SQL+ 中间表示与反馈修正主线。
+- 现阶段最小可落地闭环仍是：`Natural language -> SQL+ -> SQL -> Execution feedback -> Critic Agent -> Skill Router -> Repair Skill -> Executor`。

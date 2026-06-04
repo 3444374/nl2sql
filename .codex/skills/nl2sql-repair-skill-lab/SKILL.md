@@ -23,18 +23,19 @@ Existing scripts:
 - `scripts/agents/tools/run_order_repair_skill.py`
 - `scripts/agents/tools/run_aggregation_repair_skill.py`
 - `scripts/agents/tools/run_join_repair_skill.py`
+- `scripts/agents/tools/run_projection_repair_skill.py`
 - `scripts/agents/pipeline/run_skill_router_experiment.py`
 
 Current key result:
 
 ```text
-SQL+ Skill Router + Repair Skills: 12/13
+SQL+ Skill Router + Repair Skills v3: 13/13
 ```
 
 Remaining known failure:
 
 ```text
-q006 projection mismatch: extra product_id column.
+None in the current 13-case SQL+ failure set. Next priority is broader semantic mismatch coverage.
 ```
 
 ## Workflow

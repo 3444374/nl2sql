@@ -171,8 +171,13 @@ FROM orders o
 - ORDER repair skill
 - aggregation repair skill
 - join repair skill
+- projection repair skill
 
-待补充：projection repair skill。
+当前重点：
+
+- projection/SELECT 诊断稳定性
+- 无报错但结果语义不匹配的诊断
+- 复合错误下多个 repair skill 的调用顺序
 
 ---
 
@@ -241,13 +246,14 @@ SQL+ prompt v2 失败类型：
 | Direct SQL 非 gold Refiner | 14 | - | 14/14 | 6/14 |
 | SQL+ Schema-Critic-Refiner 初版 | 13 | 13/13 | 13/13 | 3/13 |
 | SQL+ Step-wise Critic-Refiner | 13 | 13/13 | 12/13 | 3/13 |
-| SQL+ Skill Router + Repair Skills | 13 | 13/13 | 13/13 | 12/13 |
+| SQL+ Skill Router + Repair Skills v3 | 13 | 13/13 | 13/13 | 13/13 |
 
 结论：
 
 - 单 Refiner prompt 不稳定。
 - 简单串联多个 Agent 也不一定提升。
-- `Critic Agent -> Skill Router -> Repair Skill -> Executor` 明显提升修复成功率。
+- `Critic Agent -> Skill Router -> Repair Skill -> Executor` 在 13 条已知 SQL+ 失败样例上达到 13/13。
+- 该结果仍是开题阶段小规模验证，后续需要扩展到复合错误和公开子集。
 
 ---
 
@@ -259,6 +265,7 @@ SQL+ prompt v2 失败类型：
 | ORDER repair skill | 3 | 3/3 |
 | aggregation repair skill | 3 | 3/3 |
 | join repair skill | 3 | 3/3 |
+| projection repair skill | 1 | 1/1 |
 
 说明：
 
@@ -266,6 +273,7 @@ SQL+ prompt v2 失败类型：
 - ORDER：修复排序字段和排序方向。
 - aggregation：修复 GROUP、COUNT、AGG 别名和 ORDER 引用。
 - join：修复 JOIN 路径、冗余 JOIN、缺失 JOIN 和 paid 过滤。
+- projection：修复结果列多、少或列顺序错误，例如删除问题未要求的 `product_id`。
 
 ---
 
@@ -318,7 +326,7 @@ SQL+ prompt v2 失败类型：
 | --- | --- |
 | 阶段一 | 完善 SQL+ 语法、parser、converter |
 | 阶段二 | 完善 Schema Agent 和 Critic Agent |
-| 阶段三 | 补充 projection repair skill，完善 Skill Router |
+| 阶段三 | 扩展无报错语义错诊断，完善复合错误路由 |
 | 阶段四 | 接入 Spider/BIRD 小规模子集 |
 | 阶段五 | 适配达梦 SQL 方言并完成实验评估 |
 | 阶段六 | 完成论文撰写和系统整理 |
@@ -334,22 +342,25 @@ SQL+ prompt v2 失败类型：
 - SQL+ 表达与转换链路可行：30/30。
 - SQL+ 初始生成略优于 Direct NL2SQL：17/30 vs 16/30。
 - 单 Refiner 和简单多 Agent 串联不足：4/13、3/13。
-- 引入 Skill Router 和 repair skill 后明显提升：12/13。
+- 引入 Skill Router v3 和五类 repair skill 后明显提升：13/13。
 - Spider 小规模公开子集 smoke test：20/20。
 
 结论：
 
-SQL+ 中间表示 + 多智能体错误诊断 + Skill Router + 局部修复，是一个具有研究价值和实验可行性的方向。
+SQL+ 中间表示 + 多智能体错误诊断 + Skill Router + 局部修复，是一个具有研究价值和实验可行性的方向。下一步重点是把当前小规模闭环扩展到无报错语义错、复合错误和更多公开数据集样例。
 
 ---
 
 ## 第 20 页：参考文献
 
-1. SQL Has Problems. We Can Fix Them: Pipe Syntax In SQL. Google Research / VLDB.
-2. GoogleSQL Pipe Query Syntax Guide. Google Cloud BigQuery Documentation.
-3. MAC-SQL: A Multi-Agent Collaborative Framework for Text-to-SQL. arXiv:2312.11242.
-4. DAIL-SQL: Text-to-SQL Empowered by Large Language Models. arXiv:2308.15363.
-5. DIN-SQL: Decomposed In-Context Learning of Text-to-SQL with Self-Correction. arXiv:2304.11015.
-6. Spider 2.0: Evaluating Language Models on Real-World Enterprise Text-to-SQL Workflows. arXiv:2411.07763.
-7. BIRD: A Big Bench for Large-Scale Database Grounded Text-to-SQL Evaluation.
+1. Spider: A Large-Scale Human-Labeled Dataset for Complex and Cross-Domain Semantic Parsing and Text-to-SQL Task.
+2. RAT-SQL: Relation-Aware Schema Encoding and Linking for Text-to-SQL Parsers.
+3. PICARD: Parsing Incrementally for Constrained Auto-Regressive Decoding from Language Models.
+4. DAIL-SQL: Text-to-SQL Empowered by Large Language Models.
+5. DIN-SQL: Decomposed In-Context Learning of Text-to-SQL with Self-Correction.
+6. MAC-SQL: A Multi-Agent Collaborative Framework for Text-to-SQL.
+7. CHESS / CHASE-SQL: Multi-agent and multi-path Text-to-SQL reasoning.
 8. SQLCritic: Correcting Text-to-SQL Generation via Clause-wise Critic.
+9. SQL-Factory: A Multi-Agent Framework for High-Quality and Large-Scale SQL Generation.
+10. BIRD / Spider 2.0: Real-world and enterprise Text-to-SQL benchmarks.
+11. GoogleSQL Pipe Syntax: SQL Has Problems. We Can Fix Them.

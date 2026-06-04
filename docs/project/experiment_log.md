@@ -1646,3 +1646,308 @@ git status --short
 
 - 项目后续采用“实验/修改 -> 结果记录 -> 大纲调整 -> 报告同步 -> skill/AGENTS 更新 -> GitHub 提交推送”的闭环工作流。
 - 工作流本身也纳入实验留痕范围，避免跨设备协作时丢失研究判断。
+
+## 2026-06-04 开题汇报 PPTX 生成
+
+目的：
+
+- 将 `docs/opening/opening_ppt.md` 转换为可直接打开和二次编辑的 PowerPoint 文件。
+- 保留 Markdown 作为源稿，同时生成最终 `.pptx` 汇报材料。
+
+涉及文件：
+
+- `docs/opening/opening_ppt.md`
+- `docs/opening/opening_ppt.pptx`
+- `docs/opening/opening_ppt_final.pptx`
+- `docs/opening/README.md`
+
+执行命令：
+
+```powershell
+python3 -m zipfile -l docs/opening/opening_ppt.pptx
+python3 -c "import zipfile, xml.etree.ElementTree as ET; p='docs/opening/opening_ppt.pptx'; z=zipfile.ZipFile(p); names=z.namelist(); assert '[Content_Types].xml' in names; assert 'ppt/presentation.xml' in names; slides=[n for n in names if n.startswith('ppt/slides/slide') and n.endswith('.xml')]; assert len(slides)==20, len(slides); [ET.fromstring(z.read(n)) for n in ['[Content_Types].xml','_rels/.rels','ppt/presentation.xml','ppt/_rels/presentation.xml.rels']+slides]; print('valid xml parts:', len(slides), 'slides')"
+open -a /Applications/wpsoffice.app docs/opening/opening_ppt_final.pptx
+```
+
+结果：
+
+- 生成 `docs/opening/opening_ppt.pptx` 和最终文件 `docs/opening/opening_ppt_final.pptx`，共 20 页，16:9 宽屏。
+- ZIP 包结构和 20 个 slide XML 均已通过解析校验。
+- `opening_ppt_final.pptx` 已用 WPS Office 实际打开验证，左侧缩略图显示 20 页，正文页可正常预览。
+
+问题与观察：
+
+- 当前 PPTX 适合作为可编辑初稿，正式汇报前建议在 PowerPoint / WPS 中按学校模板微调封面、字体、页眉页脚和汇报人信息。
+- 按用户要求，本次不保留 PPTX 生成脚本，只保留最终 PPT 文件。
+- 初版 PPTX 曾出现 WPS 打开失败，后续已重新制作标准 PPTX 并完成 WPS 打开验证。
+
+方向调整：
+
+- 本次为开题材料产物生成，不改变实验路线或当前指标。
+
+## 2026-06-04 开题报告飞书版学术增强与 humanizer 处理
+
+目的：
+
+- 以 `docs/opening/opening_report.md` 为基准，生成适合导入飞书云文档的开题报告版本。
+- 在写入飞书前先进行学术论证增强，再进行 humanizer 最终处理，减少模板化表达，同时保持 SQL+ 研究结论和实验指标边界准确。
+
+涉及文件：
+
+- `docs/opening/opening_report.md`
+- `docs/opening/opening_report_feishu_polished.md`
+- `docs/opening/opening_report_academic_enhanced.md`
+- `docs/opening/opening_report_feishu_final.md`
+- `docs/project/experiment_log.md`
+
+执行命令：
+
+```powershell
+lark-cli config init --new
+lark-cli config keychain-downgrade
+lark-cli docs +create --api-version v2 --doc-format markdown --content @docs/opening/opening_report_feishu_final.md
+```
+
+使用的 skills：
+
+- `academic-pipeline`：按已有开题报告草稿的中途入口检查研究问题、调研覆盖、claim 边界和实验表述。
+- `humanizer`：作为写入飞书前的最后一步，清理模板化连接词、机械三段式、过度正向表述和明显 AI 写作痕迹。
+- `lark-doc` / `lark-shared`：完成飞书 CLI 配置、Keychain 降级处理和云文档创建。
+- `nl2sql-sqlplus-research`：确保 SQL+、Spider smoke test、Skill Router 等开题结论不夸大。
+- `nl2sql-experiment-tracker`：记录本次开题材料处理和飞书同步过程。
+
+结果：
+
+- 生成 `docs/opening/opening_report_feishu_final.md`，作为最终导入飞书的 humanizer 后版本。
+- 飞书文档创建成功：`https://my.feishu.cn/docx/P1FEduyA6oag0rxHICUc7BSfnid`
+- 文档由 bot 身份创建，当前 CLI 没有 user open_id，因此自动授予当前用户 full_access 被跳过；如用户侧打不开，需要后续进行用户身份授权或手动授予权限。
+
+问题与观察：
+
+- 初次创建飞书文档前，`lark-cli` 未配置，需要扫码完成应用配置。
+- 配置成功后，沙箱无法访问 macOS Keychain，按用户授权执行 `lark-cli config keychain-downgrade`，将 master key 写入本地文件以便自动化环境继续调用。
+- 飞书 API 调用需要联网权限，使用 escalated 网络权限后创建成功。
+- 本次仅增强开题报告表达、调研论证和结论边界，不改变实验指标、研究路线和阶段优先级。
+
+方向调整：
+
+- 本次不更新 `docs/project/experiment_outline.md`。原因是文档处理没有改变当前方向判断，仍然保持 projection repair skill、Schema/Critic Agent、Spider/BIRD 小规模子集和达梦 SQL 方言适配为后续重点。
+
+## 2026-06-04 开题报告参考文献扩展与飞书文档更新
+
+目的：
+
+- 按用户补充要求，将 SQL-Factory 及与本课题相关的 Text-to-SQL、多智能体、执行反馈修正文献补入开题报告。
+- 在写入飞书前继续执行 humanizer 风格检查，保持报告表达自然，同时确保 SQL+ 研究边界和已有实验指标不被夸大。
+
+涉及文件：
+
+- `docs/opening/opening_report.md`
+- `docs/opening/opening_report_feishu_final.md`
+- `docs/project/experiment_log.md`
+
+执行命令：
+
+```powershell
+lark-cli docs +update --api-version v2 --doc https://my.feishu.cn/docx/P1FEduyA6oag0rxHICUc7BSfnid --command overwrite --doc-format markdown --content @docs/opening/opening_report_feishu_final.md
+```
+
+使用的 skills：
+
+- `academic-pipeline`：作为学术材料入口，确认本次属于开题报告调研和参考文献增强。
+- `deep-research`：用于补查和筛选与 Text-to-SQL、多智能体 SQL 生成、执行反馈修正相关的文献。
+- `humanizer`：写入飞书前检查模板化表达和 AI 化写作痕迹。
+- `lark-doc`：将更新后的 Markdown 正文覆盖写入飞书云文档。
+- `nl2sql-sqlplus-research`：检查 SQL+、Spider smoke test、Skill Router 等表述边界。
+- `nl2sql-experiment-tracker`：追加本次文档进展记录。
+
+结果：
+
+- 将参考文献从 19 条扩展到 22 条。
+- 修正 SQL-Factory 引用信息：`SQL-Factory: A Multi-Agent Framework for High-Quality and Large-Scale SQL Generation`，PVLDB 19(3):292-305, 2025，VLDB PDF 为 `https://www.vldb.org/pvldb/vol19/p292-gao.pdf`。
+- 新增或强化了 Tool-Assisted Agent、ReFoRCE、XiYan-SQL、CHESS、CHASE-SQL、SQLCritic 等与多阶段生成、执行反馈和修正相关的材料。
+- 已同步更新飞书文档：`https://my.feishu.cn/docx/P1FEduyA6oag0rxHICUc7BSfnid`，更新后 `revision_id=7`。
+
+问题与观察：
+
+- 沙箱内访问飞书 API 时仍出现 DNS 解析失败，使用授权后的 escalated 网络权限执行 `lark-cli docs +update` 成功。
+- 本次修改只增强文献综述和参考文献，不改变实验指标、研究路线和阶段优先级。
+
+方向调整：
+
+- 本次不更新 `docs/project/experiment_outline.md`。原因是新增文献用于支撑现有研究路线，没有改变后续实验优先级。
+
+## 2026-06-04 开题报告后的实验 outline 轻量调整
+
+目的：
+
+- 根据更新后的开题报告和新增参考文献，检查 `docs/project/experiment_outline.md` 是否需要同步。
+- 将实验大纲从早期“多 Agent 串联原型”表述，调整为当前已经形成证据的 `Critic Agent -> Skill Router -> Repair Skill -> Executor` 主线。
+
+涉及文件：
+
+- `docs/project/experiment_outline.md`
+- `docs/project/experiment_log.md`
+
+使用的 skills：
+
+- `nl2sql-sqlplus-research`：检查 SQL+ 研究主线、Spider smoke test 和 Skill Router 结果表述边界。
+- `nl2sql-experiment-tracker`：按项目记忆规则同步 outline 并追加日志。
+
+结果：
+
+- 更新阶段五“多智能体原型”：明确当前核心闭环为 `Critic Agent -> Skill Router -> Repair Skill -> Executor`，并保留 Intent/Schema/Planner/Translator 等组件作为初始生成和上下文组织模块。
+- 更新阶段六“公开数据集适配”：明确后续从单一 Spider smoke test 扩展到多数据库、多难度和更多 SQL 结构，但开题阶段不追求完整排行榜成绩。
+- 更新当前阶段优先级：优先补充 projection repair skill，扩展无报错但语义不匹配的诊断与修复，强化工具支撑，并将 SQL-Factory 定位为后续数据扩充参考。
+
+问题与观察：
+
+- 本次没有新增实验运行，也没有改变任何已有指标。
+- 新增文献主要支撑多阶段、多智能体、执行反馈和候选验证的合理性，不改变 SQL+ 中间表示与反馈修正的核心路线。
+
+方向调整：
+
+- `docs/project/experiment_outline.md` 已同步开题报告后的最新表述。
+- 下一步实验优先级从“实现 value lookup/value_linking 初版”更新为“projection repair skill + 无报错语义错诊断 + 公开子集扩展”。
+
+## 2026-06-04 Projection repair skill 与 Skill Router v3
+
+目的：
+
+- 补齐当前 Skill Router 唯一未修复的 q006 projection mismatch。
+- 验证结果列多/少是否可以通过 SQL+ `SELECT` 局部候选裁剪和执行验证修复。
+- 将 projection repair skill 接入 `Critic Agent -> Skill Router -> Repair Skill -> Executor` 端到端闭环。
+
+涉及文件：
+
+- `scripts/agents/tools/run_projection_repair_skill.py`
+- `data/sqlplus_projection_repair_inputs.jsonl`
+- `scripts/agents/pipeline/run_skill_router_experiment.py`
+- `outputs/refiner/sqlplus_projection_skill_outputs.jsonl`
+- `outputs/refiner/sqlplus_skill_router_outputs_v3.jsonl`
+- `docs/agents/tools/projection_repair_skill_report.md`
+- `docs/agents/pipeline/sqlplus_skill_router_report_v3.md`
+- `README.md`
+- `docs/project/opening_preliminary_results.md`
+- `docs/project/experiment_outline.md`
+- `docs/opening/opening_report.md`
+- `docs/opening/README.md`
+- `.codex/skills/nl2sql-repair-skill-lab/SKILL.md`
+
+执行命令：
+
+```powershell
+python -B scripts/agents/tools/run_projection_repair_skill.py
+python -B scripts/agents/pipeline/run_skill_router_experiment.py --output outputs/refiner/sqlplus_skill_router_outputs_v3.jsonl --report docs/agents/pipeline/sqlplus_skill_router_report_v3.md
+python3 -B scripts/agents/tools/run_projection_repair_skill.py
+python3 -B scripts/agents/pipeline/run_skill_router_experiment.py --output outputs/refiner/sqlplus_skill_router_outputs_v3.jsonl --report docs/agents/pipeline/sqlplus_skill_router_report_v3.md
+```
+
+结果：
+
+- 本机 shell 中 `python` 命令不可用，两条 `python -B ...` 首次验证命令均失败，错误为 `zsh:1: command not found: python`。
+- 改用 `python3` 后 projection repair skill 运行成功：样例 1 条，SQL+ 有效 1/1，SQL 可执行 1/1，修复成功 1/1。
+- q006 修复动作为删除未被问题要求的 `p.product_id` 投影，输出 `p.product_name, p.price`。
+- Skill Router v3 运行成功：13 条 SQL+ 失败样例，SQL+ 有效 13/13，SQL 可执行 13/13，修复成功 13/13。
+
+问题与观察：
+
+- projection skill 初次接入 router 后曾误伤 q025：join skill 已把明细查询修到 gold 对齐，但 projection 又删除了 `oi.item_id`。
+- 修正方式：收紧 router 的 projection 触发条件，仅在同一 alias 同时出现 id 与 name/price 等描述列时按结构启发触发；projection skill 遇到“明细”类问题时保留 `item_id` / `order_id`。
+- q006 的 Critic Agent 仍将真实 projection mismatch 标为 `order_or_limit`，说明 Critic 的 SELECT/projection 诊断仍需增强；router v3 目前依靠 SQL+ 结构启发补救该诊断缺口。
+
+方向调整：
+
+- 当前 13 条已知 SQL+ 失败样例上的 Skill Router 指标从 12/13 更新为 13/13。
+- repair skill 覆盖从 value-linking、ORDER、aggregation、join 四类扩展到 value-linking、ORDER、aggregation、join、projection 五类。
+- 下一步重点从“补 projection repair skill”调整为“扩展无报错语义错诊断、projection/SELECT 诊断稳定性、复合错误路由顺序和公开子集覆盖”。
+
+## 2026-06-04 开题报告飞书版与 PPT 同步 Router v3 结果
+
+目的：
+
+- 用户补充 projection repair skill 和 Skill Router v3 实验后，同步完善飞书开题报告和开题汇报 PPT。
+- 将开题材料中的旧结论 `SQL+ Skill Router + Repair Skills 12/13` 更新为 `SQL+ Skill Router + Repair Skills v3 13/13`，并补充 projection repair skill 的 1/1 结果。
+
+涉及文件：
+
+- `docs/opening/opening_report_feishu_final.md`
+- `docs/opening/opening_ppt.md`
+- `docs/opening/opening_ppt.pptx`
+- `docs/opening/opening_ppt_final.pptx`
+- `docs/project/experiment_log.md`
+
+执行命令：
+
+```powershell
+lark-cli docs +update --api-version v2 --doc https://my.feishu.cn/docx/P1FEduyA6oag0rxHICUc7BSfnid --command overwrite --doc-format markdown --content @docs/opening/opening_report_feishu_final.md
+python3 -m zipfile -t docs/opening/opening_ppt_final.pptx
+open -a /Applications/wpsoffice.app docs/opening/opening_ppt_final.pptx
+```
+
+使用的 skills：
+
+- `nl2sql-sqlplus-research`：检查 Router v3、projection repair skill 和 Spider smoke test 的开题 claim 边界。
+- `nl2sql-experiment-tracker`：追加本次材料同步记录。
+- `humanizer`：写入飞书前检查报告文本是否存在明显模板化表达。
+- `lark-doc`：覆盖更新飞书云文档正文。
+- `presentations`：更新开题 PPT 源稿和最终 PPTX 内容。
+
+结果：
+
+- 飞书版报告已更新为五类 repair skill：value-linking、ORDER、aggregation、join、projection。
+- 反馈修正对比表更新为 `SQL+ Skill Router + Repair Skills v3`，13 条已知 SQL+ 失败样例达到 SQL+ 有效 13/13、SQL 可执行 13/13、修复成功 13/13。
+- 分治 repair skill 表新增 projection repair skill：1 条样例，修复成功 1/1。
+- 后续计划从“补 projection repair skill”调整为“扩展无报错语义错诊断、projection/SELECT 诊断稳定性、复合错误路由和公开子集覆盖”。
+- 飞书文档更新成功：`https://my.feishu.cn/docx/P1FEduyA6oag0rxHICUc7BSfnid`，更新后 `revision_id=10`。
+- PPT 源稿和两个 PPTX 文件均已同步更新。`opening_ppt_final.pptx` 通过 ZIP/XML 校验，并已调用 WPS 打开验证。
+
+问题与观察：
+
+- 沙箱内飞书 API 仍出现 DNS 解析失败，使用授权后的 escalated 网络权限执行 `lark-cli docs +update` 成功。
+- PPTX 更新时保留原有 20 页结构和版式，只改第 10、14、15、18、19、20 页中的文本内容。
+- 第 14 页中旧对照方法的 SQL 可执行 `12/13` 属于保留指标，不能误改为修复成功率。
+
+方向调整：
+
+- 开题材料已经同步 Router v3 和 projection repair skill 的最新结果。
+- 本次不新增实验方向；后续优先级沿用 `docs/project/experiment_outline.md`：无报错语义错、projection/SELECT 诊断、复合错误路由、Spider/BIRD 子集扩展。
+
+## 2026-06-04 飞书用户身份授权与用户 Wiki 文档写入
+
+目的：
+
+- 解决此前飞书文档由 bot 身份创建，用户侧无法直接编辑的问题。
+- 使用用户自己创建的飞书 Wiki 文档承载最终开题报告内容。
+
+涉及文件：
+
+- `docs/opening/opening_report_feishu_final.md`
+- `docs/project/experiment_log.md`
+
+执行命令：
+
+```powershell
+lark-cli auth login --domain docs,drive --no-wait --json
+lark-cli auth qrcode --output lark_user_auth_qr.png <verification_url>
+lark-cli auth login --device-code <device_code>
+lark-cli drive +inspect --url https://my.feishu.cn/wiki/BjwewQgnNiuNv1k1TzrcvNzcnYd
+lark-cli docs +update --api-version v2 --as user --doc https://www.feishu.cn/docx/ZPZqdt32poPzrvxUX0Ac2k7pn6c --command overwrite --doc-format markdown --content @docs/opening/opening_report_feishu_final.md --new-title 开题报告
+```
+
+结果：
+
+- 用户 OAuth 授权成功，CLI 已具备 user 身份。出于隐私考虑，不在项目日志中记录用户 open_id。
+- 用户创建的 Wiki 节点 `BjwewQgnNiuNv1k1TzrcvNzcnYd` 已解析为 docx token `ZPZqdt32poPzrvxUX0Ac2k7pn6c`。
+- 使用 `--as user` 成功将开题报告写入用户自己的文档，返回 identity 为 `user`，文档 `revision_id=7`。
+- 用户文档链接：`https://my.feishu.cn/wiki/BjwewQgnNiuNv1k1TzrcvNzcnYd?from=from_copylink`
+
+问题与观察：
+
+- bot 身份对用户新建 Wiki 文档没有编辑权限，写入时返回 `No permission to operate on this document`。
+- 完成用户 OAuth 后，使用 `--as user` 写入成功。
+- 沙箱限制导致 `lark-cli config default-as user` 无法写入 `~/.lark-cli/config.json`，但 `auth status` 显示 auto 身份已可解析为 user，显式指定 `--as user` 即可执行。
+
+方向调整：
+
+- 本次为飞书文档归属和协作流程调整，不改变实验指标和研究方向。
