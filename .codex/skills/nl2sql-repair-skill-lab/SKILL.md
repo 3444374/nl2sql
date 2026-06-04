@@ -51,7 +51,7 @@ None in the current 13-case SQL+ failure set. Next priority is broader semantic 
 9. Append `docs/project/experiment_log.md`.
 10. Update `docs/project/experiment_outline.md` if the direction changes.
 11. Update `README.md`, `docs/README.md`, or opening materials if a headline repair metric changes.
-12. If a reusable repair workflow changes, update this skill and `docs/project/workflow_traceability.md`.
+12. If a reusable repair workflow changes, update this skill, `AGENTS.md`, and `docs/project/workflow_traceability.md`, then record the process change in `docs/project/project_log.md`.
 
 ## Evaluation Terms
 

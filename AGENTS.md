@@ -38,7 +38,8 @@ Natural language
 - `scripts/benchmarks/`: public benchmark subset scripts.
 - `prompts/`: prompt templates.
 - `docs/project/experiment_outline.md`: living experiment roadmap.
-- `docs/project/experiment_log.md`: chronological experiment log. Always append, never rewrite history.
+- `docs/project/experiment_log.md`: experiment-only chronological log. Record runs, metrics, failures, and experiment-driven direction changes.
+- `docs/project/project_log.md`: non-experiment project process log for documentation, sync, workflow, and external-document updates.
 - `docs/opening/`: graduate opening report and PPT draft.
 - `.codex/skills/`: portable project skills.
 
@@ -48,8 +49,9 @@ Natural language
 2. After any meaningful experiment, append to `docs/project/experiment_log.md`.
 3. If a result changes direction, update `docs/project/experiment_outline.md`.
 4. Keep opening-stage claims precise:
-   - `SQL+ Skill Router + Repair Skills` result is `12/13` on 13 SQL+ failure cases.
+   - `SQL+ Skill Router + Repair Skills v3` result is `13/13` on the current 13-case SQL+ known-failure set.
    - `Spider smoke test` is `20/20` on a supported small Spider dev subset, not a full benchmark score.
+   - Do not present small known-failure-set repair results as broad benchmark results.
 5. Do not commit API keys, `.env`, local secrets, or user-specific environment files.
 6. Do not present gold-derived diagnostics as real autonomous repair results.
 7. Prefer small, reproducible scripts over one-off notebook logic.
@@ -70,7 +72,8 @@ Key changes include:
 
 Default traceability updates:
 
-- Always append a dated entry to `docs/project/experiment_log.md`.
+- Append experiment runs, metrics, failures, and experiment-driven direction changes to `docs/project/experiment_log.md`.
+- Append non-experiment process changes, documentation work, GitHub sync, external document updates, and workflow changes to `docs/project/project_log.md`.
 - Update `docs/project/experiment_outline.md` when phase status, direction, or priorities change.
 - Update the specific report under `docs/sqlplus/`, `docs/baseline/`, `docs/agents/`,
   or `docs/benchmarks/` when the result belongs to that area.
@@ -85,6 +88,7 @@ End-of-turn checklist:
 - Commands run are reproducible or documented.
 - Metrics and failure cases are recorded.
 - Direction changes are reflected in the outline.
+- Non-experiment process changes are recorded in `docs/project/project_log.md`, not `docs/project/experiment_log.md`.
 - Affected reports and opening materials are synchronized when needed.
 - `git status --short` has been checked before the final response.
 
@@ -111,7 +115,7 @@ $env:OPENAI_API_KEY=[Environment]::GetEnvironmentVariable('OPENAI_API_KEY','User
 - NL2SQL+ prompt v2: `17/30`.
 - SQL+ non-gold single Refiner: `4/13`.
 - Direct SQL non-gold Refiner: `6/14`.
-- SQL+ Skill Router + Repair Skills: `12/13`.
+- SQL+ Skill Router + Repair Skills v3: `13/13` on the current known-failure set.
 - Spider smoke test: `20/20` on supported Spider dev subset from `concert_singer`.
 
 ## Project Skills

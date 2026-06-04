@@ -1,18 +1,19 @@
 ---
 name: nl2sql-experiment-tracker
-description: Track NL2SQL+ thesis experiments and progress. Use when Codex runs or plans experiments for the SQL+ / Text-to-SQL / multi-agent project and must update experiment outlines, append experiment logs, record results, adjust research direction, or keep reproducible evidence in docs.
+description: Track NL2SQL+ thesis experiments only. Use when Codex runs or plans SQL+ / Text-to-SQL / multi-agent experiments and must update experiment outlines, append experiment logs, record measured results, adjust experiment direction, or keep reproducible evidence in docs.
 ---
 
 # NL2SQL+ Experiment Tracker
 
-Use this skill whenever working on experiments, project progress, workflow changes, or opening-report evidence for the NL2SQL+ project. Keep work traceable: every key test, modification, result, failure, progress update, or direction change must leave a dated log entry, and any direction change must be reflected in the outline.
+Use this skill whenever working on experiments for the NL2SQL+ project. Keep experiment work traceable: every key test, model run, benchmark, failure, metric change, or experiment-driven direction change must leave a dated experiment log entry, and any direction change must be reflected in the outline.
 
 ## Files
 
 Use these project files by default:
 
 - `docs/project/experiment_outline.md`: long-running experiment roadmap, phase status, direction changes.
-- `docs/project/experiment_log.md`: chronological experiment records.
+- `docs/project/experiment_log.md`: experiment-only chronological records.
+- `docs/project/project_log.md`: non-experiment project process records.
 - `docs/project/workflow_traceability.md`: required traceability workflow and cross-session memory rules.
 - `docs/sqlplus/pre_experiment_report.md`: SQL+ conversion and execution report.
 - `docs/sqlplus/repair_experiment_report.md`: feedback repair report.
@@ -24,22 +25,22 @@ If a file is missing, create it before or after the experiment as appropriate.
 1. Before an experiment or key change, check `docs/project/experiment_outline.md` and identify the current phase.
 2. Run or modify the experiment with reproducible commands.
 3. Capture metrics, errors, changed files, and observations.
-4. Append an entry to `docs/project/experiment_log.md` using the template in `references/log-template.md`.
+4. Append an entry to `docs/project/experiment_log.md` using the template in `references/log-template.md` when the event is experiment-related.
 5. Update `docs/project/experiment_outline.md` when results change the priority, scope, or next step.
 6. Regenerate or update any report document affected by the experiment.
-7. If the workflow itself changed, update `AGENTS.md`, this skill, and `docs/project/workflow_traceability.md`.
+7. If the workflow itself changed, update `AGENTS.md`, this skill, `docs/project/workflow_traceability.md`, and record the process change in `docs/project/project_log.md`.
 8. In the final response, tell the user which documents were updated and summarize the measured results.
 
 ## Key Change Definition
 
-Record a traceability entry when any of these occurs:
+Record an experiment log entry when any of these occurs:
 
 - A script, prompt, agent, repair skill, dataset, benchmark adapter, or evaluation metric changes.
 - A model/API run is executed, whether it succeeds or fails.
 - A benchmark or smoke test is added or rerun.
 - A result changes the next research direction or opening-report claim.
-- A cross-machine setup, GitHub sync, environment, or reproducibility workflow changes.
-- A project skill or `AGENTS.md` rule changes.
+
+Do not write non-experiment process events to `docs/project/experiment_log.md`. Use `docs/project/project_log.md` for cross-machine setup, GitHub sync, opening-document formatting, Feishu updates, project skill edits, or `AGENTS.md` rule changes.
 
 ## Files to Update by Event Type
 
@@ -47,7 +48,7 @@ Record a traceability entry when any of these occurs:
 - Direction change: update `docs/project/experiment_outline.md`.
 - Opening-facing result: update `docs/opening/` and `docs/project/opening_preliminary_results.md` if needed.
 - Headline metric or command change: update `README.md` and/or `docs/README.md`.
-- Workflow or memory rule change: update `AGENTS.md`, `docs/project/workflow_traceability.md`, and the relevant `.codex/skills/*/SKILL.md`.
+- Workflow or memory rule change: update `AGENTS.md`, `docs/project/workflow_traceability.md`, the relevant `.codex/skills/*/SKILL.md`, and `docs/project/project_log.md`.
 
 ## Logging Rules
 

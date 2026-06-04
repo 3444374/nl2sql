@@ -1,24 +1,31 @@
 # 项目留痕与工作流协议
 
-本文档定义 NL2SQL+ 开题实验的项目记忆、实验留痕和跨电脑协作规则。目标是让任何一台电脑、任何一次 Codex/Agent 会话都能接上当前研究状态。
+本文档定义 NL2SQL+ 开题实验的项目记忆、实验留痕和跨电脑协作规则。项目记忆以仓库文件为准，不依赖聊天记录。
 
-## 核心原则
+## 双日志规则
 
-项目记忆以仓库文件为准，不依赖聊天记录。
+本项目采用双日志：
 
-每次关键测试、关键修改、项目进展或方向调整，都要在同一轮工作中更新相应文档。实验结果、失败原因、后续方向和复现命令必须可追溯。
+- `docs/project/experiment_log.md`：只记录实验相关内容。
+- `docs/project/project_log.md`：记录非实验类项目过程。
 
-## 什么算关键事件
+写入 `experiment_log.md` 的内容包括：
 
-需要留痕的事件包括：
+- 实验运行记录。
+- 模型/API 调用结果。
+- benchmark 或 smoke test。
+- baseline、agent、repair skill、Skill Router 等实验。
+- 实验失败记录。
+- 指标变化和实验结果分析。
+- 由实验结果引发的研究方向调整。
 
-- 新增或修改实验脚本、prompt、agent、tool、repair skill、数据集或 benchmark 适配器。
-- 执行模型/API 实验、benchmark smoke test、修复实验或 baseline 实验。
-- 实验失败，但失败原因会影响后续方向。
-- 指标发生变化，例如成功率、可执行率、修复成功率、Spider 子集覆盖数。
-- 研究方向、阶段优先级、开题报告表述或实验设计发生变化。
-- 跨电脑同步、GitHub 使用、环境变量、依赖安装或项目 skill 安装流程发生变化。
-- `AGENTS.md` 或 `.codex/skills/*/SKILL.md` 的工作规则发生变化。
+写入 `project_log.md` 的内容包括：
+
+- 目录整理。
+- GitHub 同步和跨电脑设置。
+- 开题报告、PPT、飞书文档等材料修订。
+- 工作流、AGENTS 或 project skill 修改。
+- 非实验性质的文档归档和流程调整。
 
 ## 开始工作前
 
@@ -34,35 +41,22 @@ git status --short
 Get-Content docs/project/experiment_outline.md
 ```
 
-3. 按任务选择项目 skill：
+3. 判断本轮工作类型：
 
-- 实验和进展记录：`nl2sql-experiment-tracker`
-- SQL+ 语法、开题表述、benchmark 子集：`nl2sql-sqlplus-research`
-- repair skill、Skill Router、Critic/Refiner 修复实验：`nl2sql-repair-skill-lab`
+- 如果要跑实验、改实验脚本、改 agent/repair skill 或产生指标，使用 `nl2sql-experiment-tracker`。
+- 如果要改 SQL+ 研究表述、开题报告或 benchmark 解释，使用 `nl2sql-sqlplus-research`。
+- 如果要改 repair skill、Critic、Skill Router 或修复实验，使用 `nl2sql-repair-skill-lab`。
 
-## 工作中
-
-优先使用可复现脚本，不使用一次性手工流程。所有重要命令应能写入实验日志。
-
-建议输出位置：
-
-- SQL+ 语法和转换：`docs/sqlplus/`
-- baseline：`docs/baseline/`
-- agent 和 repair skill：`docs/agents/`
-- benchmark：`docs/benchmarks/`
-- 开题材料：`docs/opening/`
-- 项目级路线和日志：`docs/project/`
-
-## 工作完成后必须检查
+## 工作完成后
 
 根据事件类型更新文件：
 
-- 所有关键事件：追加 `docs/project/experiment_log.md`
-- 方向变化：更新 `docs/project/experiment_outline.md`
-- 实验结果：更新对应领域报告
-- 开题可引用结果：检查 `docs/opening/opening_report.md`、`docs/opening/opening_ppt.md`、`docs/project/opening_preliminary_results.md`
-- 复现命令或总体指标变化：更新 `README.md` 或 `docs/README.md`
-- 工作流变化：更新 `AGENTS.md`、本文件和相关 `.codex/skills/*/SKILL.md`
+- 实验结果：更新 `docs/project/experiment_log.md` 和对应领域报告。
+- 实验方向变化：更新 `docs/project/experiment_outline.md`。
+- 开题可引用实验结果变化：检查 `docs/opening/` 和 `docs/project/opening_preliminary_results.md`。
+- 非实验流程变化：更新 `docs/project/project_log.md`。
+- 工作流变化：更新 `AGENTS.md`、本文件和相关 `.codex/skills/*/SKILL.md`。
+- 复现命令或总体指标变化：更新 `README.md` 或 `docs/README.md`。
 
 结束前运行：
 
@@ -70,21 +64,14 @@ Get-Content docs/project/experiment_outline.md
 git status --short
 ```
 
-最终回复用户时说明：
+## 实验日志模板
 
-- 做了什么实验或修改
-- 关键结果和指标
-- 更新了哪些文件
-- 下一步建议
-
-## 日志模板
-
-追加到 `docs/project/experiment_log.md` 时建议使用：
+追加到 `docs/project/experiment_log.md` 时使用：
 
 ~~~markdown
-## YYYY-MM-DD 事件标题
+## YYYY-MM-DD 实验标题
 
-目的：
+实验目的：
 
 - ...
 
@@ -92,13 +79,17 @@ git status --short
 
 - `...`
 
-执行命令：
+实验命令：
 
 ```powershell
 ...
 ```
 
-结果：
+实验配置：
+
+- ...
+
+实验结果：
 
 - ...
 
@@ -111,23 +102,43 @@ git status --short
 - ...
 ~~~
 
-如果没有执行实验命令，也要写明“本次为文档/流程调整，未运行实验”。
+## 项目过程日志模板
 
-## GitHub 同步规则
+追加到 `docs/project/project_log.md` 时使用：
 
-关键阶段完成后建议提交并推送，保证另一台电脑可以继续工作：
+~~~markdown
+## YYYY-MM-DD 事项标题
+
+目的：
+
+- ...
+
+涉及文件：
+
+- `...`
+
+处理内容：
+
+- ...
+
+结果：
+
+- ...
+
+后续影响：
+
+- ...
+~~~
+
+## GitHub 同步
+
+关键阶段完成后建议提交并推送：
 
 ```powershell
 git add .
 git commit -m "简短说明"
 git push
 ```
-
-提交信息建议直接说明研究进展，例如：
-
-- `Add Spider smoke benchmark report`
-- `Implement SQL+ skill router repair experiment`
-- `Document traceability workflow and project memory`
 
 不要提交 `.env`、API key、临时缓存、模型密钥或本机私有配置。
 
@@ -146,6 +157,5 @@ powershell -ExecutionPolicy Bypass -File scripts/setup/install_project_skills.ps
 - `AGENTS.md`
 - `docs/project/experiment_outline.md`
 - `docs/project/experiment_log.md`
+- `docs/project/project_log.md`
 - 本文件
-
-这样新的 Agent 可以恢复项目目标、当前结果、下一步方向和留痕要求。

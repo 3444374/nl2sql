@@ -5,7 +5,8 @@
 Project-level planning and experiment traceability.
 
 - `project/experiment_outline.md`: roadmap, phase status, direction decisions.
-- `project/experiment_log.md`: chronological experiment log.
+- `project/experiment_log.md`: experiment-only chronological log.
+- `project/project_log.md`: non-experiment project process log, including opening-material edits, GitHub sync, workflow changes, and external-document updates.
 - `project/experiment_plan.md`: early experiment plan.
 - `project/cross_machine_setup.md`: GitHub sync and cross-machine setup guide.
 - `project/workflow_traceability.md`: required workflow for experiment logging, project memory, and cross-agent traceability.

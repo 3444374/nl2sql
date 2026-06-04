@@ -33,7 +33,8 @@
 使用规则：
 
 - 每次规划、运行或复盘 NL2SQL+ 实验时，优先使用该 skill。
-- 每次关键测试、代码修改、模型运行、项目进展或方向调整后，必须追加 `docs/project/experiment_log.md`。
+- 每次实验运行、模型运行、benchmark、失败实验或指标变化后，必须追加 `docs/project/experiment_log.md`。
+- 非实验类项目过程，例如目录整理、GitHub 同步、开题材料修订、飞书文档写入和工作流调整，应记录到 `docs/project/project_log.md`，不要写入实验日志。
 - 当实验结果影响下一步方向时，必须同步更新本文件。
 - 失败实验也要记录，尤其要记录失败命令、错误信息、原因判断和下一步调整。
 - 工作流、跨电脑同步、项目记忆或 agent 协作规则发生变化时，必须同步更新 `AGENTS.md`、相关 `.codex/skills/*/SKILL.md` 和 `docs/project/workflow_traceability.md`。

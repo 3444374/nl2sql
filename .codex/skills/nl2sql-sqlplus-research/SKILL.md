@@ -25,7 +25,7 @@ Use precise claims:
 - Self-built order dataset SQL+ conversion: `30/30`.
 - SQL+ prompt v2: `17/30`.
 - Direct NL2SQL: `16/30`.
-- Skill Router + Repair Skills: `12/13`.
+- Skill Router + Repair Skills v3: `13/13` on the current known-failure set.
 - Spider smoke test: `20/20` on a supported small Spider dev subset.
 
 Do not claim:
@@ -34,6 +34,7 @@ Do not claim:
 - Full BIRD benchmark support.
 - Production-ready Dameng SQL dialect support.
 - Autonomous gold-free diagnosis when a result used gold-derived differences.
+- Broad benchmark repair performance from the current 13-case known-failure-set result.
 
 ## Opening Report Workflow
 
@@ -50,6 +51,7 @@ When writing opening materials, include:
 When a research-facing claim changes, update the claim in all relevant places:
 
 - `docs/project/experiment_log.md`
+- `docs/project/project_log.md` when the change is documentation, workflow, sync, or opening-material process work rather than an experiment result
 - `docs/project/experiment_outline.md`
 - `docs/project/opening_preliminary_results.md`
 - `docs/opening/opening_report.md`
