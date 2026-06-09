@@ -562,3 +562,137 @@ pandoc docs\opening\opening_report.md -o docs\opening\opening_report_template_al
 
 - 后续开题报告、PPT、飞书、GitHub、工作流和 project skill 调整，不再写入实验日志。
 - 后续实验运行、失败、指标和实验方向变化仍写入实验日志。
+
+## 2026-06-08 新增开题精读论文 Skill
+
+目的：
+
+- 将开题精读论文流程沉淀为可复用项目 skill，便于后续继续按统一标准阅读、讲解和记录 15 篇精读文献。
+- 明确精读流程需要参考 `academic-research-suite` 的 bibliography/source verification 规范。
+
+涉及文件：
+
+- `.codex/skills/nl2sql-intensive-reading/SKILL.md`
+- `.codex/skills/nl2sql-intensive-reading/agents/openai.yaml`
+- `docs/opening/intensive_reading_notes.md`
+- `docs/opening/papers/README.md`
+
+处理内容：
+
+- 新增 `nl2sql-intensive-reading` skill。
+- 规定每篇论文按“来源核验、PDF 阅读、必要图表裁剪、讲解、精读笔记、课题关系、答辩问法”的流程处理。
+- 规定论文精读笔记写入 `docs/opening/intensive_reading_notes.md`，不写入 `project_log.md` 或 `experiment_log.md`。
+- 规定新增或调整项目 skill 等工作流变化仍按项目规则记录到 `project_log.md`。
+
+结果：
+
+- 后续继续精读开题文献时，可以直接使用 `nl2sql-intensive-reading` skill。
+- 本次不涉及实验运行和指标变化，因此不更新 `docs/project/experiment_log.md`。
+
+## 2026-06-08 强化精读文献来源规则
+
+目的：
+
+- 按用户要求，降低 15 篇精读文献中 arXiv-only 文献比例，优先使用 ACL/EMNLP/AAAI/NeurIPS/ICML/ICLR/PVLDB 等正式来源。
+- 将“发现 arXiv-only 精读文献时优先替换，并同步开题材料”的要求写入 `nl2sql-intensive-reading` skill。
+
+涉及文件：
+
+- `.codex/skills/nl2sql-intensive-reading/SKILL.md`
+- `docs/opening/intensive_reading_plan.md`
+- `docs/opening/intensive_reading_notes.md`
+- `docs/opening/papers/README.md`
+- `docs/opening/venue_strengthened_literature.md`
+- `docs/opening/opening_report*.md`
+- `docs/opening/opening_ppt.md`
+
+处理内容：
+
+- 将原 DAIL-SQL 精读位替换为 AAAI 2023 的 RESDSQL。
+- 将原 SQLCritic 精读位替换为 ICML 2023 的 LEVER。
+- 将 DIN-SQL、MAC-SQL、BIRD、Spider 2.0 等条目的来源表述同步为正式 proceedings/venue 口径。
+- 在 skill 中补充：替换 arXiv-heavy 文献时，需要同步精读计划、笔记占位、PDF 来源记录、来源强化建议、开题报告草稿和 PPT 参考文献。
+
+结果：
+
+- 15 篇精读主清单不再把 SQLCritic 作为核心精读来源。
+- DAIL-SQL 可保留为扩展参考，但不作为 15 篇精读主证据。
+- 本次不涉及实验运行和指标变化，因此不更新 `docs/project/experiment_log.md`。
+
+## 2026-06-09 同步新版开题报告到飞书 Wiki
+
+目的：
+- 根据 6 月 8 日后开题内容和参考文献来源调整，将本地新版开题报告同步到用户指定的飞书 Wiki 文档。
+- 保证飞书版与本地 `docs/opening/opening_report.md` 保持一致，避免旧版十节结构、旧参考文献清单和新版学校模板报告混用。
+
+涉及文件：
+- `docs/opening/opening_report.md`
+- `docs/opening/opening_report_feishu_final.md`
+- `docs/opening/venue_strengthened_literature.md`
+- `docs/project/project_log.md`
+
+执行命令：
+
+```powershell
+lark-cli docs +fetch --api-version v2 --as user --doc "https://my.feishu.cn/wiki/BjwewQgnNiuNv1k1TzrcvNzcnYd?from=from_copylink" --doc-format markdown --scope outline
+lark-cli docs +update --api-version v2 --as user --doc "https://my.feishu.cn/wiki/BjwewQgnNiuNv1k1TzrcvNzcnYd?from=from_copylink" --command overwrite --doc-format markdown --content @docs/opening/opening_report.md
+lark-cli docs +fetch --api-version v2 --as user --doc "https://my.feishu.cn/wiki/BjwewQgnNiuNv1k1TzrcvNzcnYd?from=from_copylink" --doc-format markdown --scope outline
+```
+
+结果：
+- 飞书写入成功，返回 `revision_id=12`。
+- 更新后飞书目录已变为学校模板版结构，包含“硕士生论文开题报告”“开题要求对照说明”“课题背景、目的和意义”“研究目标与研究内容”“研究方案与可行性分析”“精读文献清单”“主要参考文献”和“签字页”等章节。
+- 本次同步的是本地新版开题报告，其中精读文献清单已采用来源强化后的口径：DAIL-SQL 不再作为 15 篇精读主证据，RESDSQL 进入精读清单；SQLCritic 不再作为精读主证据，LEVER 进入精读清单。
+- 本地 `opening_report_feishu_final.md` 已同步为 `opening_report.md` 的同版内容，避免后续误用旧飞书版。
+
+说明：
+- 本次属于开题文档同步和参考文献口径更新，不涉及实验运行或指标变化，因此不更新 `docs/project/experiment_log.md`。
+
+## 2026-06-09 使用 humanizer 润色并同步飞书开题报告
+
+目的：
+- 按用户要求，对飞书中的开题报告使用 `$humanizer` 规则进行去模板化和去 AI 化处理。
+- 保持研究事实、实验指标、参考文献清单和学校模板结构不变，只调整正文表达方式。
+
+涉及文件：
+- `docs/opening/opening_report.md`
+- `docs/opening/opening_report_feishu_final.md`
+- `docs/opening/opening_report_template_aligned.md`
+- `docs/project/project_log.md`
+
+处理内容：
+- 阅读并按 `C:\Users\Administrator\.codex\skills\humanizer\SKILL.md` 执行。
+- 将“自然语言数据库查询的目标，是让用户不必直接掌握 SQL”一类模板化开头改为更自然的研究生开题表述。
+- 减少“这些工作说明”“总体来看”“第一、第二、第三”等机械连接。
+- 保留 SQL+、Skill Router、Spider smoke test、RESDSQL、LEVER、40 篇参考文献等关键事实和口径。
+- 清理正文中的 em dash / en dash 字符，满足 humanizer 的硬约束。
+
+执行命令：
+
+```powershell
+lark-cli docs +update --api-version v2 --as user --doc "https://my.feishu.cn/wiki/BjwewQgnNiuNv1k1TzrcvNzcnYd?from=from_copylink" --command overwrite --doc-format markdown --content @docs/opening/opening_report_feishu_final.md
+lark-cli docs +fetch --api-version v2 --as user --doc "https://my.feishu.cn/wiki/BjwewQgnNiuNv1k1TzrcvNzcnYd?from=from_copylink" --doc-format markdown --scope outline
+```
+
+结果：
+- 飞书覆盖写入成功，`docs +update` 返回 `revision_id=31`。
+- 随后读取目录验证成功，飞书文档保持新版学校模板结构，读取返回 `revision_id=32`。
+- 本地 `opening_report_feishu_final.md` 和 `opening_report_template_aligned.md` 已与 `opening_report.md` 同步。
+- 本次不涉及实验运行或指标变化，因此不更新 `docs/project/experiment_log.md`。
+
+备注：
+- `lark-cli` 提示当前版本 `1.0.48`，最新版本 `1.0.49`，后续可执行 `lark-cli update` 更新 CLI 和飞书 skills。
+
+## 2026-06-09 GitHub 同步开题材料与精读流程
+
+目的：
+- 将 6 月 8 日至 6 月 9 日形成的开题报告、飞书同步版、精读文献计划、项目 skill 和过程记录同步到 GitHub。
+- 保持跨电脑工作时可复现当前开题材料和工作流。
+
+处理内容：
+- 提交开题报告正文、飞书版、模板对齐版、PPT 草稿和参考文献来源强化材料。
+- 提交 `nl2sql-intensive-reading` 项目 skill、精读计划、精读笔记和论文清单 README。
+- 更新 `.gitignore`，不提交本地论文 PDF 和论文图截图，避免公开仓库托管第三方论文原文或大体积素材。
+
+说明：
+- 本次属于项目同步和文档工作流记录，不涉及实验运行或指标变化，因此不更新 `docs/project/experiment_log.md`。

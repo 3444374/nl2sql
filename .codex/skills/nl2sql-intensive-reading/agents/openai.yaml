@@ -1,0 +1,4 @@
+interface:
+  display_name: "NL2SQL Intensive Reading"
+  short_description: "Guide rigorous NL2SQL thesis paper reading notes"
+  default_prompt: "Continue the next NL2SQL thesis intensive reading paper with source verification, key figures, explanation, and notes."

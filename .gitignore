@@ -22,3 +22,7 @@ data/benchmarks/spider_raw/
 tmp/
 temp/
 
+# Local paper copies and extracted figures.
+# Keep bibliographic notes and README files in git; do not publish third-party PDFs/images.
+docs/opening/papers/*.pdf
+docs/opening/paper_figures/

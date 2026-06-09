@@ -66,7 +66,7 @@ FROM orders o
 
 - 传统 Text-to-SQL：语义解析、Seq2Seq、schema linking、语法约束解码。
 - LLM-based Text-to-SQL：prompt engineering、few-shot、chain-of-thought、RAG、自修正。
-- 代表工作：DAIL-SQL、DIN-SQL、MAC-SQL、CHASE-SQL、SQLCritic。
+- 代表工作：RESDSQL、DIN-SQL、MAC-SQL、CHASE-SQL、LEVER。
 - Benchmark 从 Spider 发展到 BIRD、Spider 2.0，更关注真实企业环境和复杂 workflow。
 - SQL 扩展方向：GoogleSQL Pipe Syntax 证明线性查询表达具有研究和产品价值。
 
@@ -356,11 +356,11 @@ SQL+ 中间表示 + 多智能体错误诊断 + Skill Router + 局部修复，是
 1. Spider: A Large-Scale Human-Labeled Dataset for Complex and Cross-Domain Semantic Parsing and Text-to-SQL Task.
 2. RAT-SQL: Relation-Aware Schema Encoding and Linking for Text-to-SQL Parsers.
 3. PICARD: Parsing Incrementally for Constrained Auto-Regressive Decoding from Language Models.
-4. DAIL-SQL: Text-to-SQL Empowered by Large Language Models.
+4. RESDSQL: Decoupling Schema Linking and Skeleton Parsing for Text-to-SQL.
 5. DIN-SQL: Decomposed In-Context Learning of Text-to-SQL with Self-Correction.
 6. MAC-SQL: A Multi-Agent Collaborative Framework for Text-to-SQL.
 7. CHESS / CHASE-SQL: Multi-agent and multi-path Text-to-SQL reasoning.
-8. SQLCritic: Correcting Text-to-SQL Generation via Clause-wise Critic.
+8. LEVER: Learning to Verify Language-to-Code Generation with Execution.
 9. SQL-Factory: A Multi-Agent Framework for High-Quality and Large-Scale SQL Generation.
 10. BIRD / Spider 2.0: Real-world and enterprise Text-to-SQL benchmarks.
 11. GoogleSQL Pipe Syntax: SQL Has Problems. We Can Fix Them.
