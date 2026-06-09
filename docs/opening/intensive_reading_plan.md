@@ -17,7 +17,7 @@ Natural language -> SQL+ -> SQL -> Execution feedback -> Critic Agent -> Skill R
 | 3 | Lei 等，Spider 2.0 | [20] | 企业级 Text-to-SQL workflow、真实操作链路、复杂任务评测 | 用于说明 Text-to-SQL 从单句 SQL 生成走向真实 workflow，本课题的反馈修正路线有现实意义 | 已精读 |
 | 4 | Guo 等，IRNet/SemQL | [3] | 中间表示、语义解析、SQL 结构简化 | 直接支撑 SQL+ 作为中间表示的必要性；重点比较 SemQL 与 SQL+ 的差异 | 已精读 |
 | 5 | Gan 等，NatSQL | [5] | 面向 Text-to-SQL 的 SQL 简化表达、降低结构复杂度 | SQL+ 的最近邻相关工作之一；重点找出 NatSQL 能解决和不能解决的问题 | 已精读 |
-| 6 | Shute 等，Pipe Syntax in SQL | [21] | 管道式 SQL、线性数据流表达、传统 SQL 表达顺序问题 | SQL+ 语法设计的重要灵感来源；需强调本课题不是复刻 GoogleSQL Pipe Syntax | 待读 |
+| 6 | Shute 等，Pipe Syntax in SQL | [21] | 管道式 SQL、线性数据流表达、传统 SQL 表达顺序问题 | SQL+ 语法设计的重要灵感来源；需强调本课题不是复刻 GoogleSQL Pipe Syntax | 已精读 |
 | 7 | Wang 等，RAT-SQL | [4] | schema linking、关系感知编码、复杂 schema 建模 | 支撑 Schema Agent 和 schema linking 错误分析 | 待读 |
 | 8 | Scholak 等，PICARD | [6] | 语法约束解码、增量解析、无效 SQL 抑制 | 可作为 SQL+ parser/converter 与生成约束的对照 | 待读 |
 | 9 | Li 等，RESDSQL | [7] | schema linking 与 skeleton parsing 解耦、粗到细 SQL 结构生成 | 支撑 Schema Agent、结构化中间步骤和复杂 SQL 规划；替换原 DAIL-SQL 精读位以强化正式来源 | 待读 |

@@ -9,7 +9,7 @@
 | 3 | `03_spider2_lei_2024.pdf` | https://openreview.net/pdf?id=XmProj9cPs | `B5EAEB12DC7943290684906EB8A43EFBCB0BCE988FB6E0E2E52EBA6B8229109C` |
 | 4 | `04_irnet_semql_guo_2019.pdf` | https://aclanthology.org/P19-1444.pdf | `1CD26AC266E00D04D3C1A510B844B2260BF2E5D93554979B5E90AEDF0A5602A8` |
 | 5 | `05_natsql_gan_2021.pdf` | https://aclanthology.org/2021.findings-emnlp.174.pdf | `6CFC630259C7697E6D7C62F0093EE16FA928A4C83A68AEA733A4523787F941FA` |
-| 6 | `06_pipe_syntax_shute_2024.pdf` | https://storage.googleapis.com/gweb-research2023-media/pubtools/1004848.pdf | `EB3EBF55C9212684EF363E1310D82A39EA33E9FA85C8364798FCE1E5AE06BE10` |
+| 6 | `06_pipe_syntax_shute_2024.pdf` | 正式出处：https://www.vldb.org/pvldb/vol17/p4051-shute.pdf；本地下载镜像：https://storage.googleapis.com/gweb-research2023-media/pubtools/1004848.pdf | `EB3EBF55C9212684EF363E1310D82A39EA33E9FA85C8364798FCE1E5AE06BE10` |
 | 7 | `07_rat_sql_wang_2020.pdf` | https://aclanthology.org/2020.acl-main.677.pdf | `F075762F908F730248DB4B09F1B21B34E347B5F6812FBFD703BB1A0E4E3A4648` |
 | 8 | `08_picard_scholak_2021.pdf` | https://aclanthology.org/2021.emnlp-main.779.pdf | `500A85A62DD245A2A3CE17E2117E22C35A4A6FB38DC02A4F5E51E7F0EA5CC4D6` |
 | 9 | `09_resdsql_li_2023.pdf` | https://ojs.aaai.org/index.php/AAAI/article/download/26535/26307 | `E14DB0AC486AFA99BF5970EF58E9BAED35252D848925203277D3C1AD749DB6D3` |

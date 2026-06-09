@@ -537,7 +537,123 @@ NatSQL 是本课题必须重点掌握的近邻工作。它已经证明“面向 
 
 ## 6. Shute 等，Pipe Syntax in SQL
 
-待整理。
+### 0. 文献来源与核验
+
+- 完整题名：SQL Has Problems. We Can Fix Them: Pipe Syntax In SQL
+- 作者：Jeff Shute, Shannon Bales, Matthew Brown, Jean-Daniel Browne, Brandon Dolphin, Romit Kudtarkar, Andrey Litvinov, Jingchi Ma, John Morcos, Michael Shen, David Wilhite, Xi Wu, Lulan Yu
+- 发表来源：Proceedings of the VLDB Endowment, Vol. 17, No. 12, 2024，页码 4051-4063。
+- DOI / 官方 URL：10.14778/3685800.3685826；正式出处为 PVLDB，PDF 官方路径为 `https://www.vldb.org/pvldb/vol17/p4051-shute.pdf`。本机访问 PVLDB PDF 超时，实际下载使用 Google Research 镜像。
+- 本地 PDF：`docs/opening/papers/06_pipe_syntax_shute_2024.pdf`。
+- 本地图片：`docs/opening/paper_figures/06_pipe_syntax_fig1_2_order.png`，从本地 PDF 第 2 页裁剪。
+- 来源质量：PVLDB 正式论文，来源强；属于数据库语言设计和 SQL 可用性改进文献。
+- 核验状态：来源已核验，PDF 已下载并精读，关键图已抽取。
+
+![Pipe Syntax Figure 1/2: 传统 SQL clause 顺序与 pipe operator 顺序对比](paper_figures/06_pipe_syntax_fig1_2_order.png)
+
+这张图是第六篇最适合服务开题答辩的图。Figure 1 说明传统 SQL 的 `SELECT ... FROM ... WHERE ... GROUP BY ...` 语法顺序并不等于语义求值顺序，读者需要在文本中来回跳转。Figure 2 说明 pipe syntax 把查询改写成自上而下的 operator 序列，每一步更接近实际的数据流。对本课题来说，这正好解释了 SQL+ 为什么要采用 step-wise、linear 的中间表示。
+
+### 1. 一句话定位
+
+这篇论文不是 Text-to-SQL 方法论文，而是 GoogleSQL/PVLDB 发表的 SQL 语言设计论文。它提出在 SQL 内部加入 pipe-structured data flow syntax，让查询表达从传统的嵌套、inside-out 结构转向线性、可组合、可调试的 operator 序列。
+
+### 2. 作者要解决的问题
+
+作者认为 SQL 的问题不在关系模型和声明式语义，而在查询操作的组合语法。传统 SQL 的主要痛点包括：
+
+- clause order 固定，`SELECT` 写在前面，但真实数据流通常从 `FROM` 开始。
+- 同一类操作被拆成多个 clause，例如过滤在不同位置分别写成 `WHERE`、`HAVING`、`QUALIFY`。
+- 很多简单操作必须通过 subquery 或 CTE 才能表达，例如多层 aggregation、在中间位置投影新列、把查询作为 TVF 输入。
+- 大查询常呈现 inside-out data flow，读者要先找到最内层 `FROM`，再向外理解逻辑。
+- `SELECT`、`GROUP BY`、`ORDER BY` 等 clause 之间存在远距离联动，修改一处经常要同步修改多处。
+- SQL 扩展新 operator 很困难，很多新功能只能被塞进 `FROM` 后缀或特殊语法里。
+
+这套问题和 Text-to-SQL 的关系很直接：人类觉得难读、难改的结构，LLM 生成和修复时同样容易出错。论文第 5.6 节也明确讨论了 LLM 生成 SQL 的潜在收益，认为 pipe syntax 可能让 SQL 更接近普通程序语言中的顺序步骤。
+
+### 3. 核心方法 / 语言设计
+
+Pipe Syntax 的基本设计是在现有 SQL query 后面追加零个或多个 pipe operators，每个 operator 以 `|>` 开头，输入是上一步的中间 table，输出也是一个 table。例如：
+
+```sql
+FROM customer
+|> LEFT OUTER JOIN orders ON c_custkey = o_custkey
+|> AGGREGATE COUNT(o_orderkey) c_count
+   GROUP BY c_custkey
+|> AGGREGATE COUNT(*) AS custdist
+   GROUP BY c_count
+|> ORDER BY custdist DESC, c_count DESC;
+```
+
+它的几个关键设计点是：
+
+- 查询可以从 standalone `FROM` 开始，然后逐步追加 `WHERE`、`JOIN`、`AGGREGATE`、`ORDER BY`、`SELECT` 等 operator。
+- 每个 pipe operator 只看当前输入 table 的 name scope，不直接看前后其他步骤，因此天然具有局部性。
+- `AGGREGATE ... GROUP BY` 被设计成一个独立 operator，避免传统 SQL 中 `SELECT` 和 `GROUP BY` 的重复表达。
+- `EXTEND`、`SET`、`DROP` 等 projection operators 用于增量添加、更新和删除列，减少重复 `SELECT *` 和子查询。
+- `CALL` 让 table-valued functions 像普通 operator 一样接在 pipe 后面，提升 SQL 的扩展能力。
+- pipe syntax 仍然是 declarative semantics，写法像顺序数据流，但执行时仍由优化器转换为代数表示并优化，不等于强制物理执行顺序。
+
+这里要注意一个边界：Pipe Syntax 不是要替代 SQL，也不是另起一种新语言，而是在 GoogleSQL 里做 backward-compatible extension。作者反复强调“fix SQL from within”，这和 PRQL、SaneQL 这类替代语言路线不同。
+
+### 4. 实验设置与主要结果
+
+论文没有做 Spider/BIRD 这种标准 Text-to-SQL benchmark，也没有报告 LLM 生成准确率。它的 evaluation 更像语言系统论文中的工程部署和使用经验总结：
+
+- Google 已在 GoogleSQL 中实现 pipe syntax，GoogleSQL 是 F1、BigQuery、Spanner、Procella 等系统共享的 SQL dialect 和实现组件。
+- 实现层面主要发生在 parsing 和 language analysis 中，pipe syntax 最终产生和标准 SQL 相同的 algebra，不需要查询引擎新增执行或优化能力。
+- 论文报告了在 Google 内部开放后的使用情况：六个月内使用量持续增长，用户用于 ad hoc queries、dashboard/report 查询、data processing pipelines 和 TVF 函数库。
+- 作者提到已有用户反馈认为 pipe syntax 提升 productivity 和 user experience，但也明确说明还没有做正式 user experience research。
+- 论文还讨论了调试和 IDE 场景：pipe query 的每个 prefix 到 `|>` 位置都可以作为可运行 query prefix，这使中间结果查看、单步调试、自动补全和局部修改更自然。
+
+因此，开题答辩中不能把这篇论文说成“证明 pipe syntax 提升 Text-to-SQL accuracy”。更准确的说法是：它提供了来自真实数据库系统的语言设计和工程可行性证据，证明线性 operator 表达可以在 SQL 生态内落地，并能改善可读性、可编辑性和可扩展性。
+
+### 5. 关键贡献
+
+- 系统总结了传统 SQL 的语法问题：clause order、subquery 依赖、inside-out data flow、远距离副作用和扩展困难。
+- 提出在 SQL 内部加入 pipe-structured syntax，而不是创造新的替代语言。
+- 给出一组可组合 pipe operators，包括 `WHERE`、`JOIN`、`AGGREGATE`、`EXTEND`、`DROP`、`SET`、`CALL`、`PIVOT` 等。
+- 保留 SQL 的 relational model、declarative semantics、optimizer 和生态兼容性。
+- 在 GoogleSQL 中实现并部署，说明该设计不是纯概念方案。
+- 明确讨论了 AI/LLM 生成 SQL 的潜在价值：pipe syntax 更像顺序程序步骤，有利于生成、理解、验证和局部编辑。
+
+### 6. 局限性
+
+- 论文重点是 SQL 语言改进，不是 Text-to-SQL 模型，也不是多智能体修复框架。
+- evaluation 主要来自 Google 内部部署经验和用户反馈，缺少严格的 controlled user study。
+- 作者关于 LLM 更容易生成 pipe SQL 的论述属于合理推测，没有在论文中给出系统实验。
+- Pipe Syntax 主要面向 GoogleSQL 生态，其他数据库系统是否采用、标准化是否推进，仍取决于工业界支持。
+- 它解决的是 SQL 表达和可用性问题，不直接解决 schema linking、value grounding、自然语言歧义、错误诊断和 repair routing。
+
+### 7. 和本课题的关系
+
+这篇论文是 SQL+ 设计动机中非常关键的一篇，但它和 SQL+ 的关系要讲清楚：
+
+- 共同点：二者都认为传统 SQL 的结构顺序不利于阅读、生成和修改，都倾向于把查询表达成线性、step-wise 的数据流。
+- 差异一：Pipe Syntax 是 SQL 方言扩展，目标是让人类和工具更好地写 SQL；SQL+ 是本课题中的 intermediate representation，目标是服务 NL2SQL 生成、转换、执行反馈诊断和局部修复。
+- 差异二：Pipe Syntax 保持 SQL 生态兼容，尽量复用原有 SQL clause；SQL+ 可以为 Critic Agent、Skill Router 和 Repair Skill 增加更明确的 step 标签、错误定位和修复边界。
+- 差异三：Pipe Syntax 本身不提出多智能体框架；本课题把线性表达进一步接入 execution feedback loop，用于“哪里错、交给哪个 repair skill、怎么局部改”。
+
+因此，开题里可以用这篇论文支撑“线性数据流表达有现实数据库系统依据”，但不能把 SQL+ 描述成直接复刻 GoogleSQL Pipe Syntax。更稳妥的表述是：SQL+ 借鉴了 pipe-structured data flow 的可组合思想，并面向 Text-to-SQL 反馈修正任务做了研究性抽象。
+
+### 8. 可用于开题答辩的说法
+
+可以这样讲：Shute 等人在 PVLDB 2024 的 Pipe Syntax 论文中指出，传统 SQL 的语法顺序和语义执行顺序不一致，复杂查询经常需要 subquery 和 CTE，导致阅读、编辑和扩展都比较困难。他们在 GoogleSQL 中加入 pipe-structured syntax，把查询表达为自上而下的 operator 序列，同时仍保留 SQL 的声明式语义和优化器能力。这说明线性数据流式 SQL 表达不是凭空设计，而是在真实数据库系统中已有工程实践。本课题的 SQL+ 借鉴这种 step-wise 表达思想，但目标不是改造 SQL 标准，而是让 NL2SQL 结果更容易被执行反馈诊断和局部 repair skill 修正。
+
+### 9. 可能被老师追问的问题
+
+- 问：Pipe Syntax 和你的 SQL+ 是不是一回事？
+  答：不是。Pipe Syntax 是 GoogleSQL 的 SQL 方言扩展，服务人类写 SQL 和数据库系统扩展；SQL+ 是本课题的中间表示，服务 NL2SQL 生成、转换、诊断和局部修复。二者共享线性数据流思想，但研究目标和系统位置不同。
+- 问：这篇论文有没有证明 LLM 用 pipe SQL 更准确？
+  答：没有。论文只是讨论了 AI/LLM 生成 SQL 的潜在应用，认为顺序 operator 和清晰中间状态可能有利于生成和验证，但没有给出 Text-to-SQL benchmark 实验。
+- 问：为什么这篇论文能支撑你的选题？
+  答：它从数据库语言设计角度说明传统 SQL 的结构确实影响可读性、可编辑性和可扩展性，并展示了线性 operator 表达在真实 SQL 系统中的可行性。这为 SQL+ 的 step-wise 表达提供了外部依据。
+- 问：Pipe Syntax 仍然是 declarative 吗？
+  答：是。它看起来像顺序执行，但语义仍是声明式的，查询引擎仍会转换为代数表示并优化执行。这个点也提醒 SQL+ 转换到 SQL 后不能假设数据库会按文本顺序物理执行。
+- 问：Pipe Syntax 不能解决哪些 Text-to-SQL 问题？
+  答：它不直接解决 schema linking、value grounding、自然语言歧义、多候选选择和错误修复路由。它解决的是表达结构问题，本课题还需要多智能体诊断和 repair skill 来处理生成后的错误。
+
+### 10. 精读结论
+
+Pipe Syntax 是 SQL+ 的重要“语言设计背景”文献。它最值得记住的不是某个实验分数，而是三个判断：第一，传统 SQL 的语法组织确实会制造 inside-out data flow 和远距离依赖；第二，把查询写成线性 operator 序列可以增强可读性、可编辑性、可调试性和扩展性；第三，这种思想已经在 GoogleSQL 中实现并部署。对本课题来说，它支撑的是 SQL+ 的形式动机，而不是直接支撑多智能体修复效果。开题答辩时要把这个边界说清楚。
 
 ## 7. Wang 等，RAT-SQL
 
