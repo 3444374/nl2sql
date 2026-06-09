@@ -696,3 +696,64 @@ lark-cli docs +fetch --api-version v2 --as user --doc "https://my.feishu.cn/wiki
 
 说明：
 - 本次属于项目同步和文档工作流记录，不涉及实验运行或指标变化，因此不更新 `docs/project/experiment_log.md`。
+
+## 2026-06-09 生成实验进展小结并同步飞书
+
+目的：
+- 按用户要求，将当前开题阶段已经完成的实验整理成表格化小结。
+- 每个实验说明目的、数据或样例、结果和当前分析，并使用 `$humanizer` 规则降低模板化表达。
+- 将小结写入用户指定的飞书 Wiki 文档。
+
+涉及文件：
+- `docs/opening/experiment_progress_summary_feishu.md`
+- `docs/project/project_log.md`
+
+处理内容：
+- 汇总 SQL+ 表达与转换、SQL+ 规则修正、单 Agent baseline、失败类型分析、反馈修正对比、repair skill 分治、Skill Router v3、Spider smoke test 八组实验。
+- 保留指标边界：`Skill Router v3 13/13` 只表述为当前 13 条 SQL+ 已知失败样例结果；`Spider smoke test 20/20` 只表述为 `concert_singer` 数据库受支持小子集结果，不说成完整 Spider benchmark。
+- 按 humanizer 检查清理 em dash、en dash、模板句和夸大表述。
+
+执行命令：
+
+```powershell
+lark-cli docs +update --api-version v2 --as user --doc "https://my.feishu.cn/wiki/JTpwwIfGvirqGQks4jkckw28nrs?from=from_copylink" --command overwrite --doc-format markdown --content @docs/opening/experiment_progress_summary_feishu.md --new-title "开题实验进展小结"
+lark-cli docs +fetch --api-version v2 --as user --doc "https://my.feishu.cn/wiki/JTpwwIfGvirqGQks4jkckw28nrs?from=from_copylink" --doc-format markdown --scope outline
+```
+
+结果：
+- 飞书覆盖写入成功，返回 `revision_id=3`。
+- 读取目录验证成功，飞书文档包含“实验总览”“各实验说明”“当前判断”等章节。
+- `lark-cli` 提示当前版本 `1.0.47`，最新版本 `1.0.49`，后续可执行 `lark-cli update` 更新 CLI 和 skills。
+
+说明：
+- 本次只整理已有实验结果，没有运行新实验，也没有改变指标，因此不更新 `docs/project/experiment_log.md`。
+
+## 2026-06-09 细化实验进展小结表格
+
+目的：
+- 按用户追加要求，将实验进展小结从“总览表 + 文字说明”改为“每个实验单独一张表 + 结果解读 + 对课题的意义”。
+- 保留 `$humanizer` 处理要求，避免模板化总结和过度夸大。
+
+涉及文件：
+- `docs/opening/experiment_progress_summary_feishu.md`
+- `docs/project/project_log.md`
+
+处理内容：
+- 为 SQL+ 表达与转换、SQL+ 规则修正、单 Agent baseline、SQL+ 失败类型分析、反馈修正对比、repair skill 分治、Skill Router v3、Spider smoke test 分别绘制独立表格。
+- 每个实验补充“结果解读”和“对课题的意义”，便于答辩时逐项讲解。
+- 对 Skill Router v3 和 Spider smoke test 保留小规模边界表述，不把 `13/13` 和 `20/20` 说成大规模 benchmark 结果。
+- 再次按 humanizer 检查 em dash、en dash、模板句和夸大表述。
+
+执行命令：
+
+```powershell
+lark-cli docs +update --api-version v2 --as user --doc "https://my.feishu.cn/wiki/JTpwwIfGvirqGQks4jkckw28nrs?from=from_copylink" --command overwrite --doc-format markdown --content @docs/opening/experiment_progress_summary_feishu.md --new-title "开题实验进展小结"
+lark-cli docs +fetch --api-version v2 --as user --doc "https://my.feishu.cn/wiki/JTpwwIfGvirqGQks4jkckw28nrs?from=from_copylink" --doc-format markdown --scope outline
+```
+
+结果：
+- 飞书覆盖写入成功，返回 `revision_id=10`。
+- 目录验证成功，文档结构已变为“实验总览”后依次列出八个实验章节，再以“当前综合判断”收束。
+
+说明：
+- 本次只重排和细化已有实验说明，没有运行新实验，也没有改变任何指标，因此不更新 `docs/project/experiment_log.md`。
