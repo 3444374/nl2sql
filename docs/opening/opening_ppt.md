@@ -1,4 +1,4 @@
-﻿# 开题汇报 PPT 稿
+# 开题汇报 PPT 稿
 
 > 题目：面向 SQL+ 简化查询表达的多智能体自然语言数据库查询生成与反馈修正方法研究
 >
@@ -64,26 +64,24 @@ FROM orders o
 
 ## 第 5 页：国内外研究现状
 
-- 传统 Text-to-SQL：语义解析、Seq2Seq、schema linking、语法约束解码。
-- LLM-based Text-to-SQL：prompt engineering、few-shot、chain-of-thought、RAG、自修正。
-- 代表工作：RESDSQL、DIN-SQL、MAC-SQL、CHASE-SQL、LEVER。
-- Benchmark 从 Spider 发展到 BIRD、Spider 2.0，更关注真实企业环境和复杂 workflow。
-- SQL 扩展方向：GoogleSQL Pipe Syntax 证明线性查询表达具有研究和产品价值。
+- 中间表示路线：IRNet/SemQL 和 NatSQL 证明，复杂 SQL 不一定适合作为模型的一次性直接生成目标。
+- SQL 语言扩展路线：GoogleSQL Pipe Syntax 说明线性数据流式查询表达有数据库系统依据。
+- 多智能体路线：MAC-SQL、CHESS、CHASE-SQL、SQL-Factory 说明复杂 SQL 任务适合拆成 schema、规划、候选生成、验证和管理等环节。
+- 执行反馈路线：LEVER、Tool-Assisted Agent 等工作说明，执行结果可以用于候选筛选和错误检测。
+- 当前不足：多数方法仍在标准 SQL 层做整体生成或整体修复，对“错误定位到哪个步骤、调用哪个 repair skill”讨论不足。
 
-讲稿提示：本课题处在 SQL 扩展、多智能体 Text-to-SQL、执行反馈修正的交叉点。
-
+讲稿提示：本课题不是从零提出 SQL+。它把中间表示、线性 SQL 扩展、多智能体和执行反馈四条已有研究线合在一起，但研究焦点放在 SQL+ 层诊断和局部修复。
 ---
 
 ## 第 6 页：研究问题
 
-1. SQL+ 如何设计成适合大模型生成的中间查询表示？
-2. 如何构建面向 SQL+ 的多智能体查询生成和修正框架？
-3. 如何将执行反馈映射到 SQL+ 局部步骤？
-4. 如何按错误类型调用不同 repair skill 进行局部修复？
-5. SQL+ + 多智能体 + 反馈修正是否优于直接生成 SQL 或单 Agent 修复？
+1. 为什么需要 SQL+：它和 SemQL、NatSQL、Pipe Syntax 相比，新增价值在哪里？
+2. SQL+ 怎样设计：如何同时满足简化表达、可转换、可解释和可局部修复？
+3. 如何生成 SQL+：怎样处理 schema linking、value linking、join 路径和聚合口径？
+4. 如何修复 SQL+：怎样把执行反馈和结果异常映射到局部步骤，并路由到 repair skill？
+5. 如何证明有效：需要与 Direct NL2SQL、NL2SQL+、标准 SQL 多智能体、SQL 层修复和消融版本对比。
 
-讲稿提示：研究问题从表达设计、系统框架、反馈定位和实验验证四个层面展开。
-
+讲稿提示：研究问题要从“做一个系统”转成“验证一组机制是否成立”。
 ---
 
 ## 第 7 页：总体技术路线
@@ -117,42 +115,41 @@ FROM orders o
 
 当前 SQL+ 最小子集：
 
-| 步骤 | 作用 |
-| --- | --- |
-| FROM | 指定数据源 |
-| JOIN | 指定连接路径 |
-| WHERE | 过滤条件 |
-| GROUP | 分组维度 |
-| AGG | 聚合输出 |
-| HAVING | 聚合后过滤 |
-| SELECT | 最终投影 |
-| ORDER | 排序 |
-| LIMIT | 结果限制 |
+| 步骤 | 作用 | 容易出错的位置 |
+| --- | --- | --- |
+| FROM | 指定数据源 | 主表选择错误 |
+| JOIN | 指定连接路径 | 连接方向、冗余 join、缺 join |
+| WHERE | 过滤条件 | 值链接、日期边界、隐含条件 |
+| GROUP | 分组维度 | 维度多余或缺失 |
+| AGG | 聚合输出 | COUNT/SUM 口径、别名 |
+| HAVING | 聚合后过滤 | 聚合别名引用 |
+| SELECT | 最终投影 | 列多、列少、顺序不一致 |
+| ORDER | 排序 | 排序字段、方向、聚合别名 |
+| LIMIT | 结果限制 | top-k 数量 |
 
-设计原则：
+研究难点：
 
-- 线性数据流
-- 中间步骤可解释
-- 局部可修复
-- 可转换为标准 SQL / 达梦 SQL
+- 语法太接近 SQL，简化价值不足。
+- 语法太抽象，转换和方言适配困难。
+- 必须把表达设计和后续错误定位、局部修复联系起来。
 
+评估指标：SQL+ valid rate、SQL executable rate、execution match、覆盖查询类型、表达复杂度、错误定位可用性。
 ---
 
 ## 第 9 页：多智能体设计
 
-| Agent / 模块 | 作用 |
-| --- | --- |
-| Intent Agent | 识别查询目标、条件、聚合需求 |
-| Schema Agent | 选择表、字段、join 路径、候选字段值 |
-| SQL+ Generator | 生成 SQL+ 查询 |
-| Translator | SQL+ 转 SQL |
-| Critic Agent | 根据执行反馈定位错误 |
-| Skill Router | 根据错误类型选择 repair skill |
-| Repair Skill | 局部修复 SQL+ |
-| Executor | 执行和验证结果 |
+| Agent / 模块 | 研究难点 | 可观察输出 |
+| --- | --- | --- |
+| Schema Agent | 表、字段、值和 join 路径选择 | 相关表列、候选值、连接路径 |
+| Planner Agent | 自然语言意图到查询步骤 | SQL+ 步骤草图 |
+| SQL+ Generator | 稳定生成合法 SQL+ | 初始 SQL+ |
+| Translator | SQL+ 到 SQL 的确定性转换 | 可执行 SQL 或转换错误 |
+| Critic Agent | 错误类型和步骤定位 | likely_error_type、疑似步骤、证据 |
+| Skill Router | 选择正确 repair skill | repair skill 路由结果 |
+| Repair Skill | 局部 patch 生成 | 候选 SQL+ patch |
+| Executor | 执行验证和候选筛选 | 执行结果、错误、最终选择 |
 
-讲稿提示：多智能体不是形式上多个 prompt，而是明确分工，并结合工具执行。
-
+讲稿提示：多智能体不是简单串 prompt。每个 Agent 都要有可检查输出，后续通过 router accuracy、error localization accuracy 和 repair success rate 评价。
 ---
 
 ## 第 10 页：错误类型与 Repair Skill
@@ -181,22 +178,21 @@ FROM orders o
 
 ---
 
-## 第 11 页：实验数据与环境
+## 第 11 页：实验数据、对比方法与指标
 
-| 项目 | 内容 |
+数据层次：
+
+| 层次 | 用途 |
 | --- | --- |
-| 数据库 | 企业订单分析样例库 |
-| 表数量 | 4 张表 |
-| 表结构 | customers、products、orders、order_items |
-| 自然语言查询样例 | 30 条 |
-| SQL+ 标准样例 | 30 条 |
-| 错误修正样例 | 15 条 |
-| 执行环境 | SQLite 内存数据库 |
-| 模型 | gpt-5-mini |
-| 评估方式 | 与标准 SQL 执行结果比较 |
+| 自建订单分析数据集 | 控制变量、错误类型分析、SQL+ 转换验证 |
+| Spider 小规模受支持子集 | 验证公开 benchmark 迁移可行性 |
+| BIRD / 达梦样例后续子集 | 验证真实 schema、外部知识和方言差异 |
 
-讲稿提示：当前实验是开题阶段可行性验证，后续会接入 Spider/BIRD 子集和达梦场景。
+对比方法：Direct NL2SQL、NL2SQL+ 单 Agent、分解式 NL2SQL、标准 SQL 多智能体、Multi-agent NL2SQL+、SQL 层整体修复、SQL+ Skill Router + Repair Skills。
 
+评价指标：execution accuracy、valid SQL rate、SQL+ valid rate、repair success rate、average repair rounds、schema linking accuracy、value linking accuracy、join path accuracy、error localization accuracy、token cost、latency、复杂查询分层准确率。
+
+讲稿提示：后续评估要证明 SQL+、多智能体、工具和局部 repair skill 各自有贡献，而不是只展示一个系统结果。
 ---
 
 ## 第 12 页：SQL+ 转换实验结果
@@ -303,21 +299,17 @@ SQL+ prompt v2 失败类型：
 
 ## 第 17 页：预期创新点
 
-创新点一：面向大模型生成友好的 SQL+ 中间查询表示
+1. 面向生成和修复的 SQL+ 中间表示
 
-- 线性、分步、可解释。
-- 降低复杂 SQL 生成与修复难度。
+SQL+ 不只是 SQL 的另一种写法，而是面向 NL2SQL 生成、SQL 转换、执行反馈诊断和局部修复共同设计的中间层。相比 SemQL/NatSQL，它更强调线性步骤和 repairability；相比 Pipe Syntax，它更强调 Text-to-SQL 任务中的错误定位。
 
-创新点二：面向 SQL+ 的多智能体查询生成与反馈修正框架
+2. 面向 SQL+ 的多智能体诊断与技能路由机制
 
-- Schema Agent、Critic Agent、Skill Router、Repair Skill、Executor 协同工作。
+将 Critic Agent、Skill Router、Repair Skill 和 Executor 组织成反馈闭环。系统不是整体重写 SQL，而是根据错误类型路由到 value-linking、ORDER、aggregation、join、projection 等局部技能。
 
-创新点三：基于执行反馈的 SQL+ 层局部修正机制
+3. 面向修复能力的评估体系
 
-- 将错误映射到 SQL+ 局部步骤。
-- 按错误类型调用 repair skill。
-- 候选 patch 通过执行验证选择。
-
+除 execution accuracy 外，增加 repair success rate、average repair rounds、error localization accuracy、router accuracy、patch minimality、token cost、latency 和复杂查询分层指标，用于评估 SQL+ 是否真正提升可修复性。
 ---
 
 ## 第 18 页：研究计划

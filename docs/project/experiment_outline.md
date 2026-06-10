@@ -1,4 +1,4 @@
-﻿# 实验大纲与方向调整记录
+# 实验大纲与方向调整记录
 
 ## 课题定位
 
@@ -157,6 +157,17 @@
 - `data/benchmarks/spider/`
 - `scripts/benchmarks/run_spider_smoke.py`
 - `docs/benchmarks/spider_smoke_report_20.md`
+
+## 2026-06-10 开题反馈后的研究化调整
+
+导师反馈指出，研究内容不能写成工程步骤清单，需要补充技术难点、克服方法、对比系统和评价指标。后续实验方向据此调整如下：
+
+- 研究内容表述从“先做 parser、再做 Agent、再做修复”调整为四个可检验问题：SQL+ 表达设计、NL2SQL+ 生成与 grounding、SQL+ 层诊断修复、多系统对比与消融。
+- SQL+ 需要与 SemQL、NatSQL、GoogleSQL Pipe Syntax 明确区分：SQL+ 的重点是线性步骤、确定性转换、执行反馈定位和局部 repair skill，而不是单纯替代 SQL 或复刻 Pipe Syntax。
+- 后续实验增加表达复杂度指标，包括嵌套深度、子查询/CTE 数量、跨子句引用数量、join 路径长度、别名依赖数量和 SQL+ 步骤数。
+- 后续修复实验增加 error localization accuracy、router accuracy、patch minimality、average repair rounds、token cost 和 latency，不再只看 repair success rate。
+- 对比方法需要覆盖 Direct NL2SQL、NL2SQL+ 单 Agent、分解式 NL2SQL、标准 SQL 多智能体、SQL 层整体修复、Multi-agent NL2SQL+、Multi-agent NL2SQL+ + Feedback 和 SQL+ Skill Router + Repair Skills。
+- 开题材料中的当前结果仍按小规模可行性表述：SQL+ conversion 30/30、Direct NL2SQL 16/30、NL2SQL+ prompt v2 17/30、Skill Router v3 在当前 13 条已知失败样例上 13/13、Spider smoke test 在受支持小子集上 20/20。
 
 ## 当前方向判断
 

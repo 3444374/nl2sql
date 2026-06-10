@@ -757,3 +757,31 @@ lark-cli docs +fetch --api-version v2 --as user --doc "https://my.feishu.cn/wiki
 
 说明：
 - 本次只重排和细化已有实验说明，没有运行新实验，也没有改变任何指标，因此不更新 `docs/project/experiment_log.md`。
+## 2026-06-10 根据导师反馈重构开题报告研究内容
+
+目的：
+- 根据导师对飞书开题文档的反馈，补强“国内外研究现状”和“研究内容”两部分。
+- 将研究内容从工程步骤描述调整为研究问题、技术难点、解决方法和评估指标。
+- 明确 SQL+ 与 SemQL、NatSQL、GoogleSQL Pipe Syntax 的区别，说明为什么需要 SQL+。
+- 补充多系统对比、消融实验和修复能力评价指标，使开题论证更接近研究型论文写法。
+
+使用方法：
+- 按 `$academic-research-suite` 的论文结构和文献组织思路处理章节逻辑。
+- 按 `$humanizer` 规则检查表述，减少模板化连接句、夸大表述和 AI 风格痕迹，并保持无 em dash / en dash。
+
+涉及文件：
+- `docs/opening/opening_report.md`
+- `docs/opening/opening_report_feishu_final.md`
+- `docs/opening/opening_report_template_aligned.md`
+- `docs/opening/opening_ppt.md`
+- `docs/project/experiment_outline.md`
+- `docs/project/project_log.md`
+
+处理内容：
+- 重写“国内外研究现状”，按 Text-to-SQL 方法发展、查询中间表示与 SQL 扩展、多智能体和执行反馈、研究不足四条线组织。
+- 重写“研究目标与研究内容”，新增关键问题，并将四个研究内容分别写成技术难点、拟采用方法和评估方式。
+- 在 PPT 中补充研究现状、研究问题、SQL+ 设计难点、多智能体可观察输出、对比方法和评估指标。
+- 在实验大纲中记录开题反馈后的方向调整，后续实验需补充复杂度指标、错误定位准确率、路由准确率、patch minimality、token cost 和 latency。
+
+说明：
+- 本次属于开题材料和研究路线调整，没有运行新实验，也没有改变任何实验指标，因此不更新 `docs/project/experiment_log.md`。
