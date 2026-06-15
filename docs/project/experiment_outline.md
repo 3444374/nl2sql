@@ -169,6 +169,17 @@
 - 对比方法需要覆盖 Direct NL2SQL、NL2SQL+ 单 Agent、分解式 NL2SQL、标准 SQL 多智能体、SQL 层整体修复、Multi-agent NL2SQL+、Multi-agent NL2SQL+ + Feedback 和 SQL+ Skill Router + Repair Skills。
 - 开题材料中的当前结果仍按小规模可行性表述：SQL+ conversion 30/30、Direct NL2SQL 16/30、NL2SQL+ prompt v2 17/30、Skill Router v3 在当前 13 条已知失败样例上 13/13、Spider smoke test 在受支持小子集上 20/20。
 
+## 2026-06-15 导师反馈后的中间表示对比实验调整
+
+导师反馈指出，当前开题报告中的研究内容仍容易被理解为工程流程，后续需要更清楚地说明技术难点、对比系统、评价指标和“为什么使用 SQL+”。据此，实验方向调整如下：
+
+- 新增 SQL+ 与 Standard SQL、SemQL-style IR、NatSQL-style IR、Pipe-style query 的对比实验，不只比较 execution accuracy，还比较表达复杂度、转换效率、token cost、latency 和 repairability。
+- 将“为什么 SQL+”拆成可验证假设：SQL+ 是否减少跨子句依赖，是否提高错误定位准确率，是否降低 patch 范围和修复轮数，是否能抵消 IR 转换成本。
+- 开题阶段先实现 SemQL-style 和 NatSQL-style proxy 表示，用于 controlled comparison；不声称复现完整 IRNet/SemQL 或 NatSQL 系统。
+- 后续实验报告增加以下指标：representation token length、nesting depth、cross-clause reference count、alias dependency count、IR parse time、IR-to-SQL conversion time、error localization accuracy、router accuracy、patch minimality、token cost 和 latency。
+- 研究内容表述从“先做 parser、再做 agent、再做修复”调整为“技术难点、解决方法、评估指标”三段式。
+- 新增实验设计文档：`docs/sqlplus/intermediate_representation_comparison_plan.md`。
+
 ## 当前方向判断
 
 当前阶段优先级：

@@ -64,24 +64,24 @@ FROM orders o
 
 ## 第 5 页：国内外研究现状
 
-- 中间表示路线：IRNet/SemQL 和 NatSQL 证明，复杂 SQL 不一定适合作为模型的一次性直接生成目标。
-- SQL 语言扩展路线：GoogleSQL Pipe Syntax 说明线性数据流式查询表达有数据库系统依据。
-- 多智能体路线：MAC-SQL、CHESS、CHASE-SQL、SQL-Factory 说明复杂 SQL 任务适合拆成 schema、规划、候选生成、验证和管理等环节。
-- 执行反馈路线：LEVER、Tool-Assisted Agent 等工作说明，执行结果可以用于候选筛选和错误检测。
-- 当前不足：多数方法仍在标准 SQL 层做整体生成或整体修复，对“错误定位到哪个步骤、调用哪个 repair skill”讨论不足。
+- 传统 Text-to-SQL：Seq2SQL、RAT-SQL、PICARD、RESDSQL 等工作关注 schema linking、结构化解码和可执行性约束。
+- 中间表示路线：SemQL 和 NatSQL 说明标准 SQL 不是唯一生成目标，但主要服务于初次生成准确率。
+- 大模型路线：DAIL-SQL、DIN-SQL、CHESS、CHASE-SQL、ReFoRCE、XiYan-SQL 等引入样例选择、任务分解、多候选生成、列探索和自修正。
+- Agentic NL2SQL：MAC-SQL、Tool-Assisted Agent、LEVER、SQLCritic 等工作说明执行反馈和多角色协作有价值。
+- 现有不足：多数方法仍在标准 SQL 层做候选选择或整体修复，缺少面向中间步骤的错误定位、技能路由和局部 patch 评估。
 
-讲稿提示：本课题不是从零提出 SQL+。它把中间表示、线性 SQL 扩展、多智能体和执行反馈四条已有研究线合在一起，但研究焦点放在 SQL+ 层诊断和局部修复。
+讲稿提示：相关工作不要只罗列论文。这里要说明研究空缺：已有方法证明“中间表示”和“Agent”都有价值，但还没有充分回答“错误发生后如何定位到可修复步骤”。
 ---
 
 ## 第 6 页：研究问题
 
-1. 为什么需要 SQL+：它和 SemQL、NatSQL、Pipe Syntax 相比，新增价值在哪里？
-2. SQL+ 怎样设计：如何同时满足简化表达、可转换、可解释和可局部修复？
-3. 如何生成 SQL+：怎样处理 schema linking、value linking、join 路径和聚合口径？
-4. 如何修复 SQL+：怎样把执行反馈和结果异常映射到局部步骤，并路由到 repair skill？
-5. 如何证明有效：需要与 Direct NL2SQL、NL2SQL+、标准 SQL 多智能体、SQL 层修复和消融版本对比。
+1. SQL+ 为什么有必要：与标准 SQL、SemQL、NatSQL、Pipe-style 表示相比，它在生成、转换、诊断和修复上新增了什么价值。
+2. SQL+ 如何设计：怎样在简化表达、可转换、可解释和局部修复之间取得平衡。
+3. 如何生成 SQL+：怎样处理 schema linking、value linking、join path、aggregation planning 和 projection。
+4. 如何修复 SQL+：怎样把执行反馈和结果异常映射到 SQL+ 步骤，并路由到对应 repair skill。
+5. 如何证明有效：需要比较准确率、可执行率、修复成功率、定位准确率、token cost、latency 和转换时间。
 
-讲稿提示：研究问题要从“做一个系统”转成“验证一组机制是否成立”。
+讲稿提示：研究问题要从“做系统”转成“验证机制”。SQL+ 的价值必须通过对比实验和消融实验说明。
 ---
 
 ## 第 7 页：总体技术路线
@@ -185,14 +185,15 @@ FROM orders o
 | 层次 | 用途 |
 | --- | --- |
 | 自建订单分析数据集 | 控制变量、错误类型分析、SQL+ 转换验证 |
-| Spider 小规模受支持子集 | 验证公开 benchmark 迁移可行性 |
+| SQL+ 已知失败集 | 评估错误定位、Skill Router 和局部修复 |
+| Spider 小规模受支持子集 | 验证公开 benchmark 初步迁移能力 |
 | BIRD / 达梦样例后续子集 | 验证真实 schema、外部知识和方言差异 |
 
-对比方法：Direct NL2SQL、NL2SQL+ 单 Agent、分解式 NL2SQL、标准 SQL 多智能体、Multi-agent NL2SQL+、SQL 层整体修复、SQL+ Skill Router + Repair Skills。
+对比方法：Direct NL2SQL、NL2SQL+ single agent、SemQL-style IR、NatSQL-style IR、Pipe-style query、standard SQL multi-agent、SQL layer global repair、multi-agent NL2SQL+、SQL+ Skill Router + Repair Skills。
 
-评价指标：execution accuracy、valid SQL rate、SQL+ valid rate、repair success rate、average repair rounds、schema linking accuracy、value linking accuracy、join path accuracy、error localization accuracy、token cost、latency、复杂查询分层准确率。
+指标：execution accuracy、valid SQL rate、SQL+ valid rate、repair success rate、average repair rounds、error localization accuracy、router accuracy、patch minimality、schema/value/join accuracy、token cost、latency、IR parse time、IR-to-SQL conversion time。
 
-讲稿提示：后续评估要证明 SQL+、多智能体、工具和局部 repair skill 各自有贡献，而不是只展示一个系统结果。
+讲稿提示：这里回应老师的意见。实验不只证明系统能跑，还要证明 SQL+ 相比其他表示是否更容易定位和修复错误。
 ---
 
 ## 第 12 页：SQL+ 转换实验结果
@@ -301,15 +302,15 @@ SQL+ prompt v2 失败类型：
 
 1. 面向生成和修复的 SQL+ 中间表示
 
-SQL+ 不只是 SQL 的另一种写法，而是面向 NL2SQL 生成、SQL 转换、执行反馈诊断和局部修复共同设计的中间层。相比 SemQL/NatSQL，它更强调线性步骤和 repairability；相比 Pipe Syntax，它更强调 Text-to-SQL 任务中的错误定位。
+SQL+ 不只是 SQL 的另一种写法，而是面向 NL2SQL 生成、SQL 转换、执行反馈诊断和局部修复共同设计的中间层。相比 SemQL/NatSQL，它更强调步骤级错误定位和 repairability；相比 Pipe Syntax，它更强调 Text-to-SQL 场景下的诊断和修复接口。
 
 2. 面向 SQL+ 的多智能体诊断与技能路由机制
 
-将 Critic Agent、Skill Router、Repair Skill 和 Executor 组织成反馈闭环。系统不是整体重写 SQL，而是根据错误类型路由到 value-linking、ORDER、aggregation、join、projection 等局部技能。
+将 Critic Agent、Skill Router、Repair Skill 和 Executor 组织成反馈闭环。系统不直接整体重写 SQL，而是根据错误类型路由到 value-linking、ORDER、aggregation、join、projection 等局部技能。
 
 3. 面向修复能力的评估体系
 
-除 execution accuracy 外，增加 repair success rate、average repair rounds、error localization accuracy、router accuracy、patch minimality、token cost、latency 和复杂查询分层指标，用于评估 SQL+ 是否真正提升可修复性。
+除 execution accuracy 外，增加 error localization accuracy、router accuracy、patch minimality、average repair rounds、token cost、latency、IR parse time 和 conversion time，用于评估 SQL+ 是否真正提高可修复性。
 ---
 
 ## 第 18 页：研究计划

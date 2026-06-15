@@ -785,3 +785,12 @@ lark-cli docs +fetch --api-version v2 --as user --doc "https://my.feishu.cn/wiki
 
 说明：
 - 本次属于开题材料和研究路线调整，没有运行新实验，也没有改变任何实验指标，因此不更新 `docs/project/experiment_log.md`。
+## 2026-06-15 开题报告学术化与实验设计调整
+
+- 根据导师反馈，重写 `docs/opening/opening_report.md` 中“国内外研究现状”和“研究目标与研究内容”部分。
+- 将研究内容从工程步骤式表述调整为“技术难点、拟采用方法、评估方式”的研究型表述。
+- 新增 SQL+ 与 Standard SQL、SemQL-style、NatSQL-style、Pipe-style query 的对比实验设计，补充 token cost、latency、IR parse time、conversion time、error localization accuracy、patch minimality 等指标。
+- 新增 `docs/sqlplus/intermediate_representation_comparison_plan.md`，用于支撑开题答辩中“为什么使用 SQL+”的论证。
+- 同步更新 `docs/opening/opening_report_feishu_final.md`、`docs/opening/opening_report_template_aligned.md` 和 `docs/opening/opening_ppt.md`。
+- 已将 `docs/opening/opening_report_feishu_final.md` 覆盖同步到飞书开题文档，飞书返回 `revision_id=50`。
+- 本次未运行新实验，未修改实验结果数值，因此不写入 `docs/project/experiment_log.md`。

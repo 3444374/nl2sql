@@ -38,84 +38,95 @@
 
 # 国内外研究现状
 
-## Text-to-SQL 方法发展与评测重点变化
+## Text-to-SQL 研究：从结构化语义解析到大模型生成
 
-Text-to-SQL 早期主要依赖语义解析、序列到序列生成、schema linking 和语法约束解码。Spider 提出跨数据库评测后，研究重点从单库模板匹配转向跨 schema 泛化，模型必须同时处理未知表结构、复杂 SQL 组合和自然语言表达差异。RAT-SQL 通过关系感知编码建模问题、表和列之间的关系；PICARD 在解码阶段做增量语法检查，减少无效 SQL；这类工作说明，Text-to-SQL 的关键问题并不只是语言理解，还包括 schema 组织、输出结构控制和可执行性约束。
+Text-to-SQL 早期研究主要把任务看作语义解析问题，目标是把自然语言问题映射为形式化查询。Seq2SQL、SyntaxSQLNet、RAT-SQL 等工作分别从序列生成、SQL 结构建模和 schema linking 入手，解决自然语言词语、表、列、外键关系之间的匹配问题。Spider 数据集提出跨数据库评测后，研究重点从单库模板匹配转向跨 schema 泛化。模型不再只需要记住固定表结构，还要在未见过的数据库中理解表间关系、字段含义和复杂 SQL 结构。
 
-中间表示路线是本课题的重要先导。IRNet 提出 SemQL，把自然语言意图和 SQL 实现细节分开，先生成语义结构，再根据 schema 推断 SQL。NatSQL 则进一步减少 `FROM`、`JOIN ON`、`GROUP BY` 等自然语言中不容易直接对应的 SQL 细节，使模型更容易生成可转换的查询表示。这两类工作都表明，标准 SQL 不是唯一的生成目标，适当的中间表示可以降低模型需要一次性预测的结构复杂度。
+这一路线说明，Text-to-SQL 的困难不只是“把一句话翻译成 SQL”。更关键的问题包括 schema linking、join 路径选择、聚合口径判断、嵌套结构生成和可执行性约束。RAT-SQL 用关系感知编码器建模 question-schema-column 之间的关系，PICARD 在解码过程中加入增量语法检查，RESDSQL 将 schema linking 和 skeleton parsing 解耦。这些方法共同表明：如果输出结构没有被有效约束，模型很容易生成语法可疑、字段错误或语义偏离的 SQL。
 
-大语言模型出现后，研究路线从模型结构设计扩展到提示工程、检索增强、多候选生成、执行反馈和候选选择。RESDSQL 将 schema linking 与 skeleton parsing 解耦；DIN-SQL 把任务拆成 schema linking、问题分解、SQL 生成和自修正；CHESS、CHASE-SQL、ReFoRCE、XiYan-SQL 等系统进一步引入检索、列探索、候选排序、共识约束和自修正机制。评测关注点也从 exact match 扩展到 execution accuracy、valid SQL rate、执行效率、交互式修正和企业 workflow 适配。BIRD 强调真实数据库、外部知识和执行效率；Spider 2.0 则把问题推进到多 SQL 方言、项目代码、数据转换和企业分析流程。
+中间表示研究是本课题的重要基础。IRNet 提出 SemQL，将复杂 SQL 映射为更接近语义结构的树形表示，减少模型直接处理 SQL 细节的压力。NatSQL 则保留较多 SQL 外观，但去掉或简化部分 `FROM`、`JOIN ON`、`GROUP BY` 等自然语言中不容易直接对应的成分，使模型先预测较容易生成的查询表示，再转换为 SQL。这类研究已经证明，中间表示可以降低直接生成标准 SQL 的难度。但它们主要服务于生成准确率，较少讨论执行失败之后如何把错误定位到某一个中间步骤，再进行局部修复。
 
-这些研究给本课题提供了两点启发。第一，直接生成标准 SQL 在复杂查询中容易受到 SQL 结构细节拖累。第二，单一准确率不足以评价一个自然语言数据库查询系统，后续需要同时考察可执行率、执行一致性、schema linking、修复成功率、修复轮数、成本、延迟和复杂查询分层表现。
+## 大模型 Text-to-SQL：从一次生成到候选验证和任务分解
 
-## 查询中间表示与 SQL 扩展研究
+大语言模型改变了 Text-to-SQL 的实现方式。DAIL-SQL、C3、DIN-SQL 等工作把重点放在提示设计、样例选择、问题分解和自修正上。DIN-SQL 将任务拆为 schema linking、问题分解、SQL 生成和自修正几个阶段，说明复杂查询不适合完全依赖单轮生成。CHESS、CHASE-SQL、ReFoRCE、XiYan-SQL 等较新的系统进一步引入检索、候选生成、列探索、共识约束、偏好选择和执行验证，用多路径或多模块方式提高稳定性。
 
-IRNet/SemQL、NatSQL 和 GoogleSQL Pipe Syntax 是理解 SQL+ 定位的三类近邻工作。SemQL 是树状语义表示，主要目标是隐藏 SQL 实现细节并提升复杂 SQL 生成效果。NatSQL 更接近 SQL 语法，但通过简化集合操作、子查询和连接细节来降低预测难度。GoogleSQL Pipe Syntax 则是数据库语言扩展，它把查询写成自上而下的数据流式 operator 序列，缓解传统 SQL 中书写顺序、作用域和嵌套结构带来的阅读与维护困难。
+从评测趋势看，Text-to-SQL 已经不再只关注 exact match。Spider 关注跨数据库泛化，BIRD 强调真实数据库、外部知识和执行效率，Spider 2.0 将任务推进到企业级工作流，涉及多 SQL 方言、代码库、数据转换和分析流程。对应地，评价指标也需要扩展。除 execution accuracy 外，还应观察 valid SQL rate、schema linking accuracy、value linking accuracy、join path accuracy、执行时间、token cost、候选数量、修复轮数和失败类型分布。对于本课题来说，这些指标比单一准确率更能反映 SQL+ 是否真正降低了生成和修复难度。
 
-本课题的 SQL+ 与上述工作有继承关系，但目标不同。SQL+ 借鉴中间表示和线性数据流思想，但不只是为了让模型更容易“生成一条 SQL”。它需要同时服务四个目标：自然语言生成、确定性 SQL 转换、执行反馈定位和局部修复。为此，SQL+ 保留 `FROM -> JOIN -> WHERE -> GROUP -> AGG -> HAVING -> SELECT -> ORDER -> LIMIT` 这样的步骤结构，使错误可以映射到具体操作，而不是只得到一条整体 SQL 的失败信息。
+## Agentic NL2SQL：工具调用、执行反馈与多角色协作
 
-因此，SQL+ 的研究难点不是简单设计一套新语法。它需要在表达能力、简化程度、可转换性和可修复性之间取平衡。语法过于接近 SQL，就难以体现简化和局部诊断价值；语法过于抽象，又会增加转换器和方言适配难度。后续实验也不能只证明 SQL+ 能转换成 SQL，还要评估它是否降低了表达复杂度，是否能支持错误定位和 repair skill 的局部修改。
+近年来的 agentic Text-to-SQL 系统通常不再把大模型当作单一生成器，而是把查询任务拆成多个角色或工具调用过程。MAC-SQL 使用 selector、decomposer、refiner 等角色处理 schema 选择、问题分解和错误修正。CHESS 结合 schema 检索、上下文组织、候选生成和单元测试。CHASE-SQL 采用多路径候选生成与偏好优化选择。Tool-Assisted Agent、LEVER、SQLCritic 等工作则强调执行反馈、候选验证或 clause-wise 诊断。
 
-## 多智能体、执行反馈与候选验证研究
+这些研究说明，多智能体或工具增强机制的价值不在于简单增加 prompt 数量，而在于让不同模块承担可观察的子任务。例如，Schema Agent 需要给出相关表列和连接路径，Critic Agent 需要说明错误类型和证据，Repair Skill 需要产生可验证的修复候选，Executor 需要用数据库执行结果过滤错误候选。若每个模块的中间输出不可检查，多智能体很容易退化为“多个提示词串联”，并不一定提升效果。本课题后续实验也需要把 agent 的贡献拆开评估，而不是只报告完整系统的最终成功率。
 
-多智能体 Text-to-SQL 研究已经证明，复杂查询生成适合拆解为多个子问题。MAC-SQL 使用 selector、decomposer、refiner 等角色处理 schema 选择、问题分解和错误修正。CHESS 结合信息检索、schema 选择、候选生成和单元测试，强调系统化上下文组织。CHASE-SQL 采用多路径候选生成和偏好优化选择，说明复杂查询往往需要候选比较而不是单次生成。LEVER 通过执行结果学习 verifier，为 language-to-code 候选筛选提供了执行反馈视角。SQL-Factory 从多智能体角度生成大规模高质量 SQL，说明 SQL 生成任务可以通过协作流程控制规模、多样性和成本。
+现有 agentic NL2SQL 方法大多仍以标准 SQL 为主要诊断和修复对象。执行反馈常被用于候选筛选或整条 SQL 重写，但错误通常没有稳定映射到一个可修复的中间步骤。实际错误却常具有局部性，例如 value-linking 错误、聚合别名引用错误、join 路径错误、ORDER/LIMIT 遗漏、projection mismatch 等。若每次都重写整条 SQL，容易改坏原本正确的部分。因此，本课题把 SQL+ 放在 agent 修复链路的中心，试图让 Critic 的诊断、Skill Router 的路由和 Repair Skill 的补丁都围绕 SQL+ 步骤展开。
 
-不过，现有多智能体方法多数仍以标准 SQL 为最终诊断对象。执行反馈常被用来筛选候选或触发整条 SQL 重写，而不是把错误定位到某个中间步骤。实际错误还包括能执行但结果语义不一致的情况，例如值链接错误、聚合口径错误、排序遗漏、连接路径冗余和投影列不符合用户意图。数据库报错信息通常较粗，无法直接告诉系统该改 `WHERE`、`JOIN`、`AGG` 还是 `ORDER`。
+## SQL 中间表示与 SQL 语言扩展：SQL+ 的位置
 
-本课题把 SQL+ 放在多智能体反馈链路的中心位置。Critic Agent 不只判断 SQL 对错，而是输出错误类型、疑似步骤和修复依据；Skill Router 根据错误类型调用 value-linking、ORDER、aggregation、join、projection 等局部 repair skill；Executor 再用执行结果验证候选 patch。这条路线的研究重点不在于堆叠更多 Agent，而在于让每个 Agent 的输入输出可检查，并通过局部修复减少无关结构被改坏的风险。
+SQL+ 不是从零提出的新数据库语言。它与 SemQL、NatSQL 和 GoogleSQL Pipe Syntax 都有关联，但研究目标不同。
+
+SemQL 是面向复杂 Text-to-SQL 的树形语义表示，重点是隐藏标准 SQL 的实现细节，让模型先生成语义结构。它适合降低生成难度，但树形表示和最终 SQL 的执行错误之间不一定有直接的一步对应关系。NatSQL 更接近 SQL，通过简化连接、分组和嵌套结构来减少模型预测负担，适合作为生成中间层，但它主要讨论从自然语言到可转换查询表示的过程。GoogleSQL Pipe Syntax 是数据库系统内的 SQL 扩展，强调用线性数据流方式改善 SQL 的阅读、编写和维护。它给 SQL+ 提供了重要启发：查询表达顺序可以更接近数据处理流程，而不是完全受传统 SQL 书写顺序限制。
+
+本课题中的 SQL+ 更强调“生成、转换、诊断、局部修复”四个目标的统一。它保留 `FROM -> JOIN -> WHERE -> GROUP -> AGG -> HAVING -> SELECT -> ORDER -> LIMIT` 这样的线性步骤，使每一步可以被 parser 检查、被 converter 转换、被 Critic 定位、被 Repair Skill 局部修改。也就是说，SQL+ 的价值不只在于让 SQL 看起来更线性，而在于为多智能体反馈修正提供一个可操作的中间层。
+
+因此，后续研究不能只说 SQL+ “更容易读”。需要通过实验比较它与标准 SQL、SemQL-style 表示、NatSQL-style 表示和 Pipe-style 表示在以下方面的差别：表达复杂度、生成 token、转换时间、可执行率、错误定位准确率、patch 影响范围、修复轮数和最终执行准确率。只有这些指标能够支撑“为什么使用 SQL+”这一核心论证。
 
 ## 现有研究不足与本课题切入点
 
-综合现有工作，当前仍有四个不足。第一，很多方法已经承认 SQL 结构复杂，但中间表示多面向生成准确率，较少面向执行反馈后的错误定位和局部修复。第二，多智能体框架常强调任务分解和候选选择，但对于“错误来自哪一步、应该调用哪类修复策略”讨论不够充分。第三，现有评测容易集中在 execution accuracy，缺少对 repair success rate、average repair rounds、error localization accuracy、patch minimality、token cost 和 latency 的系统比较。第四，公开 benchmark 与企业数据库之间仍有差距，方言差异、schema 质量和业务语义会影响实际可用性。
+综合已有研究，可以归纳出四个不足。第一，中间表示研究多关注生成准确率，对执行反馈后的错误定位和局部修复关注不足。第二，多智能体 Text-to-SQL 多关注任务分解、候选生成和候选选择，较少把错误诊断结果映射到可执行的局部修复技能。第三，现有评测常以 execution accuracy 为主，对 repairability 的评价不够充分，本课题需要引入 error localization accuracy、router accuracy、patch minimality、average repair rounds、token cost、latency、IR parse time 和 IR-to-SQL conversion time 等指标。第四，公开 benchmark 与企业数据库环境之间存在差距，开题阶段应先用自建可控数据集和 Spider 小规模子集验证机制，后续再扩展到 BIRD 子集和达梦 SQL 方言适配。
 
-本课题的切入点是：把 SQL+ 作为面向生成和修复的中间表示，把多智能体机制落到错误诊断、技能路由、局部修复和执行验证上，并通过多 baseline、消融实验和复杂度分层评估来检验 SQL+ 是否真正带来收益。开题阶段已有实验只证明初步可行性，后续研究需要扩展到更大的公开子集、更多错误类型和更接近达梦 SQL+ 场景的方言适配。
+基于这些不足，本课题的切入点是：将 SQL+ 作为面向生成和修复的中间表示，把多智能体机制落到 schema/value grounding、错误诊断、技能路由、局部修复和执行验证上，并用多系统对比和多维指标评估 SQL+ 是否真正提高了可生成性、可解释性和可修复性。
 
 # 研究目标与研究内容
 
 ## 研究目标
 
-本课题拟研究一种面向 SQL+ 简化查询表达的多智能体自然语言数据库查询生成与反馈修正方法。核心假设是：当复杂查询先表示为线性、分步、可转换的 SQL+，再结合执行反馈、错误诊断、技能路由和局部 repair skill，系统在复杂查询上的可执行性、可解释性和可修复性会优于直接生成标准 SQL 的路线。
+本课题拟研究一种面向 SQL+ 简化查询表达的多智能体自然语言数据库查询生成与反馈修正方法。核心假设是：相比直接生成标准 SQL，先生成线性、分步、可转换的 SQL+ 中间表示，再结合执行反馈、错误诊断、技能路由和局部 repair skill，能够提高复杂查询的可执行性、可解释性和可修复性。
 
-研究目标包括四个方面。第一，设计面向生成和修复的 SQL+ 中间表示，并证明它能够覆盖常见分析查询且可稳定转换为 SQL。第二，研究自然语言到 SQL+ 的生成方法，重点处理 schema linking、join 路径、值链接和聚合意图等难点。第三，研究执行反馈到 SQL+ 局部步骤的错误诊断和修复机制，减少整条 SQL 重写带来的不稳定性。第四，建立多系统对比和消融实验体系，评价 SQL+、多智能体、工具调用、Skill Router 和 repair skill 各自的贡献。
+本课题不把目标限定为实现一个完整工程 Demo，而是围绕以下问题建立可验证的方法和实验体系：SQL+ 是否能降低查询表达复杂度，并为错误定位提供更清晰的步骤边界；SQL+ 与 SemQL、NatSQL、Pipe-style 表示相比，在哪些指标上更适合反馈修正；多智能体机制如何服务于 schema/value grounding、错误诊断、技能路由和执行验证，而不是简单串联多个 prompt；执行反馈能否被稳定映射回 SQL+ 局部步骤，并通过局部 patch 提高修复成功率；在自建可控数据集、Spider 小规模子集和后续 BIRD/达梦样例上，SQL+ 路线是否具有可迁移性。
 
 ## 拟解决的关键问题
 
-1. SQL+ 为什么有必要。已有 SemQL、NatSQL 和 Pipe Syntax 说明 SQL 结构可以被重写或线性化，但本课题需要进一步证明 SQL+ 不只是“另一种写法”，而是能服务生成、诊断和修复的中间层。
-2. SQL+ 如何保持可转换和可修复。SQL+ 必须足够简单，便于模型生成；也必须足够完整，能表达 join、聚合、having、order、limit 等常见结构，并能转换为标准 SQL 或后续达梦 SQL 方言。
-3. 多智能体如何避免变成工程堆叠。Agent 的价值应通过可观察的中间输出体现，例如 schema 选择是否正确、Critic 定位是否准确、Router 是否选对 repair skill、patch 是否只修改相关步骤。
-4. 如何评价方法是否有效。除 execution accuracy 外，还要比较 SQL+ valid rate、valid SQL rate、repair success rate、average repair rounds、error localization accuracy、schema linking accuracy、complex query accuracy、token cost、latency 和人工可解释性。
+第一个问题是 SQL+ 的必要性。已有 SemQL、NatSQL 和 Pipe Syntax 都说明标准 SQL 可以被重构，但本课题需要进一步证明 SQL+ 不是另一种写法，而是面向生成、转换、诊断和修复的一体化中间表示。这个问题需要通过复杂度指标、转换指标和修复指标共同回答。
 
-## 研究内容一：面向生成和修复的 SQL+ 中间表示设计
+第二个问题是 SQL+ 的边界。SQL+ 过于接近标准 SQL，简化效果有限；过于抽象，又会增加转换和方言适配难度。本课题需要确定一个能覆盖常见分析查询、能转换为 SQL、能映射执行错误的语法子集，并逐步扩展到更复杂结构。
 
-本部分研究 SQL+ 的语法边界、表达能力和转换机制。技术难点在于，SQL+ 不能只是把标准 SQL 换一种排列方式。它需要减少自然语言难以直接预测的结构细节，同时保留足够的信息，使转换器能够生成可执行 SQL，并使 Critic Agent 能把错误定位到具体步骤。
+第三个问题是多智能体的可验证性。Agent 的价值必须体现在可观察输出上，例如 schema 选择是否正确、Critic 是否定位到正确步骤、Router 是否选择正确 repair skill、patch 是否只修改相关步骤、Executor 是否过滤无效候选。否则多智能体只会增加成本和延迟。
 
-拟采用的方法是：以 `FROM` 为查询起点，将 `JOIN`、`WHERE`、`GROUP`、`AGG`、`HAVING`、`SELECT`、`ORDER`、`LIMIT` 组织成线性步骤；在 AST 中显式记录字段、别名、聚合口径、排序引用和连接条件；对 AGG 别名、HAVING/ORDER 引用、join 方向和投影列等容易出错的位置设计规范化规则；后续增加达梦 SQL 方言适配层。
+第四个问题是评估方法。除 execution accuracy 外，还需要比较 valid SQL rate、SQL+ valid rate、schema linking accuracy、value linking accuracy、join path accuracy、error localization accuracy、router accuracy、repair success rate、average repair rounds、patch minimality、token cost、latency、IR parse time 和 IR-to-SQL conversion time。这样才能判断 SQL+ 的收益是否超过它引入的转换成本。
 
-评估方式包括：SQL+ 语法通过率、SQL 转换可执行率、与标准 SQL 的执行一致率、查询结构覆盖率、转换失败类型分布，以及表达复杂度指标。表达复杂度拟从子查询/CTE 数量、嵌套深度、跨子句引用数量、join 路径长度、别名依赖数量和 SQL+ 步骤数等角度统计，用来解释 SQL+ 是否真的降低了生成和修复难度。
+## 研究内容一：面向生成和修复的 SQL+ 中间表示设计与对比评估
+
+本部分研究 SQL+ 的语法边界、AST 表示、转换规则和与其他中间表示的差别。技术难点在于，SQL+ 需要同时满足四个要求：足够线性，便于自然语言映射；足够完整，能够表达 join、filter、aggregation、having、order、limit 等常见分析查询；足够确定，能够转换为标准 SQL 或后续达梦 SQL；足够可诊断，能够把错误映射到具体步骤。
+
+拟采用的方法是：以 `FROM` 为查询起点，将 `JOIN`、`WHERE`、`GROUP`、`AGG`、`HAVING`、`SELECT`、`ORDER`、`LIMIT` 组织成线性步骤；在 AST 中显式记录表别名、字段引用、聚合别名、连接条件和排序引用；对 AGG 别名、HAVING/ORDER 引用、join 方向、projection 列等易错位置设计规范化规则。转换器采用确定性规则，将 SQL+ 转换为可执行 SQL，并保留步骤到 SQL 子句的映射关系。
+
+评估上，本部分不只检查 SQL+ 能否转换成功，还要比较不同表示的复杂度和可修复性。对比对象包括标准 SQL、SemQL-style 语义表示、NatSQL-style 简化 SQL、Pipe-style 线性表示和 SQL+。指标包括 token 长度、嵌套深度、子查询/CTE 数量、跨子句引用数量、join 路径长度、别名依赖数量、IR parse time、IR-to-SQL conversion time、转换成功率、SQL 可执行率和错误步骤可定位率。开题阶段可以先使用 simplified proxy 表示进行公平对比，后续再考虑接入公开 SemQL/NatSQL 实现。
 
 ## 研究内容二：自然语言到 SQL+ 的生成与 schema/value grounding 方法
 
-本部分研究自然语言问题如何稳定生成 SQL+。技术难点主要来自 schema linking、value linking、join path planning 和 aggregation planning。真实问题往往不会显式给出表名、字段名、主外键路径和聚合口径，模型容易生成字段错、连接错、过滤值错或聚合维度错的 SQL+。
+本部分研究从自然语言问题生成 SQL+ 的方法。技术难点在于，模型不仅要生成合法语法，还要正确选择表列、连接路径、过滤值、聚合口径和排序依据。当前初步实验显示，SQL+ prompt v2 在 30 条样例上达到 17/30，略高于 Direct NL2SQL 的 16/30，但差距不大。这说明单纯更换输出格式不足以解决问题，必须引入更明确的 schema/value grounding 和候选验证。
 
-拟采用的方法是：构建 schema 与字段值检索工具，为 Schema Agent 提供表、列、外键、候选值和样例数据；使用 Planner Agent 先形成查询步骤草图，再由 SQL+ Generator 生成 SQL+；对复杂查询引入候选生成和执行验证，让系统比较多个 SQL+ 候选，而不是依赖一次输出。对比方法包括 Direct NL2SQL、NL2SQL+ 单 Agent、分解式 NL2SQL、多智能体标准 SQL、多智能体 SQL+ 和 SQL+ 工具增强生成。
+拟采用的方法是构建可观察的生成流程。Schema Agent 负责检索相关表、字段、外键关系和值域样例；Planner Agent 将问题拆成 SQL+ 步骤草图；SQL+ Generator 生成候选 SQL+；Translator 将 SQL+ 转换为 SQL；Executor 执行候选并返回错误或结果摘要。对于多候选生成，记录每个候选的 token 消耗、生成延迟、SQL+ 合法性和执行结果，由选择策略挑选更可靠的候选。
 
-评估方式包括：execution accuracy、valid SQL rate、SQL+ valid rate、schema linking accuracy、value linking accuracy、join path accuracy、aggregation accuracy、complex query accuracy、token cost 和 latency。实验会按 simple、medium、hard 查询分层，单独观察多表 join、聚合、having、top-k、时间范围和隐含业务条件等场景。
+评估上，本部分比较 Direct NL2SQL、NL2SQL+ single agent、decomposition-based NL2SQL、standard SQL multi-agent、multi-agent NL2SQL+ 等方法。指标包括 execution accuracy、valid SQL rate、SQL+ valid rate、schema linking accuracy、value linking accuracy、join path accuracy、candidate pass rate、prompt tokens、completion tokens、total latency 和不同复杂度查询上的表现。通过这些指标判断 SQL+ 是降低生成负担，还是只是把复杂度转移到转换器和后续修复阶段。
 
 ## 研究内容三：执行反馈驱动的 SQL+ 层错误诊断与局部修复
 
-本部分研究如何从数据库执行反馈和结果异常中定位错误，并在 SQL+ 层做局部修复。难点在于，数据库报错信息常常只说明“字段不存在”或“类型不匹配”，不能直接说明自然语言语义哪里偏了；更困难的是 SQL 能执行但结果错误的情况，例如过滤值不匹配、排序方向错、缺少 paid 条件、COUNT 口径不对或投影列多余。
+本部分研究如何把数据库执行错误、结果异常和用户意图偏差映射回 SQL+ 步骤，并通过局部 repair skill 修复。技术难点在于，很多错误并不会触发数据库报错。例如过滤值错误、聚合口径错误、排序遗漏、projection mismatch 都可能产生可执行但语义错误的 SQL。仅凭报错信息无法完成诊断，需要结合问题文本、schema、SQL+ 步骤、执行结果和候选差异。
 
-拟采用的方法是：由 Critic Agent 输出结构化诊断，包括错误类型、疑似 SQL+ 步骤、证据和修复建议；由 Skill Router 将诊断路由到 value-linking、ORDER、aggregation、join、projection 等 repair skill；repair skill 生成有限候选 patch，并由 Executor 执行验证。修复优先在 SQL+ 层进行，只在必要时对最终 SQL 做辅助检查。gold-derived differences 只用于离线可行性验证，不作为真实自主修复指标。
+拟采用的方法是构建 `Critic Agent -> Skill Router -> Repair Skill -> Executor` 闭环。Critic Agent 输出错误类型、可疑步骤和诊断证据；Skill Router 根据错误类型和 SQL+ 结构特征选择 value-linking、ORDER、aggregation、join、projection 等 repair skill；每个 repair skill 只修改相关步骤，生成候选 patch；Executor 执行候选 SQL 并比较结果，筛掉语法错误和执行错误。该机制避免整条 SQL 重写，尽量减少对正确部分的破坏。
 
-评估方式包括：repair success rate、average repair rounds、error localization accuracy、router accuracy、patch minimality、post-repair valid SQL rate、post-repair execution accuracy，以及 SQL+ 层修复与 SQL 层整体重写的对比。当前小规模结果显示，SQL+ 非 gold 单 Refiner 为 4/13，Direct SQL 非 gold Refiner 为 6/14，而 SQL+ Skill Router + Repair Skills v3 在当前 13 条已知失败样例上达到 13/13。该结果只能说明小样例闭环可行，后续需要扩展到更多无报错语义错误和复合错误。
+评估上，本部分设置 SQL 层整体重写、SQL+ 单 Refiner、Schema-Critic-Refiner、Step-wise Critic-Refiner、SQL+ Skill Router + Repair Skills 等对照组。指标包括 repair success rate、average repair rounds、error localization accuracy、router accuracy、patch minimality、unchanged-correct-step rate、SQL executable rate、token cost 和 latency。当前 13 条已知 SQL+ 失败样例中，SQL+ non-gold single Refiner 为 4/13，Direct SQL non-gold Refiner 为 6/14，SQL+ Skill Router + Repair Skills v3 为 13/13。该结果只能说明当前小规模已知失败集上的机制可行，后续需要扩展到无报错语义错误、复合错误和公开子集。
 
 ## 研究内容四：多系统对比、消融实验与公开子集迁移评估
 
-本部分重点解决“如何证明 SQL+ 和多智能体机制确实有贡献”的问题。技术难点在于，LLM 本身能力、prompt 设计、schema 信息、执行反馈和 repair skill 都可能影响结果。如果只展示一个完整系统，很难说明改进来自 SQL+，还是来自模型或提示词。
+本部分建立完整实验体系，用于回答 SQL+ 和多智能体修复机制是否真正有效。技术难点在于公平比较。SQL+ 引入了中间表示和转换器，可能带来额外 token、转换时间和错误传播；多智能体增加了调用成本和延迟。如果只报告最终准确率，无法说明收益来自 SQL+、Agent、工具还是 repair skill。
 
-拟设置多组对比方法：Direct NL2SQL、NL2SQL+ 单 Agent、DAIL-SQL 风格 few-shot baseline、DIN-SQL 风格分解 baseline、MAC-SQL 风格标准 SQL 多智能体、Multi-agent NL2SQL+、Multi-agent NL2SQL+ + Feedback、SQL 层整体修复 baseline，以及 SQL+ Skill Router + Repair Skills。消融实验包括去掉 SQL+、去掉多智能体、去掉 Schema/value lookup、去掉 Critic Agent、去掉 Skill Router、只做 SQL 层修复、只做单一 repair skill、关闭执行验证等。
+拟采用的对比方法包括：Direct NL2SQL、NL2SQL+ single agent、SemQL-style IR generation、NatSQL-style IR generation、Pipe-style linear query generation、standard SQL multi-agent、SQL layer global repair、multi-agent NL2SQL+ without feedback、multi-agent NL2SQL+ with feedback、SQL+ Skill Router + Repair Skills。消融实验包括去掉 SQL+、去掉多智能体、去掉 Schema/value lookup、去掉 Critic Agent、去掉 Skill Router、只做 SQL 层修复、关闭执行验证、替换不同 SQL+ 语法设计等。
 
-评估数据分三层推进。第一层是自建企业订单分析样例，用于控制变量和错误类型分析。第二层是 Spider 小规模受支持子集，用于验证 SQL+ 表达和转换机制在公开 benchmark 上的初步迁移能力。当前 Spider smoke test 只覆盖 `concert_singer` 数据库中的 20 条受支持查询，结果为 20/20，不能表述为完整 Spider 成绩。第三层后续扩展到 BIRD 子集和达梦 SQL 方言样例，用来检验真实 schema、外部知识和方言差异带来的影响。
+实验数据分三层推进。第一层是自建订单分析数据集，用于控制变量、构造错误类型和快速迭代。第二层是 Spider 小规模受支持子集，用于验证 SQL+ 表达与转换机制在公开 benchmark 上的初步迁移能力。当前已完成 `concert_singer` 数据库中 20 条受支持查询的 smoke test，SQL+ 有效、SQL 可执行和执行一致均为 20/20，但这不是完整 Spider 成绩。第三层后续扩展到 BIRD 子集和达梦 SQL 方言样例，用于检验真实 schema、外部知识和方言差异的影响。
+
+评估报告将按“结果质量、表达复杂度、修复能力、成本效率、可解释性”五类组织。结果质量关注 execution accuracy 和 valid rate；表达复杂度关注 token 长度、嵌套深度、跨子句依赖和 join 路径长度；修复能力关注定位准确率、路由准确率、修复成功率和 patch 范围；成本效率关注 token cost、latency、IR parse time 和 conversion time；可解释性通过步骤级错误定位、人类定位错误时间或人工评分进行补充评估。
 
 # 研究方案与可行性分析
 
