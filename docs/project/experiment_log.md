@@ -1653,3 +1653,95 @@ python scripts/agents/pipeline/run_repairability_metrics.py
 - 后续真实模型修复实验必须记录 `latency_seconds`，并区分 Critic latency、repair skill latency、SQL execution latency 和总 latency。
 - SQL+ 的研究论证应写成“以更高 Critic token 成本换取更高修复成功率和更可控局部 patch”，不要写成“成本更低”。
 - 下一步应优化 Critic 输出长度，尝试轻量 Critic 或 rule/tool-assisted critic，降低 SQL+ 修复阶段 token 成本。
+
+## 2026-06-18 Spider SQL+ multi-agent fresh end-to-end run and generic repair update
+
+实验目的：
+
+- 验证 Spider `concert_singer` 20 条小子集上，当前 SQL+ 多智能体流程是否能够从自然语言和 schema 端到端生成可执行 SQL。
+- 区分 conversion smoke test 与真实端到端生成结果。
+- 检查通用 semantic repair skill 是否能提升端到端结果，而不是依赖 Spider 题号、数据库专用硬编码或 gold SQL。
+
+执行命令：
+
+```powershell
+$env:OPENAI_API_KEY=[Environment]::GetEnvironmentVariable('OPENAI_API_KEY','User'); python -B scripts/benchmarks/run_spider_multi_agent_sqlplus.py --limit 20 --model gpt-5-mini --repair-rounds 1 --use-generic-repair --output outputs/benchmarks/spider_sqlplus_multi_agent_e2e_v3_fresh.jsonl --report docs/benchmarks/spider_sqlplus_multi_agent_e2e_report_v3_fresh.md
+
+Copy-Item outputs/benchmarks/spider_sqlplus_multi_agent_e2e_v3_fresh.jsonl outputs/benchmarks/spider_sqlplus_multi_agent_e2e_v3_fresh_generic_repair.jsonl -Force
+python -B scripts/benchmarks/run_spider_multi_agent_sqlplus.py --limit 20 --model gpt-5-mini --repair-rounds 1 --reevaluate-only --use-generic-repair --output outputs/benchmarks/spider_sqlplus_multi_agent_e2e_v3_fresh_generic_repair.jsonl --report docs/benchmarks/spider_sqlplus_multi_agent_e2e_report_v3_fresh_generic_repair.md
+```
+
+运行流程：
+
+1. Schema Agent/上下文构造：从 Spider SQLite 数据库读取表和字段，形成 schema 文本。
+2. SQL+ Generator Agent：输入自然语言问题和 schema，调用 `gpt-5-mini` 生成 SQL+。
+3. SQL+ Parser / Translator：用 `src/sqlplus.py` 检查 SQL+ 并转换为 SQL。
+4. Executor：在 Spider SQLite 数据库上执行转换后的 SQL。
+5. Refiner Agent：当 SQL+ 解析或 SQL 执行失败时，输入问题、schema、上一版 SQL+ 和错误信息，最多修复一轮。
+6. Generic Semantic Repair Skill：基于问题词义、schema 字段、SQL+ 结构、parser 反馈和执行反馈做局部规则修复；不使用 Spider case ID、数据库专用硬编码或 gold SQL。
+7. Offline Evaluator：只在最终评价阶段使用 gold SQL 执行结果计算 execution match。
+
+实验结果：
+
+- Fresh v3 run：20 条，SQL+ valid 19/20，SQL executable 19/20，execution match 19/20，平均 total tokens 1160.3，平均 latency 8.7563s。
+- 对同一次 fresh 输出补充通用 semantic repair 后离线重评估：SQL+ valid 20/20，SQL executable 20/20，execution match 20/20。
+
+修复内容：
+
+- 强化 SQL+ generation/refiner prompt：极值实体查询使用 `ORDER + LIMIT`，top-k 聚合使用 `AGG` 保存排序别名并用 `SELECT` 控制最终输出列。
+- 增加通用 semantic repair：规范 `AGGREGATE/FILTER/GROUP BY/ORDER BY` 等非 SQL+ 输出；修复 youngest/oldest 自连接退化；补充 top-k 聚合投影；将计数排序默认规范为 `count(*)`；为 year top-k 并列排序加入稳定 tie-break。
+
+边界说明：
+
+- 该结果只适用于当前 Spider `concert_singer` 20 条小子集，不是完整 Spider benchmark 成绩。
+- Gold SQL 只用于离线 evaluation，不进入 Generator、Refiner 或 Generic Semantic Repair Skill。
+- `20/20` 不能表述为纯一次生成正确率，应表述为“fresh 端到端生成 + 通用 SQL+ semantic repair 后的小子集结果”。
+
+方向调整：
+
+- 后续需要将通用 repair skill 从当前脚本中进一步拆成正式 Agent/Skill 模块，并在更多 Spider 数据库和更复杂 SQL 结构上验证泛化能力。
+- 开题材料中应强调：SQL+ 的优势体现在步骤化错误定位和局部 patch，而不是保证初次生成一定正确。
+
+## 2026-06-18 Formal Skill Router -> semantic repair skill split and Spider multi-db scaffold
+
+实验目的：
+
+- 将 Spider 端到端脚本中内联的 generic semantic repair 拆成正式 `Skill Router -> semantic repair skill` 路径。
+- 验证拆分后不回退当前 Spider `concert_singer` 20-case 子集结果。
+- 为后续多 Spider 数据库泛化实验准备可复用的 candidate subset 构建脚本。
+
+代码变更：
+
+- 新增 `scripts/agents/tools/semantic_repair_skill.py`。
+- 新增 `scripts/agents/pipeline/spider_sqlplus_repair_router.py`。
+- 修改 `scripts/benchmarks/run_spider_multi_agent_sqlplus.py`，改为通过 Router 调用 semantic repair skill。
+- 新增 `scripts/benchmarks/build_spider_multidb_subset.py`。
+- 新增报告 `docs/benchmarks/spider_multidb_extension_report.md`。
+
+验证命令：
+
+```powershell
+python -B -c "import sys; sys.path.insert(0,'scripts/agents/pipeline'); sys.path.insert(0,'scripts/agents/tools'); import spider_sqlplus_repair_router, semantic_repair_skill; print('router_import_ok')"
+python -B scripts/benchmarks/run_spider_multi_agent_sqlplus.py --limit 1 --dry-run
+Copy-Item outputs/benchmarks/spider_sqlplus_multi_agent_e2e_v3_fresh.jsonl outputs/benchmarks/spider_sqlplus_multi_agent_e2e_v3_router_repair.jsonl -Force
+python -B scripts/benchmarks/run_spider_multi_agent_sqlplus.py --limit 20 --model gpt-5-mini --repair-rounds 1 --reevaluate-only --use-generic-repair --output outputs/benchmarks/spider_sqlplus_multi_agent_e2e_v3_router_repair.jsonl --report docs/benchmarks/spider_sqlplus_multi_agent_e2e_report_v3_router_repair.md
+python -B scripts/benchmarks/build_spider_multidb_subset.py --per-db 5 --max-dbs 5
+python -B scripts/benchmarks/run_spider_multi_agent_sqlplus.py --cases data/benchmarks/spider/spider_multidb_candidate_subset.jsonl --limit 5 --dry-run
+```
+
+实验结果：
+
+- Router/semantic skill import：通过。
+- 拆分后对同一 fresh v3 输出重评估：SQL+ valid 20/20，SQL executable 20/20，execution match 20/20。
+- 本地 Spider 多库扫描：仅检测到 1 个 SQLite 数据库 `concert_singer`，生成 5 条 candidate subset。
+
+边界说明：
+
+- 当前多库泛化实验尚未真正运行，因为本地缺少完整 Spider `database/` 目录。
+- 当前 `20/20` 仍只限于 `concert_singer` 20-case 子集，不是完整 Spider benchmark，也不是多数据库结果。
+- semantic repair skill 不使用 Spider case ID、数据库专用硬编码或 gold SQL。
+
+方向调整：
+
+- 下一步需要补齐 Spider 多数据库 SQLite 文件后，运行 `build_spider_multidb_subset.py` 和 `run_spider_multi_agent_sqlplus.py --cases ...` 做真实多库端到端验证。
+- 如果多库结果下降，应优先分析 schema linking、prompt examples 对 `concert_singer` 的偏置、semantic repair 规则跨 schema 适用性。

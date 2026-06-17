@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="760" viewBox="0 0 1280 760">
+<defs>
+<marker id="arrow-blue" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+<path d="M2,2 L10,6 L2,10 Z" fill="#1F4E79" />
+</marker>
+<marker id="arrow-orange" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+<path d="M2,2 L10,6 L2,10 Z" fill="#C65911" />
+</marker>
+<style><![CDATA[
+text { font-family: 'Microsoft YaHei', 'Noto Sans CJK SC', Arial, sans-serif; }
+.title { font-size: 34px; font-weight: 700; fill: #1F4E79; }
+.lane { font-size: 17px; font-weight: 700; fill: #666666; }
+.box-text { font-size: 17px; fill: #2B2B2B; font-weight: 600; }
+.small { font-size: 15px; fill: #2B2B2B; }
+.note { font-size: 17px; fill: #C65911; }
+]]></style>
+</defs>
+<rect x="0" y="0" width="1280" height="760" fill="#FFFFFF"/>
+<text x="60" y="58" text-anchor="start" class="title">SQL+ 多智能体生成与反馈修正闭环</text>
+<text x="80" y="115" text-anchor="start" class="lane">生成链路</text>
+<text x="80" y="305" text-anchor="start" class="lane">执行与诊断</text>
+<text x="80" y="500" text-anchor="start" class="lane">局部修复回路</text>
+<rect x="90" y="140" width="185" height="82" rx="16" fill="#DDEBF7" stroke="#1F4E79" stroke-width="2"/>
+<text x="182" y="168" text-anchor="middle" class="box-text">
+<tspan x="182" dy="0">用户问题</tspan>
+<tspan x="182" dy="24">Natural language</tspan>
+</text>
+<rect x="320" y="140" width="185" height="82" rx="16" fill="#DDEBF7" stroke="#1F4E79" stroke-width="2"/>
+<text x="412" y="168" text-anchor="middle" class="box-text">
+<tspan x="412" dy="0">Intent Agent</tspan>
+<tspan x="412" dy="24">查询意图</tspan>
+</text>
+<rect x="550" y="140" width="185" height="82" rx="16" fill="#DDEBF7" stroke="#1F4E79" stroke-width="2"/>
+<text x="642" y="168" text-anchor="middle" class="box-text">
+<tspan x="642" dy="0">Schema Agent</tspan>
+<tspan x="642" dy="24">表字段关系</tspan>
+</text>
+<rect x="780" y="140" width="185" height="82" rx="16" fill="#DDEBF7" stroke="#1F4E79" stroke-width="2"/>
+<text x="872" y="168" text-anchor="middle" class="box-text">
+<tspan x="872" dy="0">Planner Agent</tspan>
+<tspan x="872" dy="24">SQL+ 步骤</tspan>
+</text>
+<rect x="1010" y="140" width="185" height="82" rx="16" fill="#DDEBF7" stroke="#1F4E79" stroke-width="2"/>
+<text x="1102" y="168" text-anchor="middle" class="box-text">
+<tspan x="1102" dy="0">SQL+ Generator</tspan>
+<tspan x="1102" dy="24">SQL+ 表达</tspan>
+</text>
+<line x1="280" y1="181" x2="315" y2="181" stroke="#1F4E79" stroke-width="3" marker-end="url(#arrow-blue)"/>
+<line x1="510" y1="181" x2="545" y2="181" stroke="#1F4E79" stroke-width="3" marker-end="url(#arrow-blue)"/>
+<line x1="740" y1="181" x2="775" y2="181" stroke="#1F4E79" stroke-width="3" marker-end="url(#arrow-blue)"/>
+<line x1="970" y1="181" x2="1005" y2="181" stroke="#1F4E79" stroke-width="3" marker-end="url(#arrow-blue)"/>
+<rect x="1010" y="335" width="185" height="82" rx="16" fill="#E2EFDA" stroke="#548235" stroke-width="2"/>
+<text x="1102" y="363" text-anchor="middle" class="box-text">
+<tspan x="1102" dy="0">Translator</tspan>
+<tspan x="1102" dy="24">SQL+ → SQL</tspan>
+</text>
+<rect x="780" y="335" width="185" height="82" rx="16" fill="#E2EFDA" stroke="#548235" stroke-width="2"/>
+<text x="872" y="363" text-anchor="middle" class="box-text">
+<tspan x="872" dy="0">Executor</tspan>
+<tspan x="872" dy="24">执行 SQL</tspan>
+</text>
+<rect x="550" y="335" width="185" height="82" rx="16" fill="#FBE5D6" stroke="#C65911" stroke-width="2"/>
+<text x="642" y="363" text-anchor="middle" class="box-text">
+<tspan x="642" dy="0">Critic Agent</tspan>
+<tspan x="642" dy="24">定位错误步骤</tspan>
+</text>
+<rect x="320" y="335" width="185" height="82" rx="16" fill="#FBE5D6" stroke="#C65911" stroke-width="2"/>
+<text x="412" y="363" text-anchor="middle" class="box-text">
+<tspan x="412" dy="0">Skill Router</tspan>
+<tspan x="412" dy="24">选择修复技能</tspan>
+</text>
+<line x1="1102" y1="226" x2="1102" y2="328" stroke="#C65911" stroke-width="3" marker-end="url(#arrow-orange)"/>
+<line x1="1005" y1="376" x2="970" y2="376" stroke="#1F4E79" stroke-width="3" marker-end="url(#arrow-blue)"/>
+<line x1="775" y1="376" x2="740" y2="376" stroke="#C65911" stroke-width="3" marker-end="url(#arrow-orange)"/>
+<line x1="545" y1="376" x2="510" y2="376" stroke="#C65911" stroke-width="3" marker-end="url(#arrow-orange)"/>
+<rect x="320" y="530" width="210" height="82" rx="16" fill="#FBE5D6" stroke="#C65911" stroke-width="2"/>
+<text x="425" y="558" text-anchor="middle" class="box-text">
+<tspan x="425" dy="0">Repair Skill</tspan>
+<tspan x="425" dy="24">局部修改 SQL+ 步骤</tspan>
+</text>
+<rect x="610" y="530" width="210" height="82" rx="16" fill="#FBE5D6" stroke="#C65911" stroke-width="2"/>
+<text x="715" y="558" text-anchor="middle" class="box-text">
+<tspan x="715" dy="0">SQL+ Patch</tspan>
+<tspan x="715" dy="24">更新中间表示</tspan>
+</text>
+<line x1="412" y1="422" x2="412" y2="523" stroke="#C65911" stroke-width="3" marker-end="url(#arrow-orange)"/>
+<line x1="535" y1="571" x2="605" y2="571" stroke="#C65911" stroke-width="3" marker-end="url(#arrow-orange)"/>
+<path d="M 825 571 C 1100 570, 1230 505, 1110 420" fill="none" stroke="#C65911" stroke-width="3" marker-end="url(#arrow-orange)"/>
+<text x="1065" y="520" text-anchor="middle" class="small">回到 Translator</text>
+<text x="1065" y="543" text-anchor="middle" class="small">重新转换与执行</text>
+<rect x="780" y="645" width="230" height="62" rx="16" fill="#E2EFDA" stroke="#548235" stroke-width="2"/>
+<text x="895" y="676" text-anchor="middle" class="box-text">
+<tspan x="895" dy="0">最终 SQL / 查询结果</tspan>
+</text>
+<line x1="873" y1="421" x2="873" y2="638" stroke="#548235" stroke-width="3" marker-end="url(#arrow-blue)"/>
+<text x="1030" y="690" text-anchor="start" class="small">执行通过</text>
+<text x="60" y="735" text-anchor="start" class="note">关键点：失败反馈进入 Critic 和 Router，Repair Skill 只修改 SQL+ 局部步骤，patch 后回到 Translator 和 Executor 重新验证。</text>
+</svg>

@@ -14,6 +14,7 @@ secrets.*
 .DS_Store
 Thumbs.db
 .vscode/
+~$*
 
 # Downloaded external repos or temporary raw mirrors
 data/benchmarks/spider_raw/

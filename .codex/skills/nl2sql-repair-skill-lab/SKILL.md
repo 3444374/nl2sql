@@ -24,7 +24,9 @@ Existing scripts:
 - `scripts/agents/tools/run_aggregation_repair_skill.py`
 - `scripts/agents/tools/run_join_repair_skill.py`
 - `scripts/agents/tools/run_projection_repair_skill.py`
+- `scripts/agents/tools/semantic_repair_skill.py`
 - `scripts/agents/pipeline/run_skill_router_experiment.py`
+- `scripts/agents/pipeline/spider_sqlplus_repair_router.py`
 
 Current key result:
 
@@ -35,7 +37,7 @@ SQL+ Skill Router + Repair Skills v3: 13/13
 Remaining known failure:
 
 ```text
-None in the current 13-case SQL+ failure set. Next priority is broader semantic mismatch coverage.
+None in the current 13-case SQL+ failure set. Spider `concert_singer` 20-case subset reaches 20/20 after fresh e2e generation plus Skill Router -> semantic repair skill re-evaluation. Next priority is multi-database Spider coverage.
 ```
 
 ## Workflow

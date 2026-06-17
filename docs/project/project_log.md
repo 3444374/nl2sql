@@ -904,3 +904,230 @@ PY
 
 说明：
 - 本次是项目同步和材料沉淀，不新增实验结果，因此不写入 `docs/project/experiment_log.md`。
+
+## 2026-06-18 开题 PPT 每页讲解备注写入
+
+目的：
+- 按用户要求，为增强版开题 PPT 的每一页补充汇报讲解备注，方便后续试讲和正式开题答辩。
+- 将备注写入 PPTX 的 notes 区，而不是另建纯文本讲稿，保证打开 PPT 时可直接查看每页讲解提示。
+
+涉及文件：
+- `docs/opening/opening_ppt_template_version_v2.pptx`
+- `scripts/opening/add_opening_ppt_notes.py`
+- `docs/opening/README.md`
+- `docs/project/project_log.md`
+
+处理内容：
+- 新增 `add_opening_ppt_notes.py`，为 28 页增强版 PPT 写入逐页讲解稿。
+- 备注内容重点覆盖课题定位、传统 Text-to-SQL 问题、SQL+ 与 SemQL/NatSQL/Pipe-style 的区别、多智能体闭环、实验目的、实验条件、指标、结果边界和后续计划。
+- 继续保持开题阶段结果边界：不把 controlled proxy 当作完整系统复现，不把 Spider smoke test 当作完整 Spider benchmark，不把已知失败集 13/13 夸大为大规模通用结论。
+
+验证：
+```powershell
+python scripts/opening/add_opening_ppt_notes.py
+python - <<'PY'
+from pptx import Presentation
+prs = Presentation('docs/opening/opening_ppt_template_version_v2.pptx')
+missing = [i for i, s in enumerate(prs.slides, 1) if not s.notes_slide.notes_text_frame.text.strip()]
+print(missing)
+PY
+```
+
+结果：
+- 28 页 PPT 均已写入备注，无空备注页。
+- 本次属于开题展示材料维护，没有新增实验运行或指标变化，因此不更新 `docs/project/experiment_log.md`。
+
+## 2026-06-18 Canva 开题 PPT 视觉增强候选生成
+
+目的：
+- 根据用户反馈，尝试使用 Canva 插件生成开题 PPT 的视觉增强候选，用于改善当前 PPT 中部分页面偏文字罗列、图示不够美观的问题。
+- 保留本地 PPT 作为学校模板和可复现主版本，Canva 作为视觉设计增强与版式参考。
+
+处理内容：
+- 使用 Canva presentation generation 生成 4 个候选设计。
+- 生成 prompt 明确要求：中文学术开题风格、深蓝/橙/灰/白配色、避免泛 AI 紫色风格、强化流程图、架构图、实验卡片、指标表和风险矩阵。
+- 保持实验结果边界：controlled proxy 不当作完整系统复现，Spider smoke test 不当作完整 Spider benchmark，13/13 仅限当前已知失败集。
+
+候选设计：
+- Candidate 1: `https://www.canva.com/d/7lMYUPE6cTiVWYs`
+- Candidate 2: `https://www.canva.com/d/wfwZ6bnyOuMzjtu`
+- Candidate 3: `https://www.canva.com/d/I6u6zyLf-GVObem`
+- Candidate 4: `https://www.canva.com/d/MIY7iMPiN-vwm7Q`
+
+说明：
+- 当前只生成候选，没有创建最终可编辑 Canva 设计。
+- 若用户选定某个 candidate，再调用 Canva create-design-from-candidate 生成正式可编辑设计。
+- 本次属于展示材料设计探索，没有新增实验运行或指标变化，因此不更新 `docs/project/experiment_log.md`。
+
+## 2026-06-18 开题 PPT 局部视觉优化
+
+目的：
+- 根据用户反馈，不重新生成整套 Canva PPT，而是参考 Canva 式版式思路，局部优化本地开题 PPT 中图示不够美观和纯文字罗列的问题。
+- 保留本地 PPT 的学校模板、页数、讲解备注和实验指标，避免外部设计工具改写或夸大研究结论。
+
+涉及文件：
+- `docs/opening/opening_ppt_template_version_v3.pptx`
+- `scripts/opening/refine_opening_ppt_visuals.py`
+- `docs/opening/README.md`
+- `docs/project/project_log.md`
+
+处理内容：
+- 在 `opening_ppt_template_version_v2.pptx` 基础上生成 v3，不覆盖 v2。
+- 重点优化第 2、4、5、6、9、23、24、25、26、27、28 页。
+- 将纯文字页重排为路线图、挑战卡片、研究现状演进图、SemQL/NatSQL/Pipe/SQL+ 对比矩阵、研究问题卡片、综合判断双栏、后续计划时间线、创新点三柱、风险应对矩阵、总结卡片和参考文献分组图。
+- 优化脚本会删除原正文形状后再重排，避免仅用白色遮罩覆盖旧文字，方便后续手工编辑。
+
+验证：
+```powershell
+python scripts/opening/refine_opening_ppt_visuals.py
+$env:PYTHONIOENCODING='utf-8'; python - <<'PY'
+from pptx import Presentation
+prs = Presentation('docs/opening/opening_ppt_template_version_v3.pptx')
+print(len(prs.slides))
+print([i for i, s in enumerate(prs.slides, 1) if not s.notes_slide.notes_text_frame.text.strip()])
+PY
+```
+
+结果：
+- v3 PPT 共 28 页。
+- 28 页备注均保留，无空备注页。
+- 本次属于开题展示材料视觉优化，没有新增实验运行或指标变化，因此不更新 `docs/project/experiment_log.md`。
+
+## 2026-06-18 重画 SQL+ 多智能体闭环 SVG
+
+目的：
+- 根据用户反馈，修正原 SQL+ 多智能体闭环图中修复循环位置不清晰的问题。
+- 原图将 `Skill Router`、`Repair Skill`、`SQL+ Patch` 和重新验证放在断开的三行，容易误解为一次性流水线，而不是反馈闭环。
+
+涉及文件：
+- `docs/opening/figures/sqlplus_multi_agent_loop_v2.svg`
+- `scripts/opening/generate_sqlplus_loop_v2_svg.py`
+- `docs/opening/README.md`
+- `docs/project/project_log.md`
+
+处理内容：
+- 新增专用脚本生成新版闭环图，不影响其它 SVG 图。
+- 新版图将主链路和修复回路分成三层：生成链路、执行与诊断、局部修复回路。
+- 明确绘制 `Repair Skill -> SQL+ Patch -> Translator -> Executor` 的回路，说明 patch 后回到 SQL+ 转 SQL 和重新执行环节。
+- 图下注释强调：失败反馈进入 Critic 和 Router，Repair Skill 只修改 SQL+ 局部步骤，patch 后重新转换与执行。
+
+验证：
+```powershell
+python scripts/opening/generate_sqlplus_loop_v2_svg.py
+python - <<'PY'
+from pathlib import Path
+import ast, xml.etree.ElementTree as ET
+ast.parse(Path('scripts/opening/generate_sqlplus_loop_v2_svg.py').read_text(encoding='utf-8'))
+ET.parse('docs/opening/figures/sqlplus_multi_agent_loop_v2.svg')
+PY
+```
+
+结果：
+- 新版 SVG 已生成并通过 XML 解析校验。
+- 本次属于开题图示资源修正，没有新增实验运行或指标变化，因此不更新 `docs/project/experiment_log.md`。
+
+## 2026-06-18 替换 SQL+ 闭环图并扩充 PPT 备注
+
+目的：
+- 根据用户反馈，修正 PPT 中 SQL+ 多智能体闭环图的循环位置，使 `Repair Skill -> SQL+ Patch -> Translator -> Executor` 的回路更清晰。
+- 扩充 PPT 备注，将每页备注调整为“汇报讲稿 + 答辩备注”结构，实验页补充数据集、实验条件、指标来源和结果边界。
+
+涉及文件：
+- `docs/opening/opening_ppt_template_version_v2.pptx`
+- `docs/opening/opening_ppt_template_version_v3.pptx`
+- `docs/opening/figures/sqlplus_multi_agent_loop_v2.svg`
+- `scripts/opening/generate_sqlplus_loop_v2_svg.py`
+- `scripts/opening/refine_opening_ppt_visuals.py`
+- `scripts/opening/add_opening_ppt_detailed_notes.py`
+- `docs/opening/README.md`
+- `docs/project/project_log.md`
+
+处理内容：
+- 新增并生成 `sqlplus_multi_agent_loop_v2.svg`，明确主生成链路、执行诊断链路和局部修复回路。
+- 更新 v3 PPT 第 8 页，用 native PPT shape 重新绘制闭环图，避免旧图中修复循环位置不清晰。
+- 重新生成 v3 PPT，并向 v2 和 v3 同步写入详细备注。
+- 实验页备注补充：自建订单分析数据集 30 条样例、SQL+ 已知失败集 13 条、Direct SQL 失败样例 14 条、Spider dev concert_singer 20 条受支持样例，以及 valid rate、execution match、token、latency、localization accuracy、patch minimality 等指标来源。
+- 备注中继续保留边界说明：controlled proxy 不代表完整 SemQL/NatSQL 复现，Spider smoke test 不代表完整 Spider benchmark，Skill Router 13/13 仅限当前已知失败集。
+
+验证：
+```powershell
+python scripts/opening/generate_sqlplus_loop_v2_svg.py
+python scripts/opening/refine_opening_ppt_visuals.py
+python scripts/opening/add_opening_ppt_detailed_notes.py
+$env:PYTHONIOENCODING='utf-8'; python - <<'PY'
+from pptx import Presentation
+prs = Presentation('docs/opening/opening_ppt_template_version_v3.pptx')
+print(len(prs.slides))
+for i in [1, 12, 20]:
+    note = prs.slides[i-1].notes_slide.notes_text_frame.text.strip()
+    print(i, note[-200:])
+PY
+```
+
+结果：
+- v3 PPT 仍为 28 页。
+- 第 8 页闭环图已改为新版逻辑。
+- v2 和 v3 的备注已包含汇报讲稿与答辩备注，实验页备注已补充指标计算说明。
+- 本次属于开题展示材料修正，没有新增实验运行或指标变化，因此不更新 `docs/project/experiment_log.md`。
+
+## 2026-06-18 ??? PPT ? 8 ? SQL+ ???
+
+???
+- ????????????? PPT????? `docs/opening/opening_ppt_template_version_v3.pptx` ???? 8 ????
+- ?? SVG ????? PPT ????`python-pptx` ????????? SVG????????? PPT ??????????????????
+
+?????
+- ?? `scripts/opening/refine_opening_ppt_visuals.py` ?? 8 ?????? PowerShell ???????????
+- ????? v3 PPT??? `slide_8(prs.slides[7])` ??? 8 ??????????? PPT ?????
+- ? 8 ????????? `SQL+ Patch -> Translator -> Executor`????????? Critic/Router?Repair Skill ??? SQL+ ?????patch ?????????
+
+???
+```powershell
+python - <<'PY'
+from pptx import Presentation
+prs = Presentation('docs/opening/opening_ppt_template_version_v3.pptx')
+print(len(prs.slides))
+print([i for i,s in enumerate(prs.slides,1) if not s.notes_slide.notes_text_frame.text.strip()])
+PY
+```
+
+???
+- `opening_ppt_template_version_v3.pptx` ?? 28 ??
+- ???????
+- ? 8 ????? `patch ??? Translator / Executor` ???????????
+- ??????????????????????????????????? `docs/project/experiment_log.md`?
+
+
+## 2026-06-18 PPT experiment-note method clarification
+
+Purpose:
+- Update only experiment-related PPT notes, not non-experiment slides.
+- Replace file-name-only source descriptions with oral-defense-ready explanations of experiment method, sample selection, proxy meaning, metric calculation, and metric interpretation.
+
+Scope:
+- Updated notes for slides 11-22 in both `docs/opening/opening_ppt_template_version_v2.pptx` and `docs/opening/opening_ppt_template_version_v3.pptx`.
+- Added reusable note sources under `docs/opening/notes/`.
+- Added `scripts/opening/update_experiment_notes.py` to update only experiment notes without regenerating or redesigning the whole PPT.
+
+Content changes:
+- Explained `proxy` as a controlled proxy representation, not a full reproduction of SemQL, NatSQL, or GoogleSQL Pipe Syntax.
+- Explained how samples are selected: 30 self-built order-analysis cases, SQL+ known-failure cases, Direct SQL failure cases, and a 20-case Spider `concert_singer` smoke-test subset.
+- Explained how the five IR forms are constructed: Standard SQL from gold SQL, SQL+ from gold SQL+, SemQL-style proxy from SQL+ AST-like tree form, NatSQL-style proxy from SQL-like natural-order form, and Pipe-style proxy from pipeline-style steps.
+- Explained how token count, step/clause count, nesting depth, alias dependency, cross-clause reference, valid rate, execution match, repair success, localization accuracy, patch minimality, repair rounds, token cost, and latency are measured or interpreted.
+
+Validation:
+```powershell
+python scripts/opening/update_experiment_notes.py
+```
+Spot checks confirmed the updated notes are present in slides 12, 13, 14, 18, 20, and 22 of v3.
+
+Boundary:
+- This was documentation/PPT maintenance only.
+- No new experiment was run and no metric changed, so `docs/project/experiment_log.md` was not updated.
+
+## 2026-06-18 Repair skill workflow update
+
+- Added formal Spider benchmark repair route: `scripts/agents/pipeline/spider_sqlplus_repair_router.py` -> `scripts/agents/tools/semantic_repair_skill.py`.
+- Updated `AGENTS.md` and `.codex/skills/nl2sql-repair-skill-lab/SKILL.md` to include the new semantic repair skill and Spider multi-db scaffold commands.
+- Added `scripts/benchmarks/build_spider_multidb_subset.py` for future cross-database Spider evaluation once local SQLite databases are available.
+- Process boundary: do not claim multi-database accuracy until the full Spider `database/` directory is present and evaluated.

@@ -283,3 +283,42 @@
 - SQL+ Critic Agent 的平均 repair token 明显高于 Direct SQL 单 Refiner，因此后续必须继续优化 Critic prompt、减少不必要诊断输出，或设计轻量级 rule/tool critic。
 - 当前 Direct SQL 和 SQL+ Critic 的历史 API 输出没有记录真实 latency。已给相关 OpenAI Critic/Refiner 脚本补充 `latency_seconds` 字段，后续真实模型修复实验需要重新记录完整端到端 latency。
 - SQL+ 本地 router/repair skill latency 很低，但该数值不包含 Critic API latency，不能单独作为 SQL+ 完整修复延迟优势来表述。
+
+## 2026-06-18 Spider 端到端生成与通用 repair 方向更新
+
+已在 Spider `concert_singer` 20 条小子集上完成 fresh 端到端 SQL+ 多智能体实验：
+
+- Fresh v3 run：SQL+ valid 19/20，SQL executable 19/20，execution match 19/20。
+- 同一次 fresh 输出经通用 semantic repair skill 后：SQL+ valid 20/20，SQL executable 20/20，execution match 20/20。
+
+该结果说明：
+
+- SQL+ 端到端生成在小规模公开子集上已经可跑通，但直接生成仍会出现格式漂移、伪管道、聚合投影和 top-k 并列排序问题。
+- 通用 semantic repair skill 可以利用问题词义、schema 字段、SQL+ 步骤结构和执行/parser 反馈做局部修复，不需要 gold SQL 或题号硬编码。
+- 后续研究重点应从单一 `concert_singer` 小子集扩展到多个 Spider 数据库，验证这些通用 repair 规则是否具备跨 schema 泛化能力。
+
+下一步优先级：
+
+1. 将当前脚本内的 generic semantic repair 拆分为正式 `Skill Router -> semantic repair skill` 模块。
+2. 扩展 Spider 小子集到多数据库、多结构查询，观察 SQL+ valid、SQL executable、execution match 和 repair success 是否稳定。
+3. 继续记录 token、latency 和 repair rounds，避免只报告 accuracy。
+4. 开题材料中将该结果表述为“小规模公开子集端到端可行性验证”，不表述为完整 benchmark 成绩。
+
+## 2026-06-18 Router/Skill 拆分与 Spider 多库实验状态
+
+已完成：
+
+- 将 Spider 端到端脚本中的 generic semantic repair 拆为正式 `Skill Router -> semantic repair skill` 路径。
+- 拆分后对 `concert_singer` 20-case fresh 输出重评估仍保持 SQL+ valid 20/20、SQL executable 20/20、execution match 20/20。
+- 新增 `build_spider_multidb_subset.py`，可按本地已有 Spider SQLite 数据库自动构建多库候选子集。
+
+当前限制：
+
+- 本地 `data/benchmarks/spider/database/` 只有 `concert_singer`，因此还不能做真实多数据库 accuracy 结论。
+
+下一步：
+
+1. 补齐完整 Spider `database/` 目录。
+2. 重新运行 `build_spider_multidb_subset.py --per-db 5 --max-dbs 5`。
+3. 用 `run_spider_multi_agent_sqlplus.py --cases data/benchmarks/spider/spider_multidb_candidate_subset.jsonl` 运行 fresh 多库端到端实验。
+4. 若多库结果下降，优先分析 schema linking、prompt 示例偏置和 semantic repair skill 跨 schema 泛化问题。

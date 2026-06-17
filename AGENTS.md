@@ -100,6 +100,8 @@ python scripts/sqlplus/run_repair_experiment.py
 python scripts/baseline/run_baseline_eval.py
 python scripts/agents/pipeline/run_skill_router_experiment.py
 python scripts/benchmarks/run_spider_smoke.py --limit 20
+python -B scripts/benchmarks/build_spider_multidb_subset.py --per-db 5 --max-dbs 5
+python -B scripts/benchmarks/run_spider_multi_agent_sqlplus.py --limit 20 --model gpt-5-mini --repair-rounds 1 --use-generic-repair
 ```
 
 Use this for OpenAI API commands on Windows after the key is configured at user level:
@@ -117,6 +119,8 @@ $env:OPENAI_API_KEY=[Environment]::GetEnvironmentVariable('OPENAI_API_KEY','User
 - Direct SQL non-gold Refiner: `6/14`.
 - SQL+ Skill Router + Repair Skills v3: `13/13` on the current known-failure set.
 - Spider smoke test: `20/20` on supported Spider dev subset from `concert_singer`.
+- Spider SQL+ fresh e2e on `concert_singer` 20-case subset: `19/20`; same fresh output after `Skill Router -> semantic repair skill`: `20/20`.
+- Local Spider multi-db expansion is scaffolded, but only `concert_singer` SQLite is currently present locally. Do not claim multi-db accuracy until more Spider databases are added.
 
 ## Project Skills
 
