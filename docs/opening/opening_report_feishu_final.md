@@ -136,19 +136,94 @@ SemQL 是面向复杂 Text-to-SQL 的树形语义表示，重点是隐藏标准 
 
 ## 当前初步实验
 
-当前使用自建企业订单分析样例库，包括 customers、products、orders、order_items 四张表，构造 30 条自然语言查询、30 条 SQL+ 标准样例和 15 条错误修正样例，执行环境为 SQLite 内存数据库，模型使用 gpt-5-mini，评估方式为执行生成 SQL 并与标准 SQL 执行结果比较。
+当前实验主要用于开题阶段的可行性论证，不作为完整 benchmark 成绩。实验先在自建企业订单分析样例库上控制变量，随后补充 Spider dev 小规模受支持子集 smoke test，用来验证 SQL+ 表达与转换机制是否具备初步迁移可能。
 
-SQL+ 转换实验结果如下：SQL+ 样例数 30 条，SQL+ 语法通过 30/30，转换 SQL 可执行 30/30，与标准 SQL 执行结果一致 30/30。这个结果至少说明，当前 SQL+ 不是只停留在概念层面的表达设计。它已经能通过 parser 和转换器形成可执行 SQL，并在自建样例库上得到一致执行结果。
+### 实验设置
 
-单 Agent baseline 结果如下：Direct NL2SQL 在 30 条样例上执行结果一致 16/30；NL2SQL+ prompt v1 为 13/30；NL2SQL+ prompt v2 为 17/30。SQL+ prompt v2 略高于 Direct NL2SQL，但差距不大。这个结果也提醒我们，仅把输出格式从 SQL 改成 SQL+ 并不足以解决问题。SQL+ 的价值需要通过错误定位、工具调用和局部修复机制体现出来。
+| 项目 | 当前设置 |
+| --- | --- |
+| 自建数据库 | 企业订单分析样例库 |
+| 数据表 | customers、products、orders、order_items |
+| 自然语言查询 | 30 条 |
+| SQL+ 标准样例 | 30 条 |
+| 错误修正样例 | 15 条规则修正样例；13 条 SQL+ prompt v2 已知失败样例 |
+| 执行环境 | SQLite 内存数据库 |
+| 模型 | gpt-5-mini |
+| 评价方式 | 执行生成 SQL，并与标准 SQL 执行结果比较 |
+| gold 使用边界 | gold SQL 只用于离线评估；非 gold 修复实验不把 gold 差异输入模型 |
 
-SQL+ prompt v2 的 13 条失败样例主要是语义错误，而不是语法错误。错误分布为 filter/value-linking 5 条、ORDER/LIMIT 3 条、aggregation planning 2 条、schema/join planning 2 条、projection mismatch 1 条。这为后续 Critic Agent 错误诊断和 Skill Router 修复提供了实验依据。
+### 核心结果总览
 
-反馈修正对比实验结果如下：SQL+ 诊断辅助 Refiner 在 13 条失败样例上达到 13/13，但该实验使用 gold-derived differences，只能说明“结构化反馈 -> SQL+ 层局部修复 -> 执行验证”的链路可行，不能作为真实自主修复结果。更接近真实场景的非 gold 实验中，SQL+ 单 Refiner v2 为 4/13，Direct SQL 单 Refiner 为 6/14，Schema-Critic-Refiner 初版为 3/13，Step-wise Critic-Refiner 为 3/13。进一步引入 Critic Agent、Skill Router、五类局部 repair skill 和执行验证后，Skill Router v3 在 13 条 SQL+ 失败样例上达到 SQL+ 有效 13/13、SQL 可执行 13/13、修复成功 13/13。
+| 实验问题 | 对比对象或样例 | 关键结果 | 当前能说明什么 | 需要保留的限制 |
+| --- | --- | --- | --- | --- |
+| SQL+ 能否转换为 SQL | 自建 30 条 SQL+ 样例 | SQL+ 有效 30/30；SQL 可执行 30/30；执行一致 30/30 | SQL+ 不是停留在概念层，已经能形成可执行闭环 | 仍是自建小规模订单数据集 |
+| 直接生成 SQL 与生成 SQL+ 哪个更好 | Direct NL2SQL、NL2SQL+ prompt v1/v2 | Direct SQL 16/30；SQL+ v1 13/30；SQL+ v2 17/30 | SQL+ v2 略高，但优势不明显，不能只靠换输出格式解决问题 | 需要引入 schema/value grounding、候选验证和反馈修正 |
+| SQL+ 失败主要错在哪里 | SQL+ prompt v2 的 13 条失败样例 | value-linking 5；ORDER/LIMIT 3；aggregation 2；join/schema 2；projection 1 | 失败主要是语义错误，不是语法错误 | 后续 Critic 不能只看数据库报错，还要看结果语义 |
+| SQL+ 层局部修复是否可行 | 15 条规则修正样例 | 修正后 SQL 可执行 15/15；修复成功 15/15 | 执行反馈可以映射到 SQL+ 局部步骤 | 规则样例较可控，不能代表真实模型修复难度 |
+| 多智能体修复是否有必要 | SQL+ 单 Refiner、Direct SQL Refiner、Skill Router v3 | SQL+ 非 gold 单 Refiner 4/13；Direct SQL 非 gold Refiner 6/14；SQL+ Skill Router v3 13/13 | 单 prompt 修复不稳定，错误定位、路由和局部 skill 拆开后效果更好 | 13/13 来自当前已知失败集，不是大规模泛化结果 |
+| 公开数据集能否初步迁移 | Spider dev `concert_singer` 受支持子集 20 条 | SQL+ 有效 20/20；SQL 可执行 20/20；执行一致 20/20 | 当前 SQL+ 子集可迁移到公开 benchmark 的一部分查询 | 不是完整 Spider benchmark 跑分 |
 
-Repair Skill 分治实验结果如下：value-linking repair skill 3/3，ORDER repair skill 3/3，aggregation repair skill 3/3，join repair skill 3/3，projection repair skill 1/1。这个结果比较符合预期：不同错误类型需要不同的局部修复策略。整体重生成虽然简单，但容易改动无关部分；局部修复的范围更小，也更容易解释。
+### IR 表达复杂度对比
 
-为验证公开 benchmark 子集迁移性，当前还完成了 Spider dev 的小规模受支持子集 smoke test。实验选择 `concert_singer` 数据库中当前 SQL+ 子集可覆盖的 20 条查询，覆盖 count、select、where、order、limit、group、aggregation 和 simple join。结果为 SQL+ 有效 20/20，SQL 可执行 20/20，执行结果一致 20/20。该结果只能作为公开 benchmark 子集迁移可行性证据，不能等同于完整 Spider benchmark 成绩。
+这组实验用于回答“为什么使用 SQL+，而不是直接 SQL、SemQL、NatSQL 或 Pipe-style 表示”。SemQL-style、NatSQL-style 和 Pipe-style 在这里是 controlled proxy，只用于受控比较表达形态，不代表完整复现原系统。
+
+| 表示形式 | 平均 token | 平均步骤/子句 | 平均嵌套深度 | 平均别名依赖 | 平均跨子句引用 | 转换成功 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Standard SQL | 31.5333 | 5.9 | 0.6667 | 2.0333 | 2.3333 | 30/30 |
+| SQL+ | 35.0333 | 6.1333 | 0.6667 | 0.7 | 1.0 | 30/30 |
+| SemQL-style proxy | 50.5667 | 10.7333 | 3.6667 | 0.9 | 1.2 | N/A |
+| NatSQL-style proxy | 31.5 | 5.4333 | 0.9667 | 1.3667 | 1.6667 | N/A |
+| Pipe-style proxy | 40.8 | 6.1333 | 0.6667 | 1.3667 | 1.6667 | N/A |
+
+这组结果说明，SQL+ 的优势不能写成“更短”。当前 SQL+ 平均 token 反而高于 Standard SQL。更准确的表述是：SQL+ 用显式步骤边界换取更低的别名依赖和跨子句引用，使错误更容易定位到具体步骤，也更适合后续局部 repair skill。SQL+ 到 SQL 的平均转换时间约 0.007 ms，当前转换开销很小。
+
+### IR 生成成本与执行效果对比
+
+| 方法 | 表示有效 | SQL 可执行 | 执行一致 | 平均总 token | 平均延迟 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Direct SQL | 30/30 | 30/30 | 12/30 | 599.1667 | 6.5851s |
+| SQL+ | 28/30 | 28/30 | 14/30 | 813.0333 | 9.2197s |
+| NatSQL-style proxy | 30/30 | 30/30 | 13/30 | 740.7667 | 6.2802s |
+| SemQL-style proxy | 30/30 | 25/30 | 12/30 | 1028.9667 | 9.9684s |
+
+从生成阶段看，SQL+ 的执行一致率为 14/30，略高于其他组，但差距不足以支持“显著更准”的结论。同时，SQL+ 平均 token 和延迟高于 Direct SQL 与 NatSQL-style proxy，说明步骤化表达存在生成成本。后续论证重点应放在修复阶段：SQL+ 是否能提高错误定位、缩小 patch 范围，并以更可控的方式完成反馈修正。
+
+### 反馈修正与 repairability 指标
+
+| 方法 | 初始失败样例 | SQL+ 有效 | SQL 可执行 | 修复成功 | 说明 |
+| --- | ---: | ---: | ---: | ---: | --- |
+| SQL+ 诊断辅助 Refiner | 13 | 13/13 | 13/13 | 13/13 | 使用 gold-derived differences，只验证链路可行 |
+| SQL+ 非 gold Refiner v2 | 13 | 13/13 | 12/13 | 4/13 | 只使用执行反馈和粗粒度诊断 |
+| Direct SQL 非 gold Refiner | 14 | - | 14/14 | 6/14 | 直接修标准 SQL |
+| SQL+ Skill Router + Repair Skills v3 | 13 | 13/13 | 13/13 | 13/13 | Critic 路由到五类局部 repair skill |
+
+进一步计算 repairability 指标后，结果如下。
+
+| 方法 | 样例数 | 修复成功 | 定位准确率 | 严格最小 patch 率 | 平均 patch minimality | 平均修复轮数 | 平均 repair token |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Direct SQL Refiner | 14 | 6/14 | 0.8571 | 0.8571 | 0.8571 | 1 | 1609.3571 |
+| SQL+ Critic Router Skills | 13 | 13/13 | 0.7692 | 0.9231 | 0.9744 | 2.2308 | 3813.9231 |
+| Direct SQL Refiner overlap | 9 | 4/9 | 0.8889 | 0.8889 | 0.8889 | 1 | 1583.2222 |
+| SQL+ Critic Router Skills overlap | 9 | 9/9 | 0.7778 | 0.8889 | 0.9630 | 2.3333 | 4001.7778 |
+
+该结果的解释需要谨慎。SQL+ 路线当前的收益主要体现在修复成功率和局部 patch 可控性上；代价是 Critic 与多步骤修复带来更高 token 消耗和更多修复轮数。旧实验输出没有完整记录 API latency，后续需要用带 `latency_seconds` 字段的新脚本重新跑端到端修复延迟。
+
+### Repair Skill 分治结果
+
+| Repair skill | 样例数 | 修复成功 | 覆盖的典型问题 |
+| --- | ---: | ---: | --- |
+| value-linking | 3 | 3/3 | 候选值替换、日期边界归一化、值过滤错误 |
+| ORDER | 3 | 3/3 | 排序字段错误、升降序错误、LIMIT/Top-K 约束 |
+| aggregation | 3 | 3/3 | COUNT 口径、GROUP 维度、AGG 别名、ORDER/HAVING 引用 |
+| join | 3 | 3/3 | JOIN 方向、冗余 JOIN、缺失 JOIN、paid 过滤遗漏 |
+| projection | 1 | 1/1 | 结果列多、列少或列顺序错误 |
+
+这组结果支持后续多智能体设计：系统不应只把多个 prompt 串起来，而应让 Critic Agent 给出错误类型和可疑步骤，由 Skill Router 选择局部 repair skill，再由 Executor 执行候选 patch 并筛选结果。
+
+### 当前初步结论
+
+当前实验可以支撑三个开题判断。第一，SQL+ 作为中间表示具备可执行和可转换基础，已在 30 条自建样例和 20 条 Spider 受支持子集上跑通。第二，SQL+ 并不天然带来更低生成成本，甚至会增加 token 和延迟，因此不能把研究动机写成“SQL+ 更短”。第三，SQL+ 的更合理价值在于为错误定位、Skill Router 和局部修复提供步骤化载体；这一点已经在当前已知失败集和 repair skill 分治实验中得到初步验证，但还需要更大规模、更复杂错误和完整 latency 记录继续检验。
+
 
 ## 可行性分析
 

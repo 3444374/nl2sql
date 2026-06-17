@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import argparse
 import http.client
@@ -151,7 +151,9 @@ def main() -> int:
         if case_id in done:
             continue
         prompt = build_prompt(template, diagnostic)
+        started = time.perf_counter()
         response = call_openai(api_key, args.model, prompt, args.max_output_tokens, args.retries)
+        latency_seconds = time.perf_counter() - started
         text = extract_text(response)
         row = parse_refiner_output(case_id, text)
         row.update(
@@ -161,6 +163,7 @@ def main() -> int:
                 "source_category": diagnostic.get("category"),
                 "response_id": response.get("id"),
                 "usage": response.get("usage", {}),
+                "latency_seconds": latency_seconds,
             }
         )
         append_jsonl(Path(args.output), row)

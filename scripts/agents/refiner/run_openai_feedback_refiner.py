@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import argparse
 import http.client
@@ -146,7 +146,9 @@ def main() -> int:
         case_id = feedback["id"]
         if case_id in done:
             continue
+        started = time.perf_counter()
         response = call_openai(api_key, args.model, build_prompt(template, feedback), args.max_output_tokens, args.retries)
+        latency_seconds = time.perf_counter() - started
         text = extract_text(response)
         row = parse_output(case_id, text)
         row.update(
@@ -156,6 +158,7 @@ def main() -> int:
                 "coarse_feedback_category": feedback["coarse_feedback"]["category"],
                 "response_id": response.get("id"),
                 "usage": response.get("usage", {}),
+                "latency_seconds": latency_seconds,
             }
         )
         append_jsonl(Path(args.output), row)

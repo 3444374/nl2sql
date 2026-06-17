@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720">
+<defs>
+<marker id="arrow-blue" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+<path d="M2,2 L10,6 L2,10 Z" fill="#1F4E79" />
+</marker>
+<marker id="arrow-orange" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+<path d="M2,2 L10,6 L2,10 Z" fill="#C65911" />
+</marker>
+<style><![CDATA[
+text { font-family: 'Microsoft YaHei', 'Noto Sans CJK SC', Arial, sans-serif; }
+.title { font-size: 34px; font-weight: 700; fill: #1F4E79; }
+.subtitle { font-size: 20px; fill: #666666; }
+.box-title { font-size: 20px; font-weight: 700; fill: #2B2B2B; }
+.box-text { font-size: 17px; fill: #2B2B2B; }
+.small { font-size: 15px; fill: #2B2B2B; }
+.note { font-size: 17px; fill: #C65911; }
+]]></style>
+</defs>
+<rect x="0" y="0" width="1200" height="720" fill="#FFFFFF"/>
+<text x="60" y="60" text-anchor="start" class="title">传统 Text-to-SQL 流程及其问题</text>
+<rect x="70" y="140" width="155" height="85" rx="16" fill="#DDEBF7" stroke="#1F4E79" stroke-width="2"/>
+<text x="147" y="182" text-anchor="middle" class="box-title">
+<tspan x="147" dy="0">自然语言问题</tspan>
+</text>
+<line x1="230" y1="182" x2="270" y2="182" stroke="#1F4E79" stroke-width="3" marker-end="url(#arrow-blue)"/>
+<rect x="280" y="140" width="155" height="85" rx="16" fill="#DDEBF7" stroke="#1F4E79" stroke-width="2"/>
+<text x="357" y="182" text-anchor="middle" class="box-title">
+<tspan x="357" dy="0">LLM / 解析器</tspan>
+</text>
+<line x1="440" y1="182" x2="480" y2="182" stroke="#1F4E79" stroke-width="3" marker-end="url(#arrow-blue)"/>
+<rect x="490" y="140" width="155" height="85" rx="16" fill="#FBE5D6" stroke="#1F4E79" stroke-width="2"/>
+<text x="567" y="182" text-anchor="middle" class="box-title">
+<tspan x="567" dy="0">标准 SQL</tspan>
+</text>
+<line x1="650" y1="182" x2="690" y2="182" stroke="#1F4E79" stroke-width="3" marker-end="url(#arrow-blue)"/>
+<rect x="700" y="140" width="155" height="85" rx="16" fill="#E2EFDA" stroke="#1F4E79" stroke-width="2"/>
+<text x="777" y="182" text-anchor="middle" class="box-title">
+<tspan x="777" dy="0">数据库执行</tspan>
+</text>
+<line x1="860" y1="182" x2="900" y2="182" stroke="#1F4E79" stroke-width="3" marker-end="url(#arrow-blue)"/>
+<rect x="910" y="140" width="155" height="85" rx="16" fill="#E2EFDA" stroke="#1F4E79" stroke-width="2"/>
+<text x="987" y="182" text-anchor="middle" class="box-title">
+<tspan x="987" dy="0">查询结果</tspan>
+</text>
+<rect x="330" y="300" width="540" height="86" rx="16" fill="#FBE5D6" stroke="#C65911" stroke-width="2"/>
+<text x="600" y="343" text-anchor="middle" class="box-title">
+<tspan x="600" dy="0">错误反馈通常只作用在整条 SQL 上</tspan>
+</text>
+<line x1="760" y1="240" x2="760" y2="294" stroke="#C65911" stroke-width="3" marker-end="url(#arrow-orange)"/>
+<text x="105" y="455" text-anchor="start" class="box-title">主要问题</text>
+<text x="130" y="500" text-anchor="start" class="box-text">• SQL 子句之间耦合强，join、filter、aggregation、order 会互相影响。</text>
+<text x="130" y="542" text-anchor="start" class="box-text">• 执行报错往往只说明最终 SQL 出错，不一定指出哪一步语义错误。</text>
+<text x="130" y="584" text-anchor="start" class="box-text">• 整条 SQL 重写容易修复一个错误，同时破坏原本正确的部分。</text>
+</svg>

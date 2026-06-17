@@ -1,0 +1,5 @@
+method,cases,representation_valid,sql_valid,execution_match,avg_input_tokens,avg_output_tokens,avg_reasoning_tokens,avg_total_tokens,avg_latency_seconds,avg_prediction_chars
+direct_sql,30,30,30,12,287.6,311.5667,221.8667,599.1667,6.5851,202.9667
+sqlplus,30,28,28,14,319.1333,493.9,398.9333,813.0333,9.2197,204.0
+natsql_style_proxy,30,30,30,13,319.1333,421.6333,334.9333,740.7667,6.2802,185.5
+semql_style_proxy,30,30,25,12,343.1333,685.8333,582.4,1028.9667,9.9684,222.3333

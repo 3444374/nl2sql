@@ -1,0 +1,28 @@
+method,id,repair_success,expected_steps,localized_steps,changed_steps,routing_plan,localization_correct,router_correct,strict_minimal_patch,patch_minimality,changed_step_count,expected_step_count,repair_rounds,repair_tokens,repair_latency_sec,latency_note
+sqlplus_critic_router_skills,q002,True,ORDER,ORDER,ORDER,order,True,True,True,1.0,1,1,1,3600,0.000636500000837259,local deterministic router+skills only; critic API latency was not captured
+sqlplus_critic_router_skills,q003,True,ORDER,ORDER,ORDER,order,True,True,True,1.0,1,1,1,3103,0.000145500001963228,local deterministic router+skills only; critic API latency was not captured
+sqlplus_critic_router_skills,q004,True,WHERE,WHERE,WHERE,value,True,True,True,1.0,1,1,1,3713,0.0001480999999330379,local deterministic router+skills only; critic API latency was not captured
+sqlplus_critic_router_skills,q005,True,ORDER,ORDER,ORDER,order,True,True,True,1.0,1,1,1,3538,9.180000051856041e-05,local deterministic router+skills only; critic API latency was not captured
+sqlplus_critic_router_skills,q006,True,SELECT,"LIMIT,ORDER",SELECT,order->projection,False,True,True,1.0,1,1,2,3767,0.0001905999997688923,local deterministic router+skills only; critic API latency was not captured
+sqlplus_critic_router_skills,q013,True,"AGG,GROUP,ORDER","JOIN,WHERE","AGG,GROUP,ORDER",value->join->aggregation->order->projection,False,True,True,1.0,3,3,5,4076,0.0008302999995066784,local deterministic router+skills only; critic API latency was not captured
+sqlplus_critic_router_skills,q015,True,"AGG,ORDER",ORDER,"AGG,ORDER",order->aggregation,True,True,True,1.0,2,2,2,3571,0.00017939999816007912,local deterministic router+skills only; critic API latency was not captured
+sqlplus_critic_router_skills,q017,True,"ORDER,WHERE",WHERE,"ORDER,WHERE",value->order,True,True,True,1.0,2,2,2,2991,0.0001494999996793922,local deterministic router+skills only; critic API latency was not captured
+sqlplus_critic_router_skills,q019,True,"JOIN,ORDER",ORDER,ORDER,order->aggregation,True,True,True,1.0,1,2,2,3965,0.00016590000086580403,local deterministic router+skills only; critic API latency was not captured
+sqlplus_critic_router_skills,q021,True,"AGG,GROUP,WHERE",WHERE,"AGG,GROUP,ORDER",value->aggregation->join->order,True,True,False,0.6666666666666666,3,3,4,4091,0.0005810000002384186,local deterministic router+skills only; critic API latency was not captured
+sqlplus_critic_router_skills,q022,True,"AGG,GROUP,JOIN,ORDER,WHERE","AGG,GROUP,JOIN,SELECT","AGG,GROUP,JOIN,ORDER,WHERE",join->aggregation->projection,True,True,True,1.0,5,5,3,5537,0.0028940000011061784,local deterministic router+skills only; critic API latency was not captured
+sqlplus_critic_router_skills,q025,True,"JOIN,ORDER,SELECT",WHERE,"JOIN,ORDER,SELECT",value->join->projection,False,True,True,1.0,3,3,3,4393,0.00039289999767788686,local deterministic router+skills only; critic API latency was not captured
+sqlplus_critic_router_skills,q026,True,"ORDER,WHERE",WHERE,"ORDER,WHERE",value->order,True,True,True,1.0,2,2,2,3236,0.00019969999993918464,local deterministic router+skills only; critic API latency was not captured
+direct_sql_feedback_refiner,q002,True,WHERE,WHERE,WHERE,single_refiner,True,,True,1.0,1,1,1,1142,,not captured by the earlier OpenAI refiner run
+direct_sql_feedback_refiner,q003,True,ORDER,"LIMIT,ORDER",ORDER,single_refiner,True,,True,1.0,1,1,1,1383,,not captured by the earlier OpenAI refiner run
+direct_sql_feedback_refiner,q004,False,WHERE,WHERE,,single_refiner,True,,False,0.0,0,1,1,1847,,not captured by the earlier OpenAI refiner run
+direct_sql_feedback_refiner,q005,True,ORDER,"LIMIT,ORDER",ORDER,single_refiner,True,,True,1.0,1,1,1,1366,,not captured by the earlier OpenAI refiner run
+direct_sql_feedback_refiner,q007,True,"GROUP,WHERE",WHERE,WHERE,single_refiner,True,,True,1.0,1,2,1,1453,,not captured by the earlier OpenAI refiner run
+direct_sql_feedback_refiner,q008,False,"GROUP,WHERE","AGG,GROUP,HAVING",WHERE,single_refiner,True,,True,1.0,1,2,1,1584,,not captured by the earlier OpenAI refiner run
+direct_sql_feedback_refiner,q013,False,"GROUP,JOIN,ORDER,SELECT,WHERE",WHERE,ORDER,single_refiner,True,,True,1.0,1,5,1,1585,,not captured by the earlier OpenAI refiner run
+direct_sql_feedback_refiner,q016,False,"GROUP,SELECT",WHERE,,single_refiner,False,,False,0.0,0,2,1,1873,,not captured by the earlier OpenAI refiner run
+direct_sql_feedback_refiner,q019,True,ORDER,"LIMIT,ORDER",ORDER,single_refiner,True,,True,1.0,1,1,1,1380,,not captured by the earlier OpenAI refiner run
+direct_sql_feedback_refiner,q021,False,"GROUP,SELECT,WHERE",WHERE,WHERE,single_refiner,True,,True,1.0,1,3,1,1299,,not captured by the earlier OpenAI refiner run
+direct_sql_feedback_refiner,q022,False,"GROUP,JOIN,ORDER,SELECT,WHERE","AGG,GROUP,HAVING","JOIN,WHERE",single_refiner,True,,True,1.0,2,5,1,2350,,not captured by the earlier OpenAI refiner run
+direct_sql_feedback_refiner,q023,True,"GROUP,JOIN,WHERE","AGG,GROUP,HAVING","JOIN,WHERE",single_refiner,True,,True,1.0,2,3,1,1721,,not captured by the earlier OpenAI refiner run
+direct_sql_feedback_refiner,q025,False,"JOIN,ORDER,SELECT",WHERE,ORDER,single_refiner,False,,True,1.0,1,3,1,1897,,not captured by the earlier OpenAI refiner run
+direct_sql_feedback_refiner,q027,False,"GROUP,JOIN,ORDER,SELECT","AGG,GROUP,HAVING",ORDER,single_refiner,True,,True,1.0,1,4,1,1651,,not captured by the earlier OpenAI refiner run

@@ -43,6 +43,8 @@ python scripts/benchmarks/run_spider_smoke.py --limit 20
 - 完成 SQL+ join repair skill 初版实验：`scripts/agents/tools/run_join_repair_skill.py`
 - 完成 SQL+ Skill Router 端到端修复实验：`scripts/agents/pipeline/run_skill_router_experiment.py`
 - 完成 Spider 小规模公开 benchmark smoke test：`scripts/benchmarks/run_spider_smoke.py`
+- 完成 SQL+ 与 Standard SQL、SemQL-style、NatSQL-style、Pipe-style 的中间表示复杂度对比实验：`scripts/sqlplus/run_ir_complexity_eval.py`
+- 完成 Direct SQL、SQL+、NatSQL-style、SemQL-style 的 IR 生成成本与执行效果对比实验：`scripts/sqlplus/run_ir_generation_cost_eval.py`
 
 ## 复现实验
 
@@ -60,6 +62,9 @@ python scripts/agents/refiner/build_direct_feedback_refiner_inputs.py
 python scripts/agents/refiner/run_openai_direct_feedback_refiner.py --dry-run
 python scripts/agents/schema/build_sqlplus_schema_agent_inputs.py
 python scripts/agents/critic/run_openai_sqlplus_critic.py --dry-run
+python scripts/agents/pipeline/run_repairability_metrics.py
+python scripts/sqlplus/run_ir_complexity_eval.py
+python scripts/sqlplus/run_ir_generation_cost_eval.py
 ```
 
 运行后会生成：
@@ -74,6 +79,9 @@ python scripts/agents/critic/run_openai_sqlplus_critic.py --dry-run
 - `docs/agents/refiner/direct_feedback_refiner_report.md`
 - `docs/agents/pipeline/sqlplus_schema_critic_refiner_report.md`
 - `docs/agents/pipeline/sqlplus_stepwise_critic_refiner_report.md`
+- `docs/agents/pipeline/repairability_metrics_report.md`
+- `docs/sqlplus/intermediate_representation_complexity_report.md`
+- `docs/sqlplus/ir_generation_cost_report.md`
 
 真实模型 baseline 运行说明：
 
@@ -111,7 +119,10 @@ python scripts/agents/critic/run_openai_sqlplus_critic.py --dry-run
 - SQL+ join repair skill：3/3 修复成功，SQL+ 有效 3/3，SQL 可执行 3/3
 - SQL+ projection repair skill：1/1 修复成功，SQL+ 有效 1/1，SQL 可执行 1/1
 - SQL+ Skill Router + Repair Skills v3：13/13 修复成功，SQL+ 有效 13/13，SQL 可执行 13/13
+- Repairability 指标对比：SQL+ Critic Router Skills 在 13 条 SQL+ 失败样例上修复成功 13/13，localization accuracy 0.7692，strict minimal patch rate 0.9231，平均 repair rounds 2.2308，平均 repair tokens 3813.9231；Direct SQL Refiner 在 14 条 Direct SQL 失败样例上修复成功 6/14，localization accuracy 0.8571，strict minimal patch rate 0.8571，平均 repair rounds 1，平均 repair tokens 1609.3571。Direct SQL 旧运行未记录 latency，SQL+ 本地 router/skill latency 不含 Critic API latency。
 - Spider smoke test：20 条受支持 Spider dev 样例，SQL+ 有效 20/20，SQL 可执行 20/20，执行一致 20/20
+- 中间表示复杂度对比：SQL+ 平均 token 数 35.0333，高于 Standard SQL 的 31.5333；SQL+ 平均别名依赖 0.7，低于 Standard SQL 的 2.0333；SQL+ 平均跨子句引用 1.0，低于 Standard SQL 的 2.3333；SQL+ 转换成功 30/30，平均转换时间约 0.007 ms
+- IR 生成成本对比：Direct SQL 执行一致 12/30，SQL+ 14/30，NatSQL-style proxy 13/30，SemQL-style proxy 12/30；SQL+ 平均总 token 为 813.0333，高于 Direct SQL 的 599.1667 和 NatSQL-style proxy 的 740.7667；该实验为统一 prompt 下的受控对比，不替代既有 Direct NL2SQL baseline 16/30 和 SQL+ prompt v2 17/30。
 
 说明：诊断辅助 Refiner Agent 使用了 gold-derived mismatch differences，只能证明“结构化反馈 -> SQL+ 局部修正 -> 执行验证”的链路可行，不能直接等同于完全真实的自主反馈修正能力。
 非 gold 执行反馈实验更接近真实场景，结果说明仅靠单 Refiner prompt 不足以稳定完成复杂语义修复，后续需要 Schema Agent、Planner Agent 和 Critic Agent。
@@ -124,7 +135,10 @@ Aggregation skill 实验显示，聚合口径、GROUP 维度、AGG 投影和 ORD
 Join skill 实验显示，JOIN 路径、冗余 JOIN、缺失 JOIN、paid 过滤和 join 影响的投影/聚合可以通过候选 patch 与执行验证局部修复。
 Projection skill 实验显示，结果列多/少可以通过问题意图和 SELECT/AGG 局部候选裁剪修复。
 Skill Router v3 实验显示，将 Critic Agent 的错误定位结果和 SQL+ 结构启发路由到局部 repair skill 后，端到端修复成功率从 SQL+ 单 Refiner 的 4/13 提升到 13/13。
+Repairability 指标对比说明，SQL+ 修复收益主要体现在成功率和 patch minimality 上，但 Critic Agent 的 token 成本明显高于 Direct SQL 单 Refiner。当前旧输出没有完整 API latency，因此后续真实模型修复实验需要重新记录 `latency_seconds`。
 Spider smoke test 说明当前 SQL+ 子集在公开 Spider 的简单/中等查询结构上具备初步迁移可行性，但该结果不是完整 Spider benchmark 跑分。
+中间表示复杂度对比说明 SQL+ 当前不是通过缩短 token 获得优势，而是通过显式步骤边界、较少别名/跨子句依赖和确定性转换支撑后续错误定位与局部修复实验。
+IR 生成成本对比说明 SQL+ 当前存在生成阶段的 token 和 latency 成本，后续应重点验证错误定位准确率、patch minimality、修复轮数和修复阶段成本，而不是只比较初次生成准确率。
 
 ## 开题可引用结论
 

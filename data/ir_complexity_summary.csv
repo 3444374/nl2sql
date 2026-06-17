@@ -1,0 +1,6 @@
+representation,cases,avg_token_count,max_token_count,avg_line_count,max_line_count,avg_step_or_clause_count,max_step_or_clause_count,avg_nesting_depth,max_nesting_depth,avg_subquery_cte_count,max_subquery_cte_count,avg_join_path_length,max_join_path_length,avg_schema_item_count,max_schema_item_count,avg_alias_dependency_count,max_alias_dependency_count,avg_cross_clause_reference_count,max_cross_clause_reference_count,avg_parse_time_ms,max_parse_time_ms,avg_conversion_time_ms,conversion_success_count
+natsql_style_proxy,30,31.5,50.0,5.4333,7.0,5.4333,7.0,0.9667,1.0,0.0,0.0,0.0,0.0,5.5,10.0,1.3667,2.0,1.6667,2.0,0.0032,0.0056,,N/A
+pipe_style_proxy,30,40.8,64.0,6.1333,10.0,6.1333,10.0,0.6667,1.0,0.0,0.0,1.1667,3.0,5.5,10.0,1.3667,3.0,1.6667,3.0,0.0039,0.0064,,N/A
+semql_style_proxy,30,50.5667,72.0,1.0,1.0,10.7333,15.0,3.6667,4.0,0.0,0.0,0.7,1.0,5.5,10.0,0.9,2.0,1.2,2.0,0.0046,0.0071,,N/A
+sqlplus,30,35.0333,54.0,6.1333,10.0,6.1333,10.0,0.6667,1.0,0.0,0.0,1.1667,3.0,5.5,10.0,0.7,2.0,1.0,2.0,0.0034,0.0051,0.0072,30
+standard_sql,30,31.5333,48.0,5.9,8.0,5.9,8.0,0.6667,1.0,0.0,0.0,1.1667,3.0,5.5,10.0,2.0333,3.0,2.3333,3.0,0.0033,0.0053,0.0,30

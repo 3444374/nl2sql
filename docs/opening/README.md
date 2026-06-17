@@ -12,6 +12,21 @@
 - `opening_ppt.md`：开题汇报 PPT 稿，按页组织，可直接复制到 PowerPoint / WPS 中制作幻灯片。
 - `opening_ppt.pptx`：由 `opening_ppt.md` 生成的 16:9 开题汇报幻灯片。
 - `opening_ppt_final.pptx`：WPS 实际打开验证通过的最终开题汇报 PPT。
+- `opening_ppt_template_version.pptx`：基于 `D:\开题\模板.pptx` 套用学校模板生成的新版开题汇报 PPT，共 27 页，内容按当前开题报告和最新实验结果重排。
+- `opening_ppt_template_version_v2.pptx`：增强版模板 PPT，共 28 页，补充传统 Text-to-SQL 架构图、SQL+ 多智能体闭环图、实验组织逻辑和实验卡片页。
+- `figures/`：开题 PPT 可复用 SVG 矢量图，可插入 PowerPoint / WPS 后继续缩放、编辑或转换为形状。
+- `../../scripts/opening/build_opening_ppt_from_template.py`：生成模板版 PPT 的脚本，默认读取 `assets/opening_template.pptx` 并输出 `opening_ppt_template_version.pptx`。
+- `../../scripts/opening/build_opening_ppt_enhanced.py`：生成增强版模板 PPT，默认输出 `opening_ppt_template_version_v2.pptx`，不会覆盖原 PPT。
+- `../../scripts/opening/generate_opening_svgs.py`：生成开题汇报所需 SVG 架构图和实验逻辑图。
+
+## 可复用矢量图
+
+- `figures/traditional_text_to_sql.svg`：传统 Text-to-SQL 流程及问题。
+- `figures/research_positioning.svg`：SQL+ 与 SemQL、NatSQL、Pipe-style 表示的研究定位对比。
+- `figures/sqlplus_stepwise_ir.svg`：SQL+ 线性步骤与 repair skill 锚点。
+- `figures/sqlplus_multi_agent_loop.svg`：SQL+ 多智能体生成与反馈修正闭环。
+- `figures/experiment_logic_map.svg`：研究假设、实验目的和实验项目之间的映射。
+- `figures/repair_skill_router.svg`：Critic Agent、Skill Router 和 repair skill 的修复流程。
 
 ## 当前实验亮点
 
@@ -27,3 +42,27 @@
 1. 根据导师意见调整题目、汇报人信息和创新点表述。
 2. 需要正式答辩前，可在 PowerPoint / WPS 中进一步微调版式和学校模板。
 3. 后续扩展无报错语义错诊断、Spider/BIRD 子集和达梦 SQL 方言适配实验。
+
+## 模板版 PPT 生成命令
+
+```powershell
+python scripts/opening/build_opening_ppt_from_template.py
+```
+
+生成增强版 PPT：
+
+```powershell
+python scripts/opening/build_opening_ppt_enhanced.py
+```
+
+生成或刷新 SVG 矢量图：
+
+```powershell
+python scripts/opening/generate_opening_svgs.py
+```
+
+如果新电脑缺少依赖，先安装：
+
+```powershell
+python -m pip install python-pptx
+```

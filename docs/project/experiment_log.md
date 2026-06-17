@@ -4,6 +4,129 @@
 
 非实验类事项，例如目录整理、GitHub 同步、开题文档排版、飞书文档写入、项目规则调整等，记录到 `docs/project/project_log.md`。
 
+## 2026-06-15 SQL+ 与中间表示表达复杂度对比实验
+
+实验目的：
+
+回应开题反馈中“为什么使用 SQL+、SQL+ 与 SemQL/NatSQL/Pipe Syntax 有何区别”的问题，比较同一批查询在 Standard SQL、SQL+、SemQL-style proxy、NatSQL-style proxy 和 Pipe-style proxy 下的表达复杂度、结构特征和转换开销。
+
+涉及文件：
+
+- `scripts/sqlplus/run_ir_complexity_eval.py`
+- `data/sqlplus_cases.jsonl`
+- `data/ir_complexity_detail.csv`
+- `data/ir_complexity_summary.csv`
+- `docs/sqlplus/intermediate_representation_complexity_report.md`
+- `docs/sqlplus/intermediate_representation_comparison_plan.md`
+- `docs/project/opening_preliminary_results.md`
+- `docs/project/experiment_outline.md`
+
+实验命令：
+
+```powershell
+python scripts/sqlplus/run_ir_complexity_eval.py
+```
+
+实验配置：
+
+- 数据集：自建订单分析数据集 30 条查询。
+- 输入：自然语言问题、gold SQL、gold SQL+。
+- 对比表示：standard_sql、sqlplus、semql_style_proxy、natsql_style_proxy、pipe_style_proxy。
+- 指标：token_count、line_count、step_or_clause_count、nesting_depth、join_path_length、schema_item_count、alias_dependency_count、cross_clause_reference_count、parse_time_ms、conversion_time_ms。
+- 说明：SemQL-style、NatSQL-style、Pipe-style 均为开题阶段的 controlled proxy，不代表完整复现 IRNet/SemQL、NatSQL 或 GoogleSQL Pipe Syntax。
+
+实验结果：
+
+- Standard SQL 平均 token 数：31.5333；SQL+ 平均 token 数：35.0333。
+- SQL+ 平均行数/步骤数：6.1333/6.1333；Standard SQL 为 5.9/5.9。
+- SemQL-style proxy 平均嵌套深度：3.6667；SQL+ 为 0.6667。
+- SQL+ 平均 alias dependency count：0.7；Standard SQL 为 2.0333。
+- SQL+ 平均 cross-clause reference count：1.0；Standard SQL 为 2.3333。
+- SQL+ 到 SQL 平均转换时间约 0.007 ms；转换成功：30/30。
+- proxy 表示未实现完整转换器，因此 conversion success 记为 N/A，不记为失败。
+
+问题与观察：
+
+- SQL+ 当前并不比 Standard SQL 或 NatSQL-style proxy 更短，不能把 SQL+ 优势表述为“压缩查询长度”。
+- SQL+ 的优势更适合表述为：显式步骤边界、较低嵌套程度、较少跨子句/别名依赖，以及可确定转换为 SQL。
+- SemQL-style proxy 在本实验中的嵌套深度更高，适合作为语义结构化表示对照，但不天然对应步骤级局部修复。
+- NatSQL-style proxy token 数较低，可作为后续生成成本对照，但本阶段不声称覆盖完整 NatSQL 规则。
+
+方向调整：
+
+- 开题报告中“为什么 SQL+”应从“更短、更简单”调整为“面向生成、转换、诊断、局部修复统一闭环的步骤化中间表示”。
+- 后续必须继续做 repairability 指标实验，包括 error localization accuracy、router accuracy、patch minimality、average repair rounds、token cost 和 latency。
+
+下一步：
+
+- 设计生成成本实验：在同一模型、同一批样例下比较 Direct SQL、SQL+、NatSQL-style proxy、SemQL-style proxy 的 prompt/completion tokens、valid rate、execution accuracy 和 latency。
+- 设计局部修复对比实验：比较 SQL 层整体修复、SQL+ 层局部修复、SemQL-style/NatSQL-style proxy 层修复的错误定位和 patch 范围。
+
+## 2026-06-15 IR 生成成本与执行效果对比实验
+
+实验目的：
+
+比较同一批自然语言问题在 Direct SQL、SQL+、NatSQL-style proxy 和 SemQL-style proxy 四种生成目标下的 token 成本、生成延迟、表示有效率、SQL 可执行率和执行结果一致率，进一步回答“SQL+ 与其他中间表示相比有什么代价和收益”。
+
+涉及文件：
+
+- `scripts/sqlplus/run_ir_generation_cost_eval.py`
+- `outputs/ir_generation/ir_generation_outputs.jsonl`
+- `data/ir_generation_cost_detail.csv`
+- `data/ir_generation_cost_summary.csv`
+- `docs/sqlplus/ir_generation_cost_report.md`
+- `docs/project/experiment_log.md`
+- `docs/project/experiment_outline.md`
+- `docs/project/opening_preliminary_results.md`
+- `README.md`
+
+实验命令：
+
+```powershell
+$env:OPENAI_API_KEY=[Environment]::GetEnvironmentVariable('OPENAI_API_KEY','User')
+python scripts/sqlplus/run_ir_generation_cost_eval.py --run-api --resume --limit 1
+python scripts/sqlplus/run_ir_generation_cost_eval.py --run-api --resume
+python scripts/sqlplus/run_ir_generation_cost_eval.py
+```
+
+实验配置：
+
+- 模型：`gpt-5-mini`。
+- 样例数：30 条。
+- API 调用：30 条样例 × 4 种生成目标，共 120 次调用；`--resume` 跳过已完成输出。
+- 对比方法：Direct SQL、SQL+、NatSQL-style proxy、SemQL-style proxy。
+- 评估方式：将模型输出转换为 SQL，在同一 SQLite 数据库上与 gold SQL 执行结果比较。
+- 说明：NatSQL-style 和 SemQL-style 是受控 proxy，不代表完整复现 NatSQL 或 SemQL/IRNet。
+
+实验结果：
+
+| 方法 | 表示有效 | SQL 可执行 | 执行一致 | 平均输入 token | 平均输出 token | 平均总 token | 平均延迟 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Direct SQL | 30/30 | 30/30 | 12/30 | 287.6 | 311.5667 | 599.1667 | 6.5851s |
+| SQL+ | 28/30 | 28/30 | 14/30 | 319.1333 | 493.9 | 813.0333 | 9.2197s |
+| NatSQL-style proxy | 30/30 | 30/30 | 13/30 | 319.1333 | 421.6333 | 740.7667 | 6.2802s |
+| SemQL-style proxy | 30/30 | 25/30 | 12/30 | 343.1333 | 685.8333 | 1028.9667 | 9.9684s |
+
+问题与观察：
+
+- SQL+ 的执行一致率为 14/30，略高于 NatSQL-style proxy 的 13/30 和 Direct SQL/SemQL-style proxy 的 12/30，但差距很小，不能表述为显著优势。
+- SQL+ 的平均总 token 为 813.0333，高于 Direct SQL 的 599.1667 和 NatSQL-style proxy 的 740.7667，说明 SQL+ 生成存在额外成本。
+- SQL+ 平均延迟为 9.2197s，高于 Direct SQL 的 6.5851s 和 NatSQL-style proxy 的 6.2802s。
+- SQL+ 有 2 条样例生成了当前 parser 不支持的 `LEFT` step，导致表示有效率和 SQL 可执行率为 28/30。
+- SemQL-style proxy 初次评估时因 converter 误匹配 `(orders ...)` 为 `(order ...)`，SQL 可执行率被低估为 10/30；修正 converter 后离线复评估为 25/30。
+- SemQL-style proxy 平均总 token 最高，为 1028.9667，说明树状 S-expression 表达对当前模型和 prompt 来说成本较高。
+
+方向调整：
+
+- SQL+ 的开题论证不能只写“生成准确率更高”，因为当前小规模结果只是略高。
+- 更合理的论证是：SQL+ 在生成成本上有代价，但提供步骤边界、低跨子句依赖和可局部修复空间；因此后续必须用 error localization、patch minimality、repair rounds 和 repair token/latency 来证明收益是否抵消成本。
+- 下一步应围绕失败样例做修复成本对比：Direct SQL 整体重写 vs SQL+ 局部 repair skill vs NatSQL/SemQL-style proxy 层修复。
+
+下一步：
+
+- 统计四种方法失败样例的错误类型分布。
+- 在同一失败集合上比较 SQL 层整体修复和 SQL+ 层局部修复的 token、latency、修复轮数和 patch 范围。
+
 ## 记录模板
 
 ```text
@@ -1477,3 +1600,56 @@ python3 -B scripts/agents/pipeline/run_skill_router_experiment.py --output outpu
 - 当前 13 条已知 SQL+ 失败样例上的 Skill Router 指标从 12/13 更新为 13/13。
 - repair skill 覆盖从 value-linking、ORDER、aggregation、join 四类扩展到 value-linking、ORDER、aggregation、join、projection 五类。
 - 下一步重点从“补 projection repair skill”调整为“扩展无报错语义错诊断、projection/SELECT 诊断稳定性、复合错误路由顺序和公开子集覆盖”。
+
+## 2026-06-15 Repairability 指标对比实验
+
+实验目的：
+
+- 在 IR 生成成本实验之后，继续比较修复阶段收益是否能够抵消 SQL+ 的生成成本。
+- 统一统计 error localization accuracy、patch minimality、average repair rounds、repair token cost 和 repair latency 可用性。
+- 对比 Direct SQL 单 Refiner 与 SQL+ `Critic Agent -> Skill Router -> Repair Skills -> Executor`。
+
+涉及文件：
+
+- `scripts/agents/pipeline/run_repairability_metrics.py`
+- `scripts/agents/pipeline/run_skill_router_experiment.py`
+- `outputs/refiner/sqlplus_skill_router_outputs_v3.jsonl`
+- `outputs/agents/critic/sqlplus_critic_stepwise_model_merged.jsonl`
+- `outputs/refiner/direct_feedback_refiner_model_merged.jsonl`
+- `data/repairability_metrics_detail.csv`
+- `data/repairability_metrics_summary.csv`
+- `docs/agents/pipeline/repairability_metrics_report.md`
+
+执行命令：
+
+```powershell
+python scripts/agents/pipeline/run_repairability_metrics.py
+```
+
+实验配置：
+
+- 数据集：自建订单分析数据集上的已知失败样例。
+- SQL+ 修复组：13 条 SQL+ prompt v2 已知失败样例，使用 Step-wise Critic 输出、Skill Router v3 和五类 repair skill。
+- Direct SQL 对照组：14 条 Direct SQL 已知失败样例，使用既有 Direct SQL execution-feedback Refiner 输出。
+- 交集子集：9 条两组共有 ID，用于补充观察。
+- patch minimality 为离线评价指标，使用 gold 差异计算，不参与候选修复选择。
+
+实验结果：
+
+- Direct SQL Refiner：14 条，修复成功 6/14，localization accuracy 0.8571，strict minimal patch rate 0.8571，平均 patch minimality 0.8571，平均 repair rounds 1，平均 repair tokens 1609.3571。
+- SQL+ Critic Router Skills：13 条，修复成功 13/13，localization accuracy 0.7692，router accuracy 1.0000，strict minimal patch rate 0.9231，平均 patch minimality 0.9744，平均 repair rounds 2.2308，平均 repair tokens 3813.9231。
+- Direct SQL Refiner overlap：9 条，修复成功 4/9，localization accuracy 0.8889，strict minimal patch rate 0.8889，平均 patch minimality 0.8889，平均 repair rounds 1，平均 repair tokens 1583.2222。
+- SQL+ Critic Router Skills overlap：9 条，修复成功 9/9，localization accuracy 0.7778，router accuracy 1.0000，strict minimal patch rate 0.8889，平均 patch minimality 0.9630，平均 repair rounds 2.3333，平均 repair tokens 4001.7778。
+
+问题与观察：
+
+- SQL+ 修复成功率和 patch minimality 优于 Direct SQL 单 Refiner，但平均 repair token 更高。
+- SQL+ Critic 的 localized steps 并非总是直接命中 gold 差异，例如 q006、q013、q025 仍依赖 Router 的结构启发补救。
+- 当前 Direct SQL Refiner 和 SQL+ Critic 的历史 API 输出没有记录真实 latency，因此无法完整比较端到端 repair latency。
+- 本次脚本只能测 SQL+ 本地 router/repair skill latency，该耗时不包含 Critic Agent API 调用，不能作为完整 SQL+ 延迟优势来表述。
+
+方向调整：
+
+- 后续真实模型修复实验必须记录 `latency_seconds`，并区分 Critic latency、repair skill latency、SQL execution latency 和总 latency。
+- SQL+ 的研究论证应写成“以更高 Critic token 成本换取更高修复成功率和更可控局部 patch”，不要写成“成本更低”。
+- 下一步应优化 Critic 输出长度，尝试轻量 Critic 或 rule/tool-assisted critic，降低 SQL+ 修复阶段 token 成本。

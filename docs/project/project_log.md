@@ -794,3 +794,113 @@ lark-cli docs +fetch --api-version v2 --as user --doc "https://my.feishu.cn/wiki
 - 同步更新 `docs/opening/opening_report_feishu_final.md`、`docs/opening/opening_report_template_aligned.md` 和 `docs/opening/opening_ppt.md`。
 - 已将 `docs/opening/opening_report_feishu_final.md` 覆盖同步到飞书开题文档，飞书返回 `revision_id=50`。
 - 本次未运行新实验，未修改实验结果数值，因此不写入 `docs/project/experiment_log.md`。
+
+## 2026-06-15 开题材料同步：IR 生成成本实验
+
+根据第二个 IR 生成成本实验结果，同步调整本地开题相关材料，包括 `docs/project/opening_preliminary_results.md`、`docs/opening/opening_report.md`、`docs/opening/opening_report_feishu_final.md`、`docs/opening/opening_report_template_aligned.md`、`docs/opening/opening_ppt.md`、`README.md` 和 `docs/sqlplus/intermediate_representation_comparison_plan.md`。本次文档调整将 SQL+ 的阶段性结论改为：SQL+ 当前存在生成成本，不应表述为显著初始生成优势；后续需要通过错误定位、局部 patch、修复轮数和修复成本继续验证其研究价值。
+
+## 2026-06-15 飞书实验文档同步：IR 生成成本实验
+
+- 已将 `docs/opening/feishu_ir_generation_cost_append.md` 追加到飞书实验进展文档：`https://my.feishu.cn/wiki/JTpwwIfGvirqGQks4jkckw28nrs?from=from_copylink`。
+- 飞书文档新增章节为“十、IR 生成成本与执行效果对比实验”。
+- 追加后读取目录确认成功，飞书返回 `document_id=D7zAdNXWpohJZ0xqqBdclb2LnyO`，`revision_id=25`。
+- 本次属于外部文档同步和开题材料维护，不新增实验指标，因此不写入 `docs/project/experiment_log.md`。
+
+## 2026-06-15 飞书开题报告同步：IR 生成成本实验
+
+- 已将本地 `docs/opening/opening_report_feishu_final.md` 覆盖同步到原开题飞书文档：`https://my.feishu.cn/wiki/BjwewQgnNiuNv1k1TzrcvNzcnYd?from=from_copylink`。
+- 飞书返回 `revision_id=57`，文档地址为 `https://my.feishu.cn/docx/ZPZqdt32poPzrvxUX0Ac2k7pn6c`。
+- 本次同步包含第二个 IR 生成成本实验结果，并将 SQL+ 的结论调整为“存在生成成本，后续重点验证修复收益”，避免把小规模结果夸大为显著初次生成优势。
+
+## 2026-06-15 开题材料同步：Repairability 指标
+
+- 根据 repairability 指标对比实验，更新 `docs/opening/opening_report.md`、`docs/opening/opening_report_feishu_final.md`、`docs/opening/opening_report_template_aligned.md`、`docs/opening/opening_ppt.md`、`docs/project/opening_preliminary_results.md` 和 `README.md`。
+- 修正开题报告中 IR 生成成本段落的位置，将其从签字页之后移动到前期实验结果部分。
+- 本次文档口径调整为：SQL+ 修复收益主要体现在修复成功率和 patch minimality 上，但 Critic Agent 的 token 成本更高，完整端到端 latency 需要后续带 `latency_seconds` 的新运行验证。
+
+## 2026-06-16 飞书文档同步：Repairability 指标补齐
+
+- 已将本地最新 `docs/opening/opening_report_feishu_final.md` 覆盖同步到飞书开题主文档：`https://my.feishu.cn/wiki/BjwewQgnNiuNv1k1TzrcvNzcnYd?from=from_copylink`。
+- 飞书开题主文档写入成功，返回 `revision_id=61`，随后读取目录验证成功。
+- 已补齐 `docs/opening/experiment_progress_summary_feishu.md` 中的 “Repairability 指标对比实验” 章节，并将原 “当前综合判断” 顺延为第十一节。
+- 已将补齐后的实验进展小结覆盖同步到飞书实验进展文档：`https://my.feishu.cn/wiki/JTpwwIfGvirqGQks4jkckw28nrs?from=from_copylink`。
+- 飞书实验进展文档写入成功，返回 `revision_id=28`；随后读取目录返回 `revision_id=29`，目录已包含 “十、Repairability 指标对比实验” 和 “十一、当前综合判断”。
+- 第一次同步实验进展文档时使用了旧参数 `--new-title`，被新版 v2 CLI 拒绝；已按新版规则去掉该参数后重试成功。
+- `lark-cli` 提示当前版本 `1.0.50`，最新版本 `1.0.53`，后续可执行 `lark-cli update` 更新 CLI 和 skills。
+
+## 2026-06-16 飞书实验进展文档重整：补齐逐实验小结
+
+- 按用户要求，将 `docs/opening/experiment_progress_summary_feishu.md` 恢复为“每个实验单独小结”的结构，而不是只做总览式整理。
+- 补齐此前缺少或不够完整的实验小结：`IR 表达复杂度对比实验`、`IR 生成成本与执行效果实验`、`SQL+ 规则修正实验` 和 `Repairability 指标对比实验`。
+- 每个实验小结均保留实验目的、数据规模或配置、关键指标、结果解读和对课题的意义。
+- 已覆盖同步到飞书实验进展文档：`https://my.feishu.cn/wiki/JTpwwIfGvirqGQks4jkckw28nrs?from=from_copylink`。
+- 飞书写入成功，返回 `revision_id=37`；随后读取目录验证成功，目录包含 14 个章节，从“实验总览”到“下一步实验计划”。
+- 本次属于外部文档整理和开题材料维护，没有新增实验运行或新指标，因此不写入 `docs/project/experiment_log.md`。
+
+## 2026-06-16 飞书开题主文档：初步实验内容表格化
+
+- 按用户要求，只调整开题报告中“当前初步实验”相关内容，不改动课题背景、国内外研究现状、研究内容和参考文献等其它章节。
+- 将原先的段落式实验说明重排为“实验设置”“核心结果总览”“IR 表达复杂度对比”“IR 生成成本与执行效果对比”“反馈修正与 repairability 指标”“Repair Skill 分治结果”“当前初步结论”七个小节。
+- 表格化呈现 SQL+ 转换 30/30、Direct SQL 16/30、SQL+ v2 17/30、Skill Router v3 13/13、Spider smoke test 20/20、IR 成本与 repairability 指标等结果，并保留小规模实验和 proxy 对比的边界说明。
+- 覆盖同步飞书开题主文档：`https://my.feishu.cn/wiki/BjwewQgnNiuNv1k1TzrcvNzcnYd?from=from_copylink`，飞书返回 `revision_id=75`。
+- 同步后读取飞书目录验证成功，目录中已包含“当前初步实验”“实验设置”“核心结果总览”“IR 表达复杂度对比”“IR 生成成本与执行效果对比”“反馈修正与 repairability 指标”“Repair Skill 分治结果”“当前初步结论”。
+- 本次属于开题文档呈现方式调整，没有新增实验运行或新指标，因此不写入 `docs/project/experiment_log.md`。
+
+## 2026-06-17 使用学校 PPT 模板生成新版开题汇报
+
+- 根据用户提供的 `D:\开题\模板.pptx`，复制模板到项目内 `assets/opening_template.pptx`，避免 Python 处理中文路径时出现编码问题。
+- 安装并使用 `python-pptx` 生成新版模板版 PPT，生成脚本为 `scripts/opening/build_opening_ppt_from_template.py`。
+- 新版 PPT 输出为 `docs/opening/opening_ppt_template_version.pptx`，共 27 页，已通过 `python-pptx` 读取校验。
+- PPT 内容按当前开题进展重排，覆盖研究背景、国内外研究现状、研究问题、SQL+ 设计、多智能体框架、实验设计、SQL+ 转换实验、IR 表达复杂度实验、IR 生成成本实验、反馈修正实验、repairability 指标、Spider smoke test、局限与后续计划。
+- 已更新 `docs/opening/README.md`，补充模板版 PPT 文件说明和复现命令。
+- 本次属于开题汇报材料生成与模板套用，没有新增实验运行或新指标，因此不写入 `docs/project/experiment_log.md`。
+
+## 2026-06-17 开题 PPT 图示资源增强
+
+目的：
+- 根据用户对开题 PPT 的反馈，补充可编辑的结构图和实验说明图，避免汇报材料只靠文字和表格。
+- 将传统 Text-to-SQL 流程、SQL+ 多智能体闭环、SQL+ 步骤化表达、实验组织逻辑和修复路由过程做成可复用 SVG 矢量图，便于后续在 PowerPoint / WPS 中继续编辑。
+
+涉及文件：
+- `scripts/opening/build_opening_ppt_enhanced.py`
+- `scripts/opening/generate_opening_svgs.py`
+- `docs/opening/opening_ppt_template_version_v2.pptx`
+- `docs/opening/figures/*.svg`
+- `docs/opening/README.md`
+
+处理内容：
+- 新增增强版 PPT，保留用户已经手工调整过的原 `opening_ppt_template_version.pptx`，不直接覆盖。
+- 新增 6 张 SVG 矢量图：传统 Text-to-SQL 流程、研究定位、SQL+ 步骤化 IR、多智能体闭环、实验逻辑图、repair skill 路由图。
+- 将实验部分改成“实验目的、实验条件、评价指标、主要结果、当前结论”的展示结构，使初步实验不再突兀出现。
+- 按 `$humanizer` 规则控制表述边界，继续保留小规模实验、proxy 对比和 smoke test 的限制说明。
+
+验证：
+```powershell
+python scripts/opening/build_opening_ppt_enhanced.py
+python scripts/opening/generate_opening_svgs.py
+python - <<'PY'
+from pathlib import Path
+import ast, xml.etree.ElementTree as ET
+ast.parse(Path('scripts/opening/generate_opening_svgs.py').read_text(encoding='utf-8'))
+for p in Path('docs/opening/figures').glob('*.svg'):
+    ET.parse(p)
+PY
+```
+
+说明：
+- 本次属于开题展示材料和图示资源整理，没有运行新的 SQL+、Text-to-SQL 或 agent 实验，因此不更新 `docs/project/experiment_log.md`。
+
+## 2026-06-18 GitHub 同步开题材料、IR 实验与 PPT 图示资源
+
+目的：
+- 按用户要求，将当前目录中的开题材料、IR 对比实验产物、repairability 指标产物、PPT 模板版和 SVG 图示资源同步到 GitHub。
+- 保证另一台电脑可以通过 GitHub 拉取当前项目进度、实验记录、脚本和可复用开题展示材料。
+
+同步前检查：
+- 已执行 Git 状态检查，确认当前分支为 `main`，远程为 `https://github.com/3444374/nl2sql.git`。
+- 已扫描 `sk-proj-`、`sk-`、`OPENAI_API_KEY` 等敏感字符串，没有发现真实 API key，仅存在环境变量名和示例占位。
+- 已对新增和修改的 Python 脚本执行 AST 解析校验。
+- 已重新生成 SVG 图示，并完成 XML 解析校验。
+
+说明：
+- 本次是项目同步和材料沉淀，不新增实验结果，因此不写入 `docs/project/experiment_log.md`。

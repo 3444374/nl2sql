@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720">
+<defs>
+<marker id="arrow-blue" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+<path d="M2,2 L10,6 L2,10 Z" fill="#1F4E79" />
+</marker>
+<marker id="arrow-orange" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+<path d="M2,2 L10,6 L2,10 Z" fill="#C65911" />
+</marker>
+<style><![CDATA[
+text { font-family: 'Microsoft YaHei', 'Noto Sans CJK SC', Arial, sans-serif; }
+.title { font-size: 34px; font-weight: 700; fill: #1F4E79; }
+.subtitle { font-size: 20px; fill: #666666; }
+.box-title { font-size: 20px; font-weight: 700; fill: #2B2B2B; }
+.box-text { font-size: 17px; fill: #2B2B2B; }
+.small { font-size: 15px; fill: #2B2B2B; }
+.note { font-size: 17px; fill: #C65911; }
+]]></style>
+</defs>
+<rect x="0" y="0" width="1200" height="720" fill="#FFFFFF"/>
+<text x="60" y="60" text-anchor="start" class="title">实验组织逻辑：从研究问题到指标验证</text>
+<rect x="80" y="130" width="180" height="76" rx="16" fill="#DDEBF7" stroke="#1F4E79" stroke-width="2"/>
+<text x="170" y="168" text-anchor="middle" class="box-title">
+<tspan x="170" dy="0">H1 表达可行</tspan>
+</text>
+<line x1="270" y1="168" x2="330" y2="168" stroke="#1F4E79" stroke-width="3" marker-end="url(#arrow-blue)"/>
+<rect x="350" y="130" width="330" height="76" rx="16" fill="#EEF2F7" stroke="#1F4E79" stroke-width="2"/>
+<text x="515" y="168" text-anchor="middle" class="box-text">
+<tspan x="515" dy="0">SQL+ 能否稳定转换并执行</tspan>
+</text>
+<line x1="690" y1="168" x2="750" y2="168" stroke="#1F4E79" stroke-width="3" marker-end="url(#arrow-blue)"/>
+<rect x="770" y="130" width="330" height="76" rx="16" fill="#E2EFDA" stroke="#548235" stroke-width="2"/>
+<text x="935" y="155" text-anchor="middle" class="box-text">
+<tspan x="935" dy="0">SQL+ 转换实验</tspan>
+<tspan x="935" dy="24">Spider smoke test</tspan>
+</text>
+<rect x="80" y="255" width="180" height="76" rx="16" fill="#DDEBF7" stroke="#1F4E79" stroke-width="2"/>
+<text x="170" y="293" text-anchor="middle" class="box-title">
+<tspan x="170" dy="0">H2 表达差异</tspan>
+</text>
+<line x1="270" y1="293" x2="330" y2="293" stroke="#1F4E79" stroke-width="3" marker-end="url(#arrow-blue)"/>
+<rect x="350" y="255" width="330" height="76" rx="16" fill="#EEF2F7" stroke="#1F4E79" stroke-width="2"/>
+<text x="515" y="293" text-anchor="middle" class="box-text">
+<tspan x="515" dy="0">为什么使用 SQL+</tspan>
+</text>
+<line x1="690" y1="293" x2="750" y2="293" stroke="#1F4E79" stroke-width="3" marker-end="url(#arrow-blue)"/>
+<rect x="770" y="255" width="330" height="76" rx="16" fill="#E2EFDA" stroke="#548235" stroke-width="2"/>
+<text x="935" y="280" text-anchor="middle" class="box-text">
+<tspan x="935" dy="0">IR 复杂度实验</tspan>
+<tspan x="935" dy="24">IR 生成成本实验</tspan>
+</text>
+<rect x="80" y="380" width="180" height="76" rx="16" fill="#DDEBF7" stroke="#1F4E79" stroke-width="2"/>
+<text x="170" y="418" text-anchor="middle" class="box-title">
+<tspan x="170" dy="0">H3 生成效果</tspan>
+</text>
+<line x1="270" y1="418" x2="330" y2="418" stroke="#1F4E79" stroke-width="3" marker-end="url(#arrow-blue)"/>
+<rect x="350" y="380" width="330" height="76" rx="16" fill="#EEF2F7" stroke="#1F4E79" stroke-width="2"/>
+<text x="515" y="418" text-anchor="middle" class="box-text">
+<tspan x="515" dy="0">中间表示是否改善初次生成</tspan>
+</text>
+<line x1="690" y1="418" x2="750" y2="418" stroke="#1F4E79" stroke-width="3" marker-end="url(#arrow-blue)"/>
+<rect x="770" y="380" width="330" height="76" rx="16" fill="#E2EFDA" stroke="#548235" stroke-width="2"/>
+<text x="935" y="418" text-anchor="middle" class="box-text">
+<tspan x="935" dy="0">Direct SQL vs SQL+ baseline</tspan>
+</text>
+<rect x="80" y="505" width="180" height="76" rx="16" fill="#DDEBF7" stroke="#1F4E79" stroke-width="2"/>
+<text x="170" y="543" text-anchor="middle" class="box-title">
+<tspan x="170" dy="0">H4 修复收益</tspan>
+</text>
+<line x1="270" y1="543" x2="330" y2="543" stroke="#1F4E79" stroke-width="3" marker-end="url(#arrow-blue)"/>
+<rect x="350" y="505" width="330" height="76" rx="16" fill="#EEF2F7" stroke="#1F4E79" stroke-width="2"/>
+<text x="515" y="543" text-anchor="middle" class="box-text">
+<tspan x="515" dy="0">修复收益能否抵消额外开销</tspan>
+</text>
+<line x1="690" y1="543" x2="750" y2="543" stroke="#1F4E79" stroke-width="3" marker-end="url(#arrow-blue)"/>
+<rect x="770" y="505" width="330" height="76" rx="16" fill="#E2EFDA" stroke="#548235" stroke-width="2"/>
+<text x="935" y="530" text-anchor="middle" class="box-text">
+<tspan x="935" dy="0">repairability 指标</tspan>
+<tspan x="935" dy="24">Skill Router 实验</tspan>
+</text>
+<text x="60" y="660" text-anchor="start" class="note">实验不只是展示结果，而是逐项回答 SQL+ 的必要性、代价和修复收益。</text>
+</svg>

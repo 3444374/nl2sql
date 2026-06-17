@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import argparse
 import http.client
@@ -141,7 +141,9 @@ def main() -> int:
         case_id = row["id"]
         if case_id in done:
             continue
+        started = time.perf_counter()
         response = call_openai(api_key, args.model, build_prompt(template, row), args.max_output_tokens, args.retries)
+        latency_seconds = time.perf_counter() - started
         parsed = parse_output(case_id, extract_text(response))
         parsed.update(
             {
@@ -149,6 +151,7 @@ def main() -> int:
                 "method": "sqlplus_critic",
                 "response_id": response.get("id"),
                 "usage": response.get("usage", {}),
+                "latency_seconds": latency_seconds,
             }
         )
         append_jsonl(Path(args.output), parsed)
