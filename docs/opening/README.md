@@ -41,7 +41,8 @@
 - NL2SQL+ prompt v2：17/30。
 - SQL+ 非 gold 单 Refiner：4/13。
 - SQL+ Skill Router + Repair Skills v3：13/13。
-- Spider smoke test：20 条受支持 Spider dev 样例，SQL+ 有效 20/20，SQL 可执行 20/20，执行一致 20/20。
+- Spider conversion smoke test：20 条受支持 Spider dev 样例，基于 Spider gold SQL 改写为 SQL+ 后再转回 SQL，SQL+ 有效 20/20，SQL 可执行 20/20，执行一致 20/20。该结果不是端到端生成准确率。
+- Spider fresh e2e：同一 `concert_singer` 20 条小子集上，fresh generation 为 19/20；同一次 fresh 输出经 `Skill Router -> semantic repair skill` 后为 20/20。gold SQL 只用于最终离线评价。
 
 ## 后续建议
 

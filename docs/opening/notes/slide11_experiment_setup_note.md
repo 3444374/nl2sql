@@ -8,4 +8,4 @@
 【答辩备注】
 如果老师问“为什么不用原生 SemQL/NatSQL 系统”，回答：开题阶段先做 controlled proxy 对比，目的是隔离“表示形式”这个变量。原生 SemQL/NatSQL 涉及专门 parser、模型、搜索空间和数据处理流程，如果直接混在一起，结果既受表示影响，也受系统实现影响，不利于说明 SQL+ 本身的设计价值。后续如果时间允许，可以再接入原系统代码或公开实现做更严格的系统级对比。
 
-需要强调边界：proxy 结果只能说明表达形态差异，不能宣称完整 SemQL、NatSQL 或 GoogleSQL Pipe Syntax 的真实性能。Spider smoke test 也只是小规模迁移验证，不是完整 Spider benchmark 分数。
+需要强调边界：proxy 结果只能说明表达形态差异，不能宣称完整 SemQL、NatSQL 或 GoogleSQL Pipe Syntax 的真实性能。Spider conversion smoke test 是 gold SQL -> SQL+ -> SQL 的表达/转换验证，不是端到端生成准确率；Spider fresh e2e 也只是 `concert_singer` 小规模迁移验证，不是完整 Spider benchmark 分数。

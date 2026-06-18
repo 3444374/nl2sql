@@ -266,7 +266,7 @@ SQL+ prompt v2 失败 13 条，错误分布如下：
 1. SQL+ 表达与转换链路稳定，30/30 查询可执行且结果一致。
 2. SQL+ 层局部修复链路可行，诊断辅助 Refiner 达到 13/13。
 3. 在真实非 gold 条件下，Skill Router + Repair Skills 达到 12/13，明显优于 SQL+ 单 Refiner 的 4/13。
-4. Spider 小规模受支持子集达到 20/20，说明当前 SQL+ 子集具备初步公开 benchmark 迁移可行性。
+4. Spider 小规模受支持子集的 conversion smoke test 达到 20/20，fresh e2e 生成达到 19/20，同一次 fresh 输出经 `Skill Router -> semantic repair skill` 后达到 20/20，说明当前 SQL+ 子集具备初步公开 benchmark 迁移可行性；其中 conversion smoke test 使用 gold SQL 改写得到 SQL+，不能当作端到端生成准确率。
 
 因此，本课题已经具备继续深入研究和系统实现的基础。后续重点不是简单扩大 prompt，而是完善 projection repair skill、增强 Schema Agent 和 Critic Agent，并扩展公开数据集和达梦 SQL 方言验证。
 

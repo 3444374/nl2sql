@@ -1131,3 +1131,12 @@ Boundary:
 - Updated `AGENTS.md` and `.codex/skills/nl2sql-repair-skill-lab/SKILL.md` to include the new semantic repair skill and Spider multi-db scaffold commands.
 - Added `scripts/benchmarks/build_spider_multidb_subset.py` for future cross-database Spider evaluation once local SQLite databases are available.
 - Process boundary: do not claim multi-database accuracy until the full Spider `database/` directory is present and evaluated.
+
+## 2026-06-18 Spider result wording sync
+
+- Synchronized documentation after clarifying that `run_spider_smoke.py` is a gold-derived conversion smoke test, not an end-to-end generation run.
+- Updated opening-facing and repo-facing documents to separate:
+  - Spider conversion smoke test: gold SQL -> SQL+ -> SQL, 20/20 on `concert_singer` 20-case supported subset.
+  - Spider fresh e2e: question + schema -> SQL+, 19/20 before semantic repair.
+  - Spider fresh e2e + `Skill Router -> semantic repair skill`: same fresh output re-evaluated at 20/20.
+- Updated affected claim-discipline files and opening material copies so future writing does not confuse conversion validation with end-to-end generation accuracy.

@@ -167,7 +167,7 @@
 - 后续实验增加表达复杂度指标，包括嵌套深度、子查询/CTE 数量、跨子句引用数量、join 路径长度、别名依赖数量和 SQL+ 步骤数。
 - 后续修复实验增加 error localization accuracy、router accuracy、patch minimality、average repair rounds、token cost 和 latency，不再只看 repair success rate。
 - 对比方法需要覆盖 Direct NL2SQL、NL2SQL+ 单 Agent、分解式 NL2SQL、标准 SQL 多智能体、SQL 层整体修复、Multi-agent NL2SQL+、Multi-agent NL2SQL+ + Feedback 和 SQL+ Skill Router + Repair Skills。
-- 开题材料中的当前结果仍按小规模可行性表述：SQL+ conversion 30/30、Direct NL2SQL 16/30、NL2SQL+ prompt v2 17/30、Skill Router v3 在当前 13 条已知失败样例上 13/13、Spider smoke test 在受支持小子集上 20/20。
+- 开题材料中的当前结果仍按小规模可行性表述：SQL+ conversion 30/30、Direct NL2SQL 16/30、NL2SQL+ prompt v2 17/30、Skill Router v3 在当前 13 条已知失败样例上 13/13。Spider 结果必须拆开表述：conversion smoke test 为 gold SQL -> SQL+ -> SQL 的 20/20；fresh e2e 生成是 19/20，同一次 fresh 输出经 `Skill Router -> semantic repair skill` 后为 20/20。
 
 ## 2026-06-15 导师反馈后的中间表示对比实验调整
 
@@ -225,7 +225,7 @@
 - 当前五类 repair skill（value-linking、ORDER、aggregation、join、projection）已完成初版。projection repair skill 在 q006 projection mismatch 上达到 SQL+ 有效 1/1、SQL 可执行 1/1、修复成功 1/1。
 - Skill Router v3 端到端实验已完成：基于 Critic Agent 的 `likely_error_type`、局部步骤诊断和 SQL+ 结构特征自动路由五类 repair skill，在 13 条 SQL+ 失败样例上达到 SQL+ 有效 13/13、SQL 可执行 13/13、修复成功 13/13。
 - Router v3 相比 SQL+ 非 gold 单 Refiner v2 的 4/13、Schema-Critic-Refiner 初版的 3/13 有明显提升。需要注意该结果仍是 13 条已知失败样例上的小规模验证，下一步应扩展无报错语义错和公开子集样例。
-- Spider 小规模公开 benchmark smoke test 已完成：在 Spider dev 的 `concert_singer` 数据库中筛选 20 条当前 SQL+ 子集可覆盖的查询，达到 SQL+ 有效 20/20、SQL 可执行 20/20、执行一致 20/20。
+- Spider 小规模公开 benchmark conversion smoke test 已完成：在 Spider dev 的 `concert_singer` 数据库中筛选 20 条当前 SQL+ 子集可覆盖的查询，先将 Spider gold SQL 改写为 SQL+，再由 SQL+ 转换回 SQL 并比较执行结果，达到 SQL+ 有效 20/20、SQL 可执行 20/20、执行一致 20/20。该结果验证表达/转换覆盖性，不是自然语言端到端生成准确率。
 - 该结果只能作为公开 benchmark 子集迁移可行性证据，不应表述为完整 Spider benchmark 跑分。后续需要扩展到多数据库、多难度和更多 SQL 结构。
 - 开题报告新增 SQL-Factory、CHESS、CHASE-SQL、Tool-Assisted Agent、ReFoRCE、XiYan-SQL、SQLCritic 等文献后，实验路线不做大改。新增文献主要用于支撑多阶段、多智能体、执行反馈和候选验证的合理性。
 - SQL-Factory 更适合作为后续数据扩充和 SQL 样例生成的参考，不替代本课题当前的 SQL+ 中间表示与反馈修正主线。

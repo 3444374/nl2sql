@@ -18,6 +18,7 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT / "scripts" / "agents" / "pipeline"))
 
 from sqlplus import SqlPlusError, normalize_rows, to_sql
+from sqlplus_generator import build_sqlplus_generation_prompt
 
 import spider_sqlplus_repair_router
 
@@ -54,86 +55,6 @@ def table_schema(db_path: Path) -> str:
         return "\n".join(lines)
     finally:
         conn.close()
-
-
-def build_generation_prompt(case: dict, schema: str) -> str:
-    return f"""You are the SQL+ Generator Agent for a Text-to-SQL experiment.
-
-Task:
-Generate one SQL+ query for the natural-language question.
-
-Database schema:
-{schema}
-
-SQL+ syntax:
-FROM table [alias]
-| JOIN table [alias] ON condition
-| WHERE condition
-| GROUP columns
-| AGG expressions
-| SELECT expressions
-| HAVING condition
-| ORDER expression [ASC|DESC]
-| LIMIT n
-
-Hard output rules:
-- Output SQL+ only. No markdown, no explanation.
-- The first non-empty line must start with exactly: FROM
-- Every later non-empty line must start with: |
-- Do not output standard SQL. Never write SELECT ... FROM ..., GROUP BY, ORDER BY, AGGREGATE, FILTER, or HAVING BY.
-- Use SQL+ step names exactly: FROM, JOIN, WHERE, GROUP, AGG, SELECT, HAVING, ORDER, LIMIT.
-- Use only tables and columns in the schema.
-- Use aliases only when needed for joins.
-- Do not use WITH, UNION, INTERSECT, EXCEPT, subqueries, CASE, BETWEEN, LIKE, or OR.
-
-Semantic rules:
-- For youngest/oldest/highest/lowest entity questions, prefer ORDER on the ranking column plus LIMIT 1. Do not create a self-join with MIN/MAX unless the question asks to output the min/max value itself.
-- For grouped top-k questions, put group/output columns and ranking aggregates in AGG, then add SELECT with only the columns requested by the question. Keep count/sum aliases available for ORDER, but do not output them unless the question asks for the number.
-- If the schema contains a column whose name directly matches a noun in the question, use that column. Use avg(column) only when the question asks for the average of a specific column.
-- For aggregate queries, include non-aggregated group columns in AGG when they are needed in output or ORDER/HAVING.
-
-Examples:
-Question: How many singers do we have?
-FROM singer
-| AGG count(*) AS count_value
-
-Question: Show name and age ordered by age descending.
-FROM singer
-| SELECT Name, Age
-| ORDER Age DESC
-
-Question: Show each country and the number of singers in that country.
-FROM singer
-| GROUP Country
-| AGG Country, count(*) AS singer_count
-
-Question: Which year has the most concerts?
-FROM concert
-| GROUP Year
-| AGG Year, count(*) AS concert_count
-| SELECT Year
-| ORDER concert_count DESC
-| LIMIT 1
-
-Question: Show the stadium name and capacity with the most concerts after 2013.
-FROM concert AS T1
-| JOIN stadium AS T2 ON T1.Stadium_ID = T2.Stadium_ID
-| WHERE T1.Year > 2013
-| GROUP T2.Stadium_ID
-| AGG T2.Name, T2.Capacity, count(*) AS concert_count
-| SELECT T2.Name, T2.Capacity
-| ORDER concert_count DESC
-| LIMIT 1
-
-Question: Show the song name and release year of the youngest singer.
-FROM singer
-| SELECT Song_Name, Song_release_year
-| ORDER Age ASC
-| LIMIT 1
-
-Question:
-{case["question"]}
-"""
 
 
 def build_refine_prompt(case: dict, schema: str, prediction: str, error: str) -> str:
@@ -283,7 +204,8 @@ def run_case(
     use_generic_repair: bool,
 ) -> dict:
     start = time.perf_counter()
-    gen_response = call_openai(api_key, model, build_generation_prompt(case, schema), max_output_tokens, retries)
+    prompt = build_sqlplus_generation_prompt(question=case["question"], schema=schema)
+    gen_response = call_openai(api_key, model, prompt, max_output_tokens, retries)
     prediction = extract_text(gen_response)
     usage = {"generation": gen_response.get("usage", {})}
     steps = [{"agent": "sqlplus_generator", "prediction": prediction}]

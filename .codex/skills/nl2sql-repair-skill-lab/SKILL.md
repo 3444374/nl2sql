@@ -37,7 +37,7 @@ SQL+ Skill Router + Repair Skills v3: 13/13
 Remaining known failure:
 
 ```text
-None in the current 13-case SQL+ failure set. Spider `concert_singer` 20-case subset reaches 20/20 after fresh e2e generation plus Skill Router -> semantic repair skill re-evaluation. Next priority is multi-database Spider coverage.
+None in the current 13-case SQL+ failure set. On Spider `concert_singer`, the conversion smoke test reaches 20/20 by converting Spider gold SQL to SQL+ and back to SQL; this is not an end-to-end generation score. The fresh e2e run on the same 20-case subset is 19/20 before semantic repair and reaches 20/20 after Skill Router -> semantic repair skill re-evaluation. Next priority is multi-database Spider coverage.
 ```
 
 ## Workflow

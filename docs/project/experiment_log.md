@@ -1745,3 +1745,23 @@ python -B scripts/benchmarks/run_spider_multi_agent_sqlplus.py --cases data/benc
 
 - 下一步需要补齐 Spider 多数据库 SQLite 文件后，运行 `build_spider_multidb_subset.py` 和 `run_spider_multi_agent_sqlplus.py --cases ...` 做真实多库端到端验证。
 - 如果多库结果下降，应优先分析 schema linking、prompt examples 对 `concert_singer` 的偏置、semantic repair 规则跨 schema 适用性。
+
+## 2026-06-18 Spider smoke/e2e result wording correction
+
+背景：
+
+- 复查发现部分开题材料仍可能把 Spider `20/20` smoke test 误读为完整端到端生成正确率。
+- 实际上，`scripts/benchmarks/run_spider_smoke.py` 的 smoke test 是 conversion smoke test：先将 Spider gold SQL 改写为 SQL+，再由 SQL+ 转回 SQL，并与 gold SQL 执行结果比较。
+- 2026-06-18 已另行完成 fresh end-to-end generation 与 semantic repair 实验，应与 conversion smoke test 分开表述。
+
+修正后的事实口径：
+
+- Spider conversion smoke test：`concert_singer` 20 条受支持样例，gold SQL -> SQL+ -> SQL，SQL+ valid 20/20，SQL executable 20/20，execution match 20/20。该结果验证 SQL+ 表达/转换覆盖性，不是端到端生成准确率。
+- Spider fresh e2e：同一 20 条小子集，从 question + schema 生成 SQL+，fresh v3 为 SQL+ valid 19/20，SQL executable 19/20，execution match 19/20。
+- Spider fresh e2e + `Skill Router -> semantic repair skill`：同一次 fresh 输出经语义修复后离线重评估为 SQL+ valid 20/20，SQL executable 20/20，execution match 20/20。
+- Gold SQL 只用于 conversion smoke test 的源 SQL 改写和最终离线 evaluation；不进入 fresh e2e 的 Generator、Refiner 或 semantic repair skill。
+
+文档同步：
+
+- 更新 README、AGENTS、项目 skills、experiment outline、opening preliminary results、opening report/PPT、Feishu summary markdown 和相关报告副本。
+- 历史实验日志条目不回写，保留当时记录；从本条开始采用上述区分口径。

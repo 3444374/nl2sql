@@ -156,11 +156,11 @@ Repair Skill 分治实验结果如下：value-linking repair skill 3/3，ORDER r
 
 ## 可行性分析
 
-从技术可行性看，当前已经完成 SQL+ parser、SQL+ 到 SQL 转换器、自建数据集、baseline 实验、错误诊断、五类 repair skill 和 Skill Router v3 端到端实验。SQL+ 表达与转换链路稳定，30/30 查询可执行且结果一致。SQL+ 层局部修复链路可行，诊断辅助 Refiner 达到 13/13。真实非 gold 条件下，Skill Router + Repair Skills v3 在 13 条已知 SQL+ 失败样例上达到 13/13，高于 SQL+ 单 Refiner 的 4/13。Spider 小规模受支持子集达到 20/20，说明当前 SQL+ 子集具备初步公开 benchmark 迁移可行性。
+从技术可行性看，当前已经完成 SQL+ parser、SQL+ 到 SQL 转换器、自建数据集、baseline 实验、错误诊断、五类 repair skill 和 Skill Router v3 端到端实验。SQL+ 表达与转换链路稳定，30/30 查询可执行且结果一致。SQL+ 层局部修复链路可行，诊断辅助 Refiner 达到 13/13。真实非 gold 条件下，Skill Router + Repair Skills v3 在 13 条已知 SQL+ 失败样例上达到 13/13，高于 SQL+ 单 Refiner 的 4/13。Spider 小规模受支持子集上，conversion smoke test 达到 20/20，fresh e2e 生成达到 19/20，同一次 fresh 输出经 `Skill Router -> semantic repair skill` 后达到 20/20，说明当前 SQL+ 子集具备初步公开 benchmark 迁移可行性。
 
 从数据和实验条件看，当前已有自建可控数据集、公开 Spider 子集适配脚本和完整实验记录。后续可继续扩展 Spider/BIRD 子集，逐步增加复杂 SQL 结构。从工程实现看，当前脚本、报告、数据和 project skills 已在 GitHub 中留痕，具备跨电脑复现基础。从应用场景看，达梦 SQL+ 方言适配可作为后续扩展目标，先通过标准 SQL/SQLite 验证核心机制，再迁移到达梦数据库场景。
 
-当前不足也需要明确。自建数据集规模还比较小，主要用于开题阶段可行性验证；Spider smoke test 只是受支持子集验证，不是完整 benchmark 跑分；SQL+ 语法子集还没有覆盖复杂子查询、集合运算、窗口函数、复杂布尔条件等结构。非 gold 反馈修正目前仍依赖 Critic 的错误类型识别，后续需要增强无报错语义错的诊断能力。达梦 SQL 方言适配也还没有完成。
+当前不足也需要明确。自建数据集规模还比较小，主要用于开题阶段可行性验证；Spider conversion smoke test 使用 gold SQL 改写得到 SQL+，只能说明表达与转换覆盖性，不能当作端到端生成准确率；Spider fresh e2e 结果也只是 `concert_singer` 20 条小子集，不是完整 benchmark 跑分。SQL+ 语法子集还没有覆盖复杂子查询、集合运算、窗口函数、复杂布尔条件等结构。非 gold 反馈修正目前仍依赖 Critic 的错误类型识别，后续需要增强无报错语义错的诊断能力。达梦 SQL 方言适配也还没有完成。
 
 # 已有工作局限
 

@@ -124,7 +124,7 @@ SemQL 是面向复杂 Text-to-SQL 的树形语义表示，重点是隐藏标准 
 
 拟采用的对比方法包括：Direct NL2SQL、NL2SQL+ single agent、SemQL-style IR generation、NatSQL-style IR generation、Pipe-style linear query generation、standard SQL multi-agent、SQL layer global repair、multi-agent NL2SQL+ without feedback、multi-agent NL2SQL+ with feedback、SQL+ Skill Router + Repair Skills。消融实验包括去掉 SQL+、去掉多智能体、去掉 Schema/value lookup、去掉 Critic Agent、去掉 Skill Router、只做 SQL 层修复、关闭执行验证、替换不同 SQL+ 语法设计等。
 
-实验数据分三层推进。第一层是自建订单分析数据集，用于控制变量、构造错误类型和快速迭代。第二层是 Spider 小规模受支持子集，用于验证 SQL+ 表达与转换机制在公开 benchmark 上的初步迁移能力。当前已完成 `concert_singer` 数据库中 20 条受支持查询的 smoke test，SQL+ 有效、SQL 可执行和执行一致均为 20/20，但这不是完整 Spider 成绩。第三层后续扩展到 BIRD 子集和达梦 SQL 方言样例，用于检验真实 schema、外部知识和方言差异的影响。
+实验数据分三层推进。第一层是自建订单分析数据集，用于控制变量、构造错误类型和快速迭代。第二层是 Spider 小规模受支持子集，用于验证 SQL+ 表达、转换和端到端生成修复机制在公开 benchmark 上的初步迁移能力。当前已完成两类 Spider 小实验：其一是 conversion smoke test，先将 `concert_singer` 数据库中 20 条受支持查询的 Spider gold SQL 改写为 SQL+，再转换回 SQL，SQL+ 有效、SQL 可执行和执行一致均为 20/20；其二是 fresh e2e 生成实验，从自然语言和 schema 生成 SQL+，同一 20 条样例在修复前为 19/20，经 `Skill Router -> semantic repair skill` 后为 20/20。前者不是端到端生成准确率，后者也只是单数据库小子集结果，不是完整 Spider 成绩。第三层后续扩展到 BIRD 子集和达梦 SQL 方言样例，用于检验真实 schema、外部知识和方言差异的影响。
 
 评估报告将按“结果质量、表达复杂度、修复能力、成本效率、可解释性”五类组织。结果质量关注 execution accuracy 和 valid rate；表达复杂度关注 token 长度、嵌套深度、跨子句依赖和 join 路径长度；修复能力关注定位准确率、路由准确率、修复成功率和 patch 范围；成本效率关注 token cost、latency、IR parse time 和 conversion time；可解释性通过步骤级错误定位、人类定位错误时间或人工评分进行补充评估。
 
@@ -161,7 +161,7 @@ SemQL 是面向复杂 Text-to-SQL 的树形语义表示，重点是隐藏标准 
 | SQL+ 失败主要错在哪里 | SQL+ prompt v2 的 13 条失败样例 | value-linking 5；ORDER/LIMIT 3；aggregation 2；join/schema 2；projection 1 | 失败主要是语义错误，不是语法错误 | 后续 Critic 不能只看数据库报错，还要看结果语义 |
 | SQL+ 层局部修复是否可行 | 15 条规则修正样例 | 修正后 SQL 可执行 15/15；修复成功 15/15 | 执行反馈可以映射到 SQL+ 局部步骤 | 规则样例较可控，不能代表真实模型修复难度 |
 | 多智能体修复是否有必要 | SQL+ 单 Refiner、Direct SQL Refiner、Skill Router v3 | SQL+ 非 gold 单 Refiner 4/13；Direct SQL 非 gold Refiner 6/14；SQL+ Skill Router v3 13/13 | 单 prompt 修复不稳定，错误定位、路由和局部 skill 拆开后效果更好 | 13/13 来自当前已知失败集，不是大规模泛化结果 |
-| 公开数据集能否初步迁移 | Spider dev `concert_singer` 受支持子集 20 条 | SQL+ 有效 20/20；SQL 可执行 20/20；执行一致 20/20 | 当前 SQL+ 子集可迁移到公开 benchmark 的一部分查询 | 不是完整 Spider benchmark 跑分 |
+| 公开数据集能否初步迁移 | Spider dev `concert_singer` 受支持子集 20 条 | conversion smoke test 20/20；fresh e2e 19/20；fresh 输出经 Skill Router -> semantic repair skill 后 20/20 | SQL+ 表达/转换具备公开子集覆盖能力，端到端生成和修复链路也已在小子集跑通 | conversion smoke test 使用 gold SQL 改写，不是端到端生成分数；整体不是完整 Spider benchmark 跑分 |
 
 ### IR 表达复杂度对比
 
@@ -227,11 +227,11 @@ SemQL 是面向复杂 Text-to-SQL 的树形语义表示，重点是隐藏标准 
 
 ## 可行性分析
 
-从技术可行性看，当前已经完成 SQL+ parser、SQL+ 到 SQL 转换器、自建数据集、baseline 实验、错误诊断、五类 repair skill 和 Skill Router v3 端到端实验。SQL+ 表达与转换链路稳定，30/30 查询可执行且结果一致。SQL+ 层局部修复链路可行，诊断辅助 Refiner 达到 13/13。真实非 gold 条件下，Skill Router + Repair Skills v3 在 13 条已知 SQL+ 失败样例上达到 13/13，高于 SQL+ 单 Refiner 的 4/13。Spider 小规模受支持子集达到 20/20，说明当前 SQL+ 子集具备初步公开 benchmark 迁移可行性。
+从技术可行性看，当前已经完成 SQL+ parser、SQL+ 到 SQL 转换器、自建数据集、baseline 实验、错误诊断、五类 repair skill 和 Skill Router v3 端到端实验。SQL+ 表达与转换链路稳定，30/30 查询可执行且结果一致。SQL+ 层局部修复链路可行，诊断辅助 Refiner 达到 13/13。真实非 gold 条件下，Skill Router + Repair Skills v3 在 13 条已知 SQL+ 失败样例上达到 13/13，高于 SQL+ 单 Refiner 的 4/13。Spider 小规模受支持子集上，conversion smoke test 达到 20/20，fresh e2e 生成达到 19/20，同一次 fresh 输出经 `Skill Router -> semantic repair skill` 后达到 20/20，说明当前 SQL+ 子集具备初步公开 benchmark 迁移可行性。
 
 从数据和实验条件看，当前已有自建可控数据集、公开 Spider 子集适配脚本和完整实验记录。后续可继续扩展 Spider/BIRD 子集，逐步增加复杂 SQL 结构。从工程实现看，当前脚本、报告、数据和 project skills 已在 GitHub 中留痕，具备跨电脑复现基础。从应用场景看，达梦 SQL+ 方言适配可作为后续扩展目标，先通过标准 SQL/SQLite 验证核心机制，再迁移到达梦数据库场景。
 
-当前不足也需要明确。自建数据集规模还比较小，主要用于开题阶段可行性验证；Spider smoke test 只是受支持子集验证，不是完整 benchmark 跑分；SQL+ 语法子集还没有覆盖复杂子查询、集合运算、窗口函数、复杂布尔条件等结构。非 gold 反馈修正目前仍依赖 Critic 的错误类型识别，后续需要增强无报错语义错的诊断能力。达梦 SQL 方言适配也还没有完成。
+当前不足也需要明确。自建数据集规模还比较小，主要用于开题阶段可行性验证；Spider conversion smoke test 使用 gold SQL 改写得到 SQL+，只能说明表达与转换覆盖性，不能当作端到端生成准确率；Spider fresh e2e 结果也只是 `concert_singer` 20 条小子集，不是完整 benchmark 跑分。SQL+ 语法子集还没有覆盖复杂子查询、集合运算、窗口函数、复杂布尔条件等结构。非 gold 反馈修正目前仍依赖 Critic 的错误类型识别，后续需要增强无报错语义错的诊断能力。达梦 SQL 方言适配也还没有完成。
 
 # 已有工作局限
 

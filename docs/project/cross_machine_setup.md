@@ -134,6 +134,6 @@ python scripts/benchmarks/run_spider_smoke.py --limit 20
 Expected important results:
 
 - SQL+ conversion: `30/30`.
-- Skill Router: `12/13`.
-- Spider smoke test: `20/20`.
-
+- Skill Router: `13/13` on the current 13-case SQL+ known-failure set.
+- Spider conversion smoke test: `20/20` on the `concert_singer` supported subset, using gold SQL -> SQL+ -> SQL.
+- Spider fresh e2e: `19/20` before semantic repair; same fresh output reaches `20/20` after `Skill Router -> semantic repair skill`.

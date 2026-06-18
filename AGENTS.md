@@ -50,7 +50,9 @@ Natural language
 3. If a result changes direction, update `docs/project/experiment_outline.md`.
 4. Keep opening-stage claims precise:
    - `SQL+ Skill Router + Repair Skills v3` result is `13/13` on the current 13-case SQL+ known-failure set.
-   - `Spider smoke test` is `20/20` on a supported small Spider dev subset, not a full benchmark score.
+   - `Spider conversion smoke test` is `20/20` on a supported small Spider dev subset from `concert_singer`; it starts from Spider gold SQL converted to SQL+, so it is not an end-to-end generation score.
+   - `Spider SQL+ fresh e2e` on the same 20-case subset is `19/20` before semantic repair and `20/20` after re-evaluating the same fresh output through `Skill Router -> semantic repair skill`.
+   - Both Spider results are small-subset feasibility evidence, not full Spider benchmark scores.
    - Do not present small known-failure-set repair results as broad benchmark results.
 5. Do not commit API keys, `.env`, local secrets, or user-specific environment files.
 6. Do not present gold-derived diagnostics as real autonomous repair results.
@@ -118,7 +120,7 @@ $env:OPENAI_API_KEY=[Environment]::GetEnvironmentVariable('OPENAI_API_KEY','User
 - SQL+ non-gold single Refiner: `4/13`.
 - Direct SQL non-gold Refiner: `6/14`.
 - SQL+ Skill Router + Repair Skills v3: `13/13` on the current known-failure set.
-- Spider smoke test: `20/20` on supported Spider dev subset from `concert_singer`.
+- Spider conversion smoke test: `20/20` on supported Spider dev subset from `concert_singer`, using gold SQL -> SQL+ -> SQL conversion.
 - Spider SQL+ fresh e2e on `concert_singer` 20-case subset: `19/20`; same fresh output after `Skill Router -> semantic repair skill`: `20/20`.
 - Local Spider multi-db expansion is scaffolded, but only `concert_singer` SQLite is currently present locally. Do not claim multi-db accuracy until more Spider databases are added.
 

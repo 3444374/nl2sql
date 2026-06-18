@@ -68,7 +68,8 @@ For each paper, use this structure:
 - Do not present small local results as broad benchmark scores.
 - State current project results precisely when relevant:
   - SQL+ Skill Router + Repair Skills v3: `13/13` on the current known-failure set.
-  - Spider smoke test: `20/20` on a supported small Spider dev subset, not full Spider.
+  - Spider conversion smoke test: `20/20` on a supported small Spider dev subset, using gold SQL -> SQL+ -> SQL, not end-to-end generation and not full Spider.
+  - Spider SQL+ fresh e2e on the same 20-case subset: `19/20`; same fresh output after `Skill Router -> semantic repair skill`: `20/20`.
 - Separate what a paper proves from how this thesis uses it.
 - Mark future-work relevance explicitly for BIRD, Spider 2.0, and other large benchmarks if no local experiment has been run.
 - Do not keep arXiv-only papers in the 15-paper intensive-reading list when a formal ACL/EMNLP/AAAI/NeurIPS/ICML/ICLR/PVLDB/SIGMOD substitute can serve the same thesis role.

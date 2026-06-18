@@ -12,7 +12,7 @@ Natural language -> SQL+ -> SQL -> Execution feedback -> Critic Agent -> Skill R
 
 | 顺序 | 文献 | 原参考编号 | 阅读重点 | 和本课题的关系 | 精读状态 |
 | --- | --- | --- | --- | --- | --- |
-| 1 | Yu 等，Spider | [2] | 跨数据库 Text-to-SQL benchmark、复杂 SQL 分类、评测协议 | 支撑 Spider smoke test 的 benchmark 背景；答辩时需说明本课题只做小规模受支持子集验证 | 已精读 |
+| 1 | Yu 等，Spider | [2] | 跨数据库 Text-to-SQL benchmark、复杂 SQL 分类、评测协议 | 支撑 Spider conversion smoke test 和 fresh e2e 小子集实验的 benchmark 背景；答辩时需说明本课题只做 `concert_singer` 小规模受支持子集验证 | 已精读 |
 | 2 | Li 等，BIRD | [25] | 真实数据库、外部知识、执行效率、难例构造 | 支撑后续从自建 order 数据集迁移到真实数据库场景；不能把当前结果说成 BIRD benchmark 成绩 | 已精读 |
 | 3 | Lei 等，Spider 2.0 | [20] | 企业级 Text-to-SQL workflow、真实操作链路、复杂任务评测 | 用于说明 Text-to-SQL 从单句 SQL 生成走向真实 workflow，本课题的反馈修正路线有现实意义 | 已精读 |
 | 4 | Guo 等，IRNet/SemQL | [3] | 中间表示、语义解析、SQL 结构简化 | 直接支撑 SQL+ 作为中间表示的必要性；重点比较 SemQL 与 SQL+ 的差异 | 已精读 |
