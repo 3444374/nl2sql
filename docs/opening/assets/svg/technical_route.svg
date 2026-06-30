@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <defs>
+    <style>
+      .title { font: 700 34px "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; fill: #18375c; }
+      .step { font: 700 23px "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; fill: #1f2933; }
+      .body { font: 400 18px "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; fill: #52606d; }
+      .focus { font: 700 24px "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; fill: #b22626; }
+      .card { fill: #f6f8fa; stroke: #18375c; stroke-width: 2.4; rx: 10; }
+      .arrow { stroke: #667080; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+    </style>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#667080"/>
+    </marker>
+  </defs>
+
+  <rect width="1280" height="720" fill="#ffffff"/>
+  <text class="title" x="640" y="66" text-anchor="middle">研究方案与技术路线</text>
+
+  <rect class="card" x="74" y="168" width="190" height="190"/>
+  <text class="step" x="169" y="216" text-anchor="middle">1 SQL+ 表达层</text>
+  <text class="body" x="169" y="260" text-anchor="middle">parser</text>
+  <text class="body" x="169" y="292" text-anchor="middle">converter</text>
+  <text class="body" x="169" y="324" text-anchor="middle">AST 映射</text>
+
+  <rect class="card" x="314" y="168" width="190" height="190"/>
+  <text class="step" x="409" y="216" text-anchor="middle">2 初始生成层</text>
+  <text class="body" x="409" y="260" text-anchor="middle">Schema Agent</text>
+  <text class="body" x="409" y="292" text-anchor="middle">SQL+ Generator</text>
+  <text class="body" x="409" y="324" text-anchor="middle">Translator</text>
+
+  <rect class="card" x="554" y="168" width="190" height="190"/>
+  <text class="step" x="649" y="216" text-anchor="middle">3 反馈诊断层</text>
+  <text class="body" x="649" y="260" text-anchor="middle">Executor</text>
+  <text class="body" x="649" y="292" text-anchor="middle">Critic Agent</text>
+  <text class="body" x="649" y="324" text-anchor="middle">结果摘要</text>
+
+  <rect class="card" x="794" y="168" width="190" height="190"/>
+  <text class="step" x="889" y="216" text-anchor="middle">4 局部修复层</text>
+  <text class="body" x="889" y="260" text-anchor="middle">Skill Router</text>
+  <text class="body" x="889" y="292" text-anchor="middle">Repair Skills</text>
+  <text class="body" x="889" y="324" text-anchor="middle">Patch 验证</text>
+
+  <rect class="card" x="1034" y="168" width="190" height="190"/>
+  <text class="step" x="1129" y="216" text-anchor="middle">5 实验评估层</text>
+  <text class="body" x="1129" y="260" text-anchor="middle">对比实验</text>
+  <text class="body" x="1129" y="292" text-anchor="middle">消融实验</text>
+  <text class="body" x="1129" y="324" text-anchor="middle">公开子集</text>
+
+  <path class="arrow" d="M264 263 H306"/>
+  <path class="arrow" d="M504 263 H546"/>
+  <path class="arrow" d="M744 263 H786"/>
+  <path class="arrow" d="M984 263 H1026"/>
+
+  <rect x="170" y="482" width="940" height="62" fill="#faebeb" stroke="#b22626" stroke-width="2.2" rx="8"/>
+  <text class="focus" x="640" y="522" text-anchor="middle">先证明表达可执行，再验证反馈修复，最后扩展公开子集和方言适配</text>
+</svg>

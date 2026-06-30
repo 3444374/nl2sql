@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <defs>
+    <style>
+      .title { font: 700 34px "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; fill: #18375c; }
+      .head { font: 700 22px "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; fill: #1f2933; }
+      .body { font: 400 16px "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; fill: #52606d; }
+      .metric { font: 700 19px "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; fill: #b22626; }
+      .card { fill: #f6f8fa; stroke: #18375c; stroke-width: 2.1; rx: 8; }
+      .focus { fill: #faebeb; stroke: #b22626; stroke-width: 2.3; rx: 8; }
+      .arrow { stroke: #667080; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+    </style>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#667080"/>
+    </marker>
+  </defs>
+
+  <rect width="1280" height="720" fill="#ffffff"/>
+  <text class="title" x="640" y="58" text-anchor="middle">动机测试如何推出系统设计</text>
+
+  <rect class="card" x="62" y="120" width="220" height="168"/>
+  <text class="head" x="172" y="160" text-anchor="middle">背景与设置</text>
+  <text class="body" x="172" y="196" text-anchor="middle">30 条自建查询</text>
+  <text class="body" x="172" y="224" text-anchor="middle">13 条 SQL+ 失败样例</text>
+  <text class="body" x="172" y="252" text-anchor="middle">14 条 Direct SQL 失败样例</text>
+
+  <rect class="card" x="330" y="120" width="250" height="168"/>
+  <text class="head" x="455" y="160" text-anchor="middle">实验过程</text>
+  <text class="body" x="455" y="196" text-anchor="middle">初次生成对比</text>
+  <text class="body" x="455" y="224" text-anchor="middle">表示复杂度与成本对比</text>
+  <text class="body" x="455" y="252" text-anchor="middle">失败输出修复对比</text>
+
+  <rect class="card" x="628" y="120" width="250" height="168"/>
+  <text class="head" x="753" y="160" text-anchor="middle">结果表一</text>
+  <text class="body" x="753" y="196" text-anchor="middle">Direct 16/30</text>
+  <text class="body" x="753" y="224" text-anchor="middle">SQL+ v2 17/30</text>
+  <text class="metric" x="753" y="254" text-anchor="middle">依赖更少，不是更短</text>
+
+  <rect class="card" x="926" y="120" width="292" height="168"/>
+  <text class="head" x="1072" y="160" text-anchor="middle">结果表二</text>
+  <text class="body" x="1072" y="196" text-anchor="middle">SQL+ Refiner 4/13</text>
+  <text class="body" x="1072" y="224" text-anchor="middle">Direct Refiner 6/14</text>
+  <text class="metric" x="1072" y="254" text-anchor="middle">Router + Skills 13/13</text>
+
+  <path class="arrow" d="M282 204 H320"/>
+  <path class="arrow" d="M580 204 H618"/>
+  <path class="arrow" d="M878 204 H916"/>
+
+  <rect class="focus" x="116" y="402" width="1048" height="154"/>
+  <text class="metric" x="640" y="446" text-anchor="middle">结果分析与设计结论</text>
+  <text class="head" x="640" y="488" text-anchor="middle">SQL+ 负责提供步骤边界，多 Agent 负责诊断、路由、局部 patch 和执行验证</text>
+  <text class="body" x="640" y="524" text-anchor="middle">因此系统设计从 NL -> SQL+ -> SQL -> feedback -> SQL+ repair 的闭环展开</text>
+
+  <path class="arrow" d="M1072 288 C1072 354 640 350 640 396"/>
+</svg>

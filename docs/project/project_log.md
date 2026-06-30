@@ -1140,3 +1140,77 @@ Boundary:
   - Spider fresh e2e: question + schema -> SQL+, 19/20 before semantic repair.
   - Spider fresh e2e + `Skill Router -> semantic repair skill`: same fresh output re-evaluated at 20/20.
 - Updated affected claim-discipline files and opening material copies so future writing does not confuse conversion validation with end-to-end generation accuracy.
+
+## 2026-06-26 GitHub sync check
+
+- Checked remote `origin` at `git@github.com:3444374/nl2sql.git` from local `main`.
+- Ran `git fetch origin` and `git pull --ff-only origin main`; result was `Already up to date.`
+- No remote commits were pending and no source, experiment, dataset, or metric changes were introduced.
+
+## 2026-06-26 Opening PPT structure revision
+
+- Reworked `docs/opening/opening_ppt.md` after advisor feedback that the experiment section was too list-like and did not clearly show each experiment's role.
+- Reorganized the deck around the opening-defense argument chain: problem, research gap, SQL+ motivation, method, experiment map, feasibility tests, motivation/cost tests, repair tests, Spider transfer tests, limitations, and next work.
+- Added an experiment map that labels each experiment as feasibility, motivation-boundary, cost, baseline, repair-necessity, mechanism-feasibility, repairability, or transfer testing.
+- Preserved result boundaries: Spider conversion smoke remains gold SQL -> SQL+ -> SQL; Spider fresh e2e remains separate; Skill Router v3 13/13 remains limited to the current known-failure set.
+- Generated editable PPTX `docs/opening/opening_ppt_template_version_v4.pptx` from the existing v3 deck as the template/theme base. The v4 deck has 23 slides and reorganizes the experiment section by purpose instead of chronological listing.
+
+## 2026-06-27 Opening PPT v4 academic-logic rebuild
+
+- Rebuilt `docs/opening/opening_ppt_template_version_v4.pptx` again after feedback that v4 still lacked clear opening-defense structure and research logic.
+- Used the academic writing, research-pipeline, reviewer, humanization, and PPT-structure skills as guidance: background -> research development -> gap -> proposed SQL+ system -> architecture and technical route -> feasibility experiments -> follow-up comparison design -> schedule and references.
+- Expanded the editable v4 deck to 30 slides and added native PowerPoint diagrams/tables for the research timeline, benchmark comparison, IR comparison, agentic NL2SQL comparison, SQL+ system architecture, technical route, experiment setup, experiment results, risk control, and future experiment matrix.
+- Synchronized `docs/opening/opening_ppt.md` with the new 30-slide structure so the PPT file and scriptable outline remain aligned.
+- Preserved claim boundaries: Spider conversion smoke remains gold SQL -> SQL+ -> SQL; Spider fresh e2e remains a 20-case `concert_singer` subset result; Skill Router + Repair Skills v3 remains 13/13 only on the current known-failure set; no full Spider, BIRD, or multi-database claim was added.
+- This was opening-material maintenance only. No new experiment was run and no metric changed, so `docs/project/experiment_log.md` was not updated.
+
+## 2026-06-27 Opening PPT v4 22-slide compression
+
+- Compressed `docs/opening/opening_ppt_template_version_v4.pptx` from the 30-slide academic-logic rebuild to a 22-slide defense version after confirming the template layout, content positions, and font sizes were acceptable.
+- Kept the same editable PowerPoint style and merged only content sections: background with problem statement, related research matrix, research questions with technical route, IR complexity with generation cost, future experiments with metrics, risks with schedule, and contributions with summary.
+- Synchronized `docs/opening/opening_ppt.md` with the 22-slide structure.
+- Verified the regenerated PPTX has 22 slides and corrected experiment numbering after merging the IR experiments.
+- This was opening-material maintenance only. No new experiment was run and no metric changed.
+
+## 2026-06-27 Opening PPT v4 motivation-test separation
+
+- Reorganized the 22-slide v4 opening PPT so the motivation test is a standalone section after the domestic/international research status and before the proposed system.
+- Added a concrete scenario slide to explain why whole-query rewriting is fragile and why SQL+ needs step-level repair anchors.
+- Added a dedicated motivation-test slide that uses baseline comparison, IR complexity/cost, structural dependency metrics, and single-Refiner results to justify SQL+ plus feedback repair.
+- Moved baseline and IR comparison evidence out of the feasibility-experiment section. The feasibility section now focuses on whether the proposed design can run: SQL+ conversion, feedback repair, repair-skill decomposition, and Spider small-subset validation.
+- Synchronized `docs/opening/opening_ppt.md` and regenerated `docs/opening/opening_ppt_template_version_v4.pptx` with 22 slides. No new experiment was run and no metric changed.
+
+## 2026-06-27 Opening PPT v4 visual simplification and SVG assets
+
+- Revised the v4 PPT visual style toward a simpler academic-defense look: deep blue, neutral gray, and limited red emphasis replaced the previous multicolor palette.
+- Added stronger per-slide focus statements through larger centered red emphasis boxes while preserving the existing 22-slide structure, layout positions, and content boundaries.
+- Created local hand-authored SVG assets under `docs/opening/assets/svg/`:
+  - `system_architecture.svg`
+  - `technical_route.svg`
+  - `motivation_test_flow.svg`
+- Regenerated `docs/opening/opening_ppt_template_version_v4.pptx` and synchronized `docs/opening/opening_ppt.md` with the visual policy and SVG asset list.
+- This was opening-material maintenance only. No new experiment was run and no metric changed.
+
+## 2026-06-27 Opening PPT v4 motivation experiment expansion
+
+- Expanded the motivation-test section in `docs/opening/opening_ppt_template_version_v4.pptx` from a short summary into a four-slide experimental argument.
+- The new motivation section now presents: experiment setting and problem decomposition, why SQL+ is needed, why multi-agent repair is needed, and how the experimental observations lead to the system design requirements.
+- Reordered the deck so the flow is: research status -> motivation experiments -> system design -> feasibility experiments -> initial public-subset validation -> future plan.
+- Regenerated the deck with 24 slides and synchronized `docs/opening/opening_ppt.md`.
+- Updated `docs/opening/assets/svg/motivation_test_flow.svg` so the saved SVG source matches the new motivation logic.
+- This was opening-material maintenance only. No new experiment was run and no metric changed.
+
+## 2026-06-27 Opening PPT v4 motivation process detail
+
+- Revised the motivation-test section again after feedback that the experiment process and result analysis were still not explicit enough.
+- Split the motivation section into five pages: experiment background and setting, experiment process, SQL+ motivation result table, multi-agent motivation result table, and result analysis with design conclusions.
+- Regenerated `docs/opening/opening_ppt_template_version_v4.pptx` with 25 slides and synchronized `docs/opening/opening_ppt.md`.
+- Updated `docs/opening/assets/svg/motivation_test_flow.svg` so the saved SVG source now shows the background -> process -> result tables -> analysis conclusion chain.
+- This was opening-material maintenance only. No new experiment was run and no metric changed, so `docs/project/experiment_log.md` was not updated.
+
+## 2026-07-01 GitHub sync preparation
+
+- Prepared the current opening PPT v4 material changes for GitHub synchronization from local `main`.
+- Included the v4 PPT outline, generated PPTX, PPT generation script, SVG assets, and project process log updates.
+- Excluded the Office temporary file `docs/opening/.~opening_ppt_template_version_v4.pptx` from staging.
+- This was a repository synchronization step only. No new experiment was run and no metric changed.
