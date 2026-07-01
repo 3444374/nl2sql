@@ -1,0 +1,20 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="800" height="430" viewBox="0 0 800 430">
+  <defs>
+    <style>
+      .title{font:700 28px 'Microsoft YaHei',sans-serif;fill:#102a43}.box{fill:#fff;stroke:#1f4e79;stroke-width:2.4;rx:12}.repair{fill:#fff5f5;stroke:#b22222;stroke-width:2.4;rx:12}.ok{fill:#f4fbf1;stroke:#4f7f3a;stroke-width:2.4;rx:12}.label{font:700 22px 'Microsoft YaHei',sans-serif;fill:#102a43}.small{font:400 18px 'Microsoft YaHei',sans-serif;fill:#334e68}.note{font:700 20px 'Microsoft YaHei',sans-serif;fill:#b22222}.line{stroke:#52606d;stroke-width:3;fill:none;marker-end:url(#a)}.red{stroke:#b22222;stroke-width:3;fill:none;marker-end:url(#r)}
+    </style>
+    <marker id="a" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M2,2 L10,6 L2,10 Z" fill="#52606d"/></marker>
+    <marker id="r" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M2,2 L10,6 L2,10 Z" fill="#b22222"/></marker>
+  </defs>
+  <text x="400" y="40" text-anchor="middle" class="title">SQL+ 多智能体生成与反馈修正框架</text>
+  <rect x="40" y="80" width="150" height="78" class="box"/><text x="115" y="113" text-anchor="middle" class="label">用户问题</text><text x="115" y="140" text-anchor="middle" class="small">自然语言输入</text>
+  <rect x="235" y="80" width="150" height="78" class="box"/><text x="310" y="113" text-anchor="middle" class="label">SQL+ 生成</text><text x="310" y="140" text-anchor="middle" class="small">意图 + schema</text>
+  <rect x="430" y="80" width="150" height="78" class="ok"/><text x="505" y="113" text-anchor="middle" class="label">转换执行</text><text x="505" y="140" text-anchor="middle" class="small">SQL+ → SQL</text>
+  <rect x="625" y="80" width="135" height="78" class="ok"/><text x="692" y="113" text-anchor="middle" class="label">结果/错误</text><text x="692" y="140" text-anchor="middle" class="small">数据库反馈</text>
+  <path d="M190 119 H225" class="line"/><path d="M385 119 H420" class="line"/><path d="M580 119 H615" class="line"/>
+  <rect x="95" y="235" width="150" height="82" class="repair"/><text x="170" y="268" text-anchor="middle" class="label">Critic</text><text x="170" y="295" text-anchor="middle" class="small">定位错误步骤</text>
+  <rect x="325" y="235" width="150" height="82" class="repair"/><text x="400" y="268" text-anchor="middle" class="label">Skill Router</text><text x="400" y="295" text-anchor="middle" class="small">选择修复技能</text>
+  <rect x="555" y="235" width="150" height="82" class="repair"/><text x="630" y="268" text-anchor="middle" class="label">Repair Skill</text><text x="630" y="295" text-anchor="middle" class="small">局部修改 SQL+</text>
+  <path d="M692 158 C692 210 170 190 170 225" class="red"/><path d="M245 276 H315" class="red"/><path d="M475 276 H545" class="red"/><path d="M630 235 C630 190 505 200 505 168" class="red"/>
+  <rect x="115" y="355" width="570" height="42" class="repair"/><text x="400" y="382" text-anchor="middle" class="note">核心：不是整条 SQL 重写，而是把错误压回 SQL+ 局部步骤中修</text>
+</svg>

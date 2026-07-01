@@ -1,4 +1,4 @@
-# 项目过程记录
+﻿# 项目过程记录
 
 本文件记录非实验类项目过程，包括目录整理、开题材料修订、跨电脑同步、工作流调整、飞书或外部文档写入、项目规则更新等。
 
@@ -1214,3 +1214,117 @@ Boundary:
 - Included the v4 PPT outline, generated PPTX, PPT generation script, SVG assets, and project process log updates.
 - Excluded the Office temporary file `docs/opening/.~opening_ppt_template_version_v4.pptx` from staging.
 - This was a repository synchronization step only. No new experiment was run and no metric changed.
+
+## 2026-07-01 Opening PPT v4 experiment-section refinement with ppt-master workflow
+
+- Used the `ppt-master` existing-PPTX enhancement route to revise experiment-related pages in `docs/opening/opening_ppt_template_version_v4.pptx` instead of regenerating the whole deck.
+- Reworked the literature/status transition and experiment sections so the logic is: research gap -> motivation-test setting -> experiment process/configuration -> result table -> conclusion -> feasibility evidence.
+- Updated slides 4, 6-10, 13, and 15-20, including the literature-development page, motivation-test pages, SQL+ example page, and feasibility-test pages.
+- Added speaker notes to the revised experiment pages. Each note now separates `汇报讲稿` and `答辩备注`, and explains data source, comparison objects, metric meanings, result calculation, and claim boundaries.
+- Kept result boundaries unchanged: no new experiment was run, no metric changed, and Spider small-subset results remain feasibility evidence rather than a full benchmark score.
+- Added the reproducible helper script `scripts/opening/refine_opening_ppt_experiment_pages.py` for this PPT refinement.
+
+## 2026-07-01 Opening PPT v4 experiment-table refinement
+
+- Revised `docs/opening/opening_ppt_template_version_v4.pptx` after feedback that several experiment pages still looked like key-result summaries rather than experiment-result tables.
+- Updated slide 13 to show an explicit original SQL vs SQL+ side-by-side example, followed by SQL+ diagnostic anchors.
+- Updated slide 8 to include concrete result tables for baseline generation, IR generation cost, and IR expression-complexity comparison.
+- Updated slide 9 to include concrete result tables for repair-method comparison and repairability metrics instead of only listing key outcomes.
+- Updated speaker notes for slides 8, 9, and 13 so the presenter can explain data source, metric calculation, result interpretation, and claim boundaries.
+- Regenerated the PPTX via `scripts/opening/refine_opening_ppt_experiment_pages.py`. No new experiment was run and no metric changed.
+
+## 2026-07-01 Opening PPT slide 13 diagnostic table completion
+
+- Updated slide 13 in `docs/opening/opening_ppt_template_version_v4.pptx` after feedback that the SQL+ diagnostic-anchor table had been over-compressed.
+- Restored the full SQL+ diagnostic rows: `WHERE`, `JOIN`, `GROUP / AGG`, `SELECT`, and `ORDER / LIMIT`.
+- Regenerated the PPTX via `scripts/opening/refine_opening_ppt_experiment_pages.py`. No new experiment was run and no metric changed.
+
+## 2026-07-01 Opening PPT template-layout recovery
+
+- Repaired the opening PPT after earlier script-based edits accidentally drew a second fake header over pages that already used the school/WNLO template.
+- Updated the affected pages `4, 6, 7, 8, 9, 10, 13, 15, 16, 17, 18, 19, 20` to use only the existing template/master background instead of drawing an additional header.
+- Left slides `11, 12, 14` unchanged because they already matched the intended template layout.
+- Reworked slide 4 into a cleaner vertical card layout: year on top, title below, then content, with text placed inside the template safe area.
+- Reworked slide 13 according to the requested SQL vs SQL+ comparison: original SQL, SQL+ representation, and a full SQL+ diagnostic-anchor table.
+- Centered table text in the regenerated affected pages. No experiment was run and no metric changed.
+
+## 2026-07-01 Opening report Feishu academic revision
+- 按 PPT 内容、实验大纲和当前实验结果重写开题报告，重点调整研究现状、研究内容、实验设计与初步结果。
+- 使用 academic-research-suite 的研究写作逻辑，将研究内容从工程步骤改为“技术难点、方法设计、评估指标、初步证据”的结构。
+- 使用 humanizer 风格约束，降低模板化表达，避免夸大 SQL+ 初次生成优势，明确 Spider 与 known-failure set 的小规模边界。
+- 已生成本地版本 `docs/opening/opening_report_feishu_an_v2.md`，并同步覆盖 `docs/opening/opening_report.md`。
+- 已更新飞书开题报告文档 `ANf7wbWxni0k0XkCBBXccl7nnEe`，写入返回 revision_id 为 9，随后校验读取 revision_id 为 10。
+
+## 2026-07-01 DOCX skill selection
+- 使用 `find-skills` 搜索 Word/DOCX 编辑能力，低安装量候选包括 `modelscope.cn@word-docx`、`syncfusion/document-sdk-skills@syncfusion-java-word` 等。
+- 按用户要求不保留低安装量 Syncfusion Word skill，已执行 `npx skills remove syncfusion-dotnet-word -g -y` 清理。
+- 安装 Anthropic 官方 `anthropics/skills` 中的 `docx` skill；CLI 安全评估为 Low Risk，安装位置为 `C:\Users\Administrator\.agents\skills\docx`。
+- 后续处理 Word 开题模板或 `.docx` 文件时，优先参考该官方 `docx` skill；若当前会话技能列表未刷新，可直接读取该路径下的 `SKILL.md`。
+
+## 2026-07-01 Opening report DOCX template build
+- 使用官方开题报告模板 `docs/opening/硕士生开题报告模板0604.docx` 生成本地 Word 版开题报告。
+- 新增可复现脚本 `scripts/opening/build_opening_report_docx.py`，以 `docs/opening/opening_report_feishu_an_v2.md` 为正文来源，将内容重排为模板栏目：课题背景、国内外研究现状、研究目标与研究内容、研究方案与可行性分析、进度安排、预期成果、主要参考文献。
+- 输出文件为 `docs/opening/硕士生开题报告_SQLPlus多智能体_模板版.docx`，保留模板 DOCX 的页面设置、页脚关系和文档包结构，并在正文 XML 中按宋体小四、英文 Times New Roman、小四、1.5 倍行距写入内容。
+- 本次为文档格式化与本地归档工作，不涉及新实验运行或实验指标变化。
+
+## 2026-07-01 Opening report DOCX figure enhancement
+- 根据用户反馈补充 Word 版开题报告中的图示内容，不再只保留文字和表格。
+- 更新 `scripts/opening/build_opening_report_docx.py`，在生成 DOCX 时嵌入 4 张已有 SVG：`system_architecture.svg`、`technical_route.svg`、`motivation_test_flow.svg`、`sqlplus_multi_agent_loop_v2.svg`。
+- 重新生成含图版报告 `docs/opening/硕士生开题报告_SQLPlus多智能体_模板版_含图.docx`，并校验 DOCX 包含 4 个 SVG media 文件和 4 个正文 drawing 引用。
+- 原 `docs/opening/硕士生开题报告_SQLPlus多智能体_模板版.docx` 当前被外部程序占用，未强制覆盖；含图版作为新的本地交付文件。
+
+## 2026-07-01 Opening report DOCX large-font figure rebuild
+- 根据用户反馈，原 DOCX 中直接嵌入 PPT 横屏 SVG 后在 A4 正文宽度下文字过小，影响阅读。
+- 新增 4 张 Word 专用简化 SVG：`docx_system_architecture.svg`、`docx_technical_route.svg`、`docx_motivation_test_flow.svg`、`docx_sqlplus_multi_agent_loop.svg`，减少节点数量并放大字号。
+- 更新 `scripts/opening/build_opening_report_docx.py`，后续默认使用 Word 专用 SVG 图源生成报告。
+- 生成新文件 `docs/opening/硕士生开题报告_SQLPlus多智能体_模板版_大字图.docx`，已校验 DOCX 内含 4 个 `docx_*` SVG 和 4 个正文 drawing 引用。
+- 本次为开题报告 Word 展示优化，不涉及新实验运行或指标变化。
+
+## 2026-07-01 Opening report DOCX PNG figure replacement
+- 根据用户反馈，上一版 Word 中 SVG 图在正文宽度下仍然显得文字偏小，且部分反馈箭头不够清晰。
+- 新增 `scripts/opening/generate_docx_png_figures.py`，用 Pillow 生成 4 张适合 A4 Word 正文宽度的高清 PNG 图，统一放在 `docs/opening/assets/png/`。
+- 更新 `scripts/opening/build_opening_report_docx.py`，改为嵌入 PNG 图片，并调整图片版式为“图片在上、图注在下、图注后接解释正文”。
+- 生成新文件 `docs/opening/硕士生开题报告_SQLPlus多智能体_模板版_PNG图.docx`，已校验 DOCX 内含 4 个 PNG media 文件、4 个正文 drawing 引用以及 `image/png` content type。
+- 本次只调整开题报告中的图片呈现、图注位置和图后解释文字，不涉及实验指标变化。
+
+## 2026-07-01 Opening report DOCX curved PNG figure refinement
+- 根据用户反馈，上一版 PNG 图仍偏硬、反馈箭头不够自然，且 DOCX 图注出现乱码。
+- 重写 `scripts/opening/generate_docx_png_figures.py`，生成更简洁的曲线风格 PNG：浅色卡片、圆角节点、柔和曲线反馈箭头，减少视觉噪声。
+- 修复 `scripts/opening/build_opening_report_docx.py` 中被错误编码写坏的图注和图后说明文字，并改用 Unicode 转义避免再次乱码。
+- 生成新文件 `docs/opening/硕士生开题报告_SQLPlus多智能体_模板版_曲线图.docx`，已校验 DOCX 内含 4 张 PNG，图注文本可通过 Unicode 码点匹配为正确中文，且不存在字面问号乱码。
+- 本次只调整图片、图注和图后说明，不涉及实验指标变化。
+
+## 2026-07-01 Opening report DOCX figure 2/3 layout fix
+- 根据用户反馈，仅调整 Word 报告中图 2 和图 3 的图片呈现。
+- 将图 2、图 3 顶部流程箭头改为直箭头，避免过度曲线化。
+- 修复图 3 顶部卡片副标题越界问题：副标题改为更小字号并增加卡片高度，确保 `样例集`、`表示对比`、`修复收益` 等卡片内文字不压线、不溢出。
+- 重新生成并覆盖 `docs/opening/硕士生开题报告_SQLPlus多智能体_模板版_曲线图.docx`，已校验 DOCX 内含 4 张 PNG、4 个 drawing 引用，图注中文码点正常。
+- 本次仅为开题报告图片排版修正，不涉及实验内容或指标变化。
+
+## 2026-07-02 ECharts 图表化与开题材料展示更新
+
+- 按用户要求将 ECharts 依赖迁移到项目外 `D:\Tools\echarts`，并安装 `echarts 6.1.0` 与 `sharp 0.35.3`，避免在仓库内保留 `node_modules`。
+- 更新 `scripts/opening/generate_echarts_experiment_svgs.js`：使用 `D:\Tools\echarts` 作为依赖目录，统一生成大字号 16:9 ECharts 图表，并同时输出 SVG 与 PNG。
+- 新增/更新图表资源：`docs/opening/assets/charts/chart_baseline_generation.*`、`chart_ir_complexity.*`、`chart_ir_generation_cost.*`、`chart_repair_success.*`、`chart_spider_subset.*`。
+- 更新 `scripts/opening/build_opening_report_docx.py`：将开题报告中的核心实验结果表自动替换为 ECharts SVG 图，并补充图注和文字解释。
+- 重新生成 Word 图表版：`docs/opening/硕士生开题报告_SQLPlus多智能体_模板版_图表版.docx`。
+- 新增 `scripts/opening/build_opening_ppt_v5_charts.py`，在 v4 PPT 基础上生成 `docs/opening/opening_ppt_template_version_v5_charts.pptx`：保留模板页眉页脚，将第 8、9、17、18、20 页主体替换为大字号图表，并为 25 页写入汇报讲稿与答辩备注。
+- 本次属于开题文档与展示材料加工，没有新增实验运行，因此未写入 `docs/project/experiment_log.md`。
+## 2026-07-02 PPT 备注讲稿增强
+- 参考用户提供的 `SQLplus_opening_ppt_complete_speaker_notes_v3.docx` 讲稿结构，结合当前 SQL+ / Text-to-SQL / 多智能体实验结果与边界，新增 `scripts/opening/update_opening_ppt_v6_long_notes.py`。
+- 在 `opening_ppt_template_version_v5_charts.pptx` 基础上生成 `opening_ppt_template_version_v6_long_notes.pptx`，仅更新备注讲稿，不改动页面视觉。
+- 25 页备注均扩展为“汇报讲稿 + 答辩备注”结构；实验页补充数据来源、固定条件、变量、指标计算、实验过程、结果和结论边界。
+- 本次为开题 PPT 讲稿完善，不涉及新增实验运行，未写入 `experiment_log.md`。
+## 2026-07-02 PPT 第 3 页备注校准
+- 根据用户反馈，仅修改 `opening_ppt_template_version_v6_long_notes.pptx` 第 3 页备注，不重新生成 PPT，不调整页面视觉和排版。
+- 将备注内容改为严格对应页面表格四行：`schema linking`、`value linking`、`aggregation`、`projection/order`，并把结论收束到“错误定位、路由和局部修复”。
+- 本次为开题 PPT 讲稿一致性修订，不涉及新增实验运行，未写入 `experiment_log.md`。
+## 2026-07-02 PPT 第 3 页备注乱码修复
+- 修复 `opening_ppt_template_version_v6_long_notes.pptx` 第 3 页备注因 PowerShell 管道转码导致的问号乱码。
+- 通过 UTF-8 Python 脚本重新写入第 3 页备注，并用字符码位检查确认 PPT 内部文本已恢复为中文（首字符为 `0x3010`，即“【”）。
+- 本次仅修复备注文本编码，不改页面视觉、排版和实验结果。
+## 2026-07-02 PPT 图片越界与备注对应性修订
+- 检查 `opening_ppt_template_version_v6_long_notes.pptx` 中图片位置，发现第 9、12、17、18、20 页图片超出页面边界。
+- 按页面安全区域等比例缩小并居中上述图片，保留原始比例，不裁剪、不拉伸；复检结果为 `bad_pictures []`。
+- 根据页面内容与备注对应性检查，修订第 4 页备注，使其严格对应 PPT 中四个阶段框：Benchmark 与复杂 schema、中间表示与 schema linking、SQL 扩展与执行反馈、Agentic NL2SQL。
+- 复检备注文本，未发现大量问号乱码；本次为 PPT 展示材料修订，不涉及新增实验运行，未写入 `experiment_log.md`。

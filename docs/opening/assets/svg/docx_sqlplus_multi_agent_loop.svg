@@ -1,0 +1,14 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="800" height="430" viewBox="0 0 800 430">
+  <defs><style>.title{font:700 28px 'Microsoft YaHei',sans-serif;fill:#102a43}.box{fill:#fff;stroke:#1f4e79;stroke-width:2.4;rx:12}.repair{fill:#fff5f5;stroke:#b22222;stroke-width:2.4;rx:12}.ok{fill:#f4fbf1;stroke:#4f7f3a;stroke-width:2.4;rx:12}.label{font:700 21px 'Microsoft YaHei',sans-serif;fill:#102a43}.small{font:400 17px 'Microsoft YaHei',sans-serif;fill:#334e68}.note{font:700 20px 'Microsoft YaHei',sans-serif;fill:#b22222}.line{stroke:#52606d;stroke-width:3;fill:none;marker-end:url(#a)}.red{stroke:#b22222;stroke-width:3;fill:none;marker-end:url(#r)}</style><marker id="a" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M2,2 L10,6 L2,10 Z" fill="#52606d"/></marker><marker id="r" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M2,2 L10,6 L2,10 Z" fill="#b22222"/></marker></defs>
+  <text x="400" y="40" text-anchor="middle" class="title">SQL+ 层局部诊断与反馈修正闭环</text>
+  <rect x="40" y="88" width="135" height="76" class="box"/><text x="107" y="118" text-anchor="middle" class="label">SQL+</text><text x="107" y="145" text-anchor="middle" class="small">步骤化表示</text>
+  <rect x="220" y="88" width="135" height="76" class="ok"/><text x="287" y="118" text-anchor="middle" class="label">Translator</text><text x="287" y="145" text-anchor="middle" class="small">转 SQL</text>
+  <rect x="400" y="88" width="135" height="76" class="ok"/><text x="467" y="118" text-anchor="middle" class="label">Executor</text><text x="467" y="145" text-anchor="middle" class="small">执行反馈</text>
+  <rect x="590" y="88" width="150" height="76" class="repair"/><text x="665" y="118" text-anchor="middle" class="label">Critic</text><text x="665" y="145" text-anchor="middle" class="small">错误定位</text>
+  <path d="M175 126 H210" class="line"/><path d="M355 126 H390" class="line"/><path d="M535 126 H580" class="red"/>
+  <rect x="110" y="245" width="150" height="76" class="repair"/><text x="185" y="275" text-anchor="middle" class="label">Skill Router</text><text x="185" y="302" text-anchor="middle" class="small">选择技能</text>
+  <rect x="325" y="245" width="150" height="76" class="repair"/><text x="400" y="275" text-anchor="middle" class="label">Repair Skill</text><text x="400" y="302" text-anchor="middle" class="small">生成 patch</text>
+  <rect x="540" y="245" width="150" height="76" class="ok"/><text x="615" y="275" text-anchor="middle" class="label">Re-validate</text><text x="615" y="302" text-anchor="middle" class="small">重新执行</text>
+  <path d="M665 164 C665 205 185 205 185 235" class="red"/><path d="M260 283 H315" class="red"/><path d="M475 283 H530" class="red"/><path d="M615 245 C615 210 287 210 287 174" class="red"/>
+  <rect x="120" y="360" width="560" height="38" class="repair"/><text x="400" y="385" text-anchor="middle" class="note">失败反馈进入 Critic → Router → Skill，patch 后再转换和执行</text>
+</svg>

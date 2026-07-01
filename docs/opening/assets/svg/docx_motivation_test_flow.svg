@@ -1,0 +1,13 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="800" height="430" viewBox="0 0 800 430">
+  <defs><style>.title{font:700 28px 'Microsoft YaHei',sans-serif;fill:#102a43}.box{fill:#fff;stroke:#1f4e79;stroke-width:2.4;rx:12}.label{font:700 21px 'Microsoft YaHei',sans-serif;fill:#102a43}.small{font:400 17px 'Microsoft YaHei',sans-serif;fill:#334e68}.note{font:700 20px 'Microsoft YaHei',sans-serif;fill:#b22222}.line{stroke:#52606d;stroke-width:3;fill:none;marker-end:url(#a)}</style><marker id="a" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M2,2 L10,6 L2,10 Z" fill="#52606d"/></marker></defs>
+  <text x="400" y="40" text-anchor="middle" class="title">动机测试与初步实验流程</text>
+  <rect x="45" y="92" width="155" height="86" class="box"/><text x="122" y="124" text-anchor="middle" class="label">样例集</text><text x="122" y="150" text-anchor="middle" class="small">自建 30 条</text><text x="122" y="170" text-anchor="middle" class="small">Spider 20 条</text>
+  <rect x="235" y="92" width="155" height="86" class="box"/><text x="312" y="124" text-anchor="middle" class="label">表示对比</text><text x="312" y="150" text-anchor="middle" class="small">SQL / SQL+</text><text x="312" y="170" text-anchor="middle" class="small">NatSQL / SemQL</text>
+  <rect x="425" y="92" width="155" height="86" class="box"/><text x="502" y="124" text-anchor="middle" class="label">生成成本</text><text x="502" y="150" text-anchor="middle" class="small">token</text><text x="502" y="170" text-anchor="middle" class="small">latency</text>
+  <rect x="615" y="92" width="140" height="86" class="box"/><text x="685" y="124" text-anchor="middle" class="label">修复收益</text><text x="685" y="150" text-anchor="middle" class="small">定位</text><text x="685" y="170" text-anchor="middle" class="small">局部 patch</text>
+  <path d="M200 135 H225" class="line"/><path d="M390 135 H415" class="line"/><path d="M580 135 H605" class="line"/>
+  <rect x="70" y="242" width="660" height="90" fill="#f7f9fb" stroke="#d9e2ec" stroke-width="1.6" rx="12"/>
+  <text x="110" y="277" class="label">回答问题：</text><text x="230" y="277" class="small">为什么需要 SQL+？它不是为了更短，而是为了结构边界清晰。</text>
+  <text x="110" y="310" class="label">观察指标：</text><text x="230" y="310" class="small">valid rate、execution match、别名依赖、跨子句引用、修复轮数。</text>
+  <rect x="120" y="365" width="560" height="38" fill="#fff5f5" stroke="#b22222" stroke-width="2" rx="8"/><text x="400" y="390" text-anchor="middle" class="note">实验服务于研究动机：SQL+ 的价值主要体现在后续诊断与修复</text>
+</svg>

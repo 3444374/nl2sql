@@ -1,0 +1,15 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="800" height="430" viewBox="0 0 800 430">
+  <defs><style>.title{font:700 28px 'Microsoft YaHei',sans-serif;fill:#102a43}.box{fill:#fff;stroke:#1f4e79;stroke-width:2.4;rx:12}.label{font:700 22px 'Microsoft YaHei',sans-serif;fill:#102a43}.small{font:400 18px 'Microsoft YaHei',sans-serif;fill:#334e68}.note{font:700 20px 'Microsoft YaHei',sans-serif;fill:#b22222}.line{stroke:#52606d;stroke-width:3;fill:none;marker-end:url(#a)}</style><marker id="a" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M2,2 L10,6 L2,10 Z" fill="#52606d"/></marker></defs>
+  <text x="400" y="40" text-anchor="middle" class="title">课题技术路线</text>
+  <rect x="50" y="88" width="140" height="82" class="box"/><text x="120" y="120" text-anchor="middle" class="label">SQL+ 定义</text><text x="120" y="148" text-anchor="middle" class="small">语法与转换</text>
+  <rect x="250" y="88" width="140" height="82" class="box"/><text x="320" y="120" text-anchor="middle" class="label">生成方法</text><text x="320" y="148" text-anchor="middle" class="small">NL → SQL+</text>
+  <rect x="450" y="88" width="140" height="82" class="box"/><text x="520" y="120" text-anchor="middle" class="label">反馈诊断</text><text x="520" y="148" text-anchor="middle" class="small">错误类型定位</text>
+  <rect x="650" y="88" width="100" height="82" class="box"/><text x="700" y="120" text-anchor="middle" class="label">评估</text><text x="700" y="148" text-anchor="middle" class="small">多指标</text>
+  <path d="M190 129 H240" class="line"/><path d="M390 129 H440" class="line"/><path d="M590 129 H640" class="line"/>
+  <rect x="55" y="235" width="690" height="90" fill="#f7f9fb" stroke="#d9e2ec" stroke-width="1.6" rx="12"/>
+  <text x="95" y="270" class="label">研究闭环：</text>
+  <text x="210" y="270" class="small">表示复杂度对比 → 初次生成 → 执行验证 → 局部修复 → Spider 小规模迁移</text>
+  <text x="95" y="305" class="label">评估重点：</text>
+  <text x="210" y="305" class="small">valid rate、execution match、repair rounds、token、latency、patch minimality</text>
+  <rect x="110" y="365" width="580" height="38" fill="#fff5f5" stroke="#b22222" stroke-width="2" rx="8"/><text x="400" y="390" text-anchor="middle" class="note">目标不是只跑通 Demo，而是验证 SQL+ 是否提高可定位、可修复性</text>
+</svg>

@@ -1,70 +1,86 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
   <defs>
     <style>
-      .title { font: 700 34px "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; fill: #18375c; }
-      .label { font: 700 23px "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; fill: #1f2933; }
-      .small { font: 400 18px "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; fill: #52606d; }
-      .focus { font: 700 24px "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; fill: #b22626; }
-      .box { fill: #f6f8fa; stroke: #18375c; stroke-width: 2.4; rx: 10; }
-      .redbox { fill: #faebeb; stroke: #b22626; stroke-width: 2.4; rx: 10; }
-      .line { stroke: #667080; stroke-width: 3; fill: none; marker-end: url(#arrow); }
-      .feedback { stroke: #b22626; stroke-width: 3.2; fill: none; marker-end: url(#arrow-red); }
+      .title { font: 700 34px "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; fill: #102a43; }
+      .section { font: 700 20px "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; fill: #334e68; }
+      .label { font: 700 22px "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; fill: #102a43; }
+      .small { font: 400 17px "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; fill: #52606d; }
+      .note { font: 700 22px "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; fill: #8a1f1f; }
+      .box { fill: #ffffff; stroke: #243b53; stroke-width: 2.2; rx: 10; }
+      .repair { fill: #fffafa; stroke: #8a1f1f; stroke-width: 2.2; rx: 10; }
+      .line { stroke: #52606d; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .feedback { stroke: #8a1f1f; stroke-width: 3; fill: none; marker-end: url(#arrow-red); }
+      .dash { stroke: #8a1f1f; stroke-width: 2.4; fill: none; stroke-dasharray: 8 7; marker-end: url(#arrow-red); }
+      .lane { fill: #f7f9fb; stroke: #d9e2ec; stroke-width: 1.4; rx: 14; }
     </style>
-    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto">
-      <path d="M2,2 L10,6 L2,10 Z" fill="#667080"/>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#52606d"/>
     </marker>
-    <marker id="arrow-red" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto">
-      <path d="M2,2 L10,6 L2,10 Z" fill="#b22626"/>
+    <marker id="arrow-red" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#8a1f1f"/>
     </marker>
   </defs>
 
   <rect x="0" y="0" width="1280" height="720" fill="#ffffff"/>
-  <text class="title" x="640" y="64" text-anchor="middle">SQL+ 多智能体反馈修正框架</text>
+  <text class="title" x="640" y="58" text-anchor="middle">SQL+ 多智能体生成与反馈修正框架</text>
 
-  <rect class="box" x="72" y="138" width="190" height="86"/>
-  <text class="label" x="167" y="173" text-anchor="middle">用户问题</text>
-  <text class="small" x="167" y="203" text-anchor="middle">Natural language</text>
+  <rect class="lane" x="70" y="92" width="1140" height="210"/>
+  <text class="section" x="98" y="126">首次生成链路</text>
 
-  <rect class="box" x="342" y="138" width="210" height="86"/>
-  <text class="label" x="447" y="173" text-anchor="middle">SQL+ Generator</text>
-  <text class="small" x="447" y="203" text-anchor="middle">question + schema</text>
+  <rect class="box" x="100" y="165" width="170" height="82"/>
+  <text class="label" x="185" y="197" text-anchor="middle">用户问题</text>
+  <text class="small" x="185" y="225" text-anchor="middle">自然语言输入</text>
 
-  <rect class="box" x="632" y="138" width="190" height="86"/>
-  <text class="label" x="727" y="173" text-anchor="middle">Translator</text>
-  <text class="small" x="727" y="203" text-anchor="middle">SQL+ -> SQL</text>
+  <rect class="box" x="325" y="165" width="190" height="82"/>
+  <text class="label" x="420" y="197" text-anchor="middle">Schema Agent</text>
+  <text class="small" x="420" y="225" text-anchor="middle">表字段与关系</text>
 
-  <rect class="box" x="902" y="138" width="190" height="86"/>
-  <text class="label" x="997" y="173" text-anchor="middle">Executor</text>
-  <text class="small" x="997" y="203" text-anchor="middle">result / error</text>
+  <rect class="box" x="570" y="165" width="190" height="82"/>
+  <text class="label" x="665" y="197" text-anchor="middle">SQL+ Generator</text>
+  <text class="small" x="665" y="225" text-anchor="middle">生成 SQL+ 步骤</text>
 
-  <path class="line" d="M262 181 H334"/>
-  <path class="line" d="M552 181 H624"/>
-  <path class="line" d="M822 181 H894"/>
+  <rect class="box" x="815" y="165" width="160" height="82"/>
+  <text class="label" x="895" y="197" text-anchor="middle">Translator</text>
+  <text class="small" x="895" y="225" text-anchor="middle">SQL+ 到 SQL</text>
 
-  <path class="feedback" d="M997 224 V308 C997 330 972 338 940 338 H345"/>
-  <text class="focus" x="765" y="315" text-anchor="middle">执行反馈进入诊断与修复闭环</text>
+  <rect class="box" x="1030" y="165" width="150" height="82"/>
+  <text class="label" x="1105" y="197" text-anchor="middle">Executor</text>
+  <text class="small" x="1105" y="225" text-anchor="middle">结果或错误</text>
 
-  <rect class="redbox" x="132" y="390" width="220" height="96"/>
-  <text class="label" x="242" y="428" text-anchor="middle">Critic Agent</text>
-  <text class="small" x="242" y="458" text-anchor="middle">错误类型与步骤定位</text>
+  <path class="line" d="M270 206 H317"/>
+  <path class="line" d="M515 206 H562"/>
+  <path class="line" d="M760 206 H807"/>
+  <path class="line" d="M975 206 H1022"/>
 
-  <rect class="redbox" x="432" y="390" width="220" height="96"/>
-  <text class="label" x="542" y="428" text-anchor="middle">Skill Router</text>
-  <text class="small" x="542" y="458" text-anchor="middle">选择局部 repair skill</text>
+  <rect class="lane" x="70" y="345" width="1140" height="215"/>
+  <text class="section" x="98" y="379">反馈修正闭环</text>
 
-  <rect class="redbox" x="732" y="390" width="220" height="96"/>
-  <text class="label" x="842" y="428" text-anchor="middle">Repair Skill</text>
-  <text class="small" x="842" y="458" text-anchor="middle">生成 SQL+ patch</text>
+  <rect class="repair" x="130" y="425" width="190" height="86"/>
+  <text class="label" x="225" y="458" text-anchor="middle">Critic Agent</text>
+  <text class="small" x="225" y="486" text-anchor="middle">定位错误步骤</text>
 
-  <rect class="redbox" x="1032" y="390" width="176" height="96"/>
-  <text class="label" x="1120" y="428" text-anchor="middle">Executor</text>
-  <text class="small" x="1120" y="458" text-anchor="middle">验证候选</text>
+  <rect class="repair" x="390" y="425" width="190" height="86"/>
+  <text class="label" x="485" y="458" text-anchor="middle">Skill Router</text>
+  <text class="small" x="485" y="486" text-anchor="middle">选择修复技能</text>
 
-  <path class="line" d="M352 438 H424"/>
-  <path class="line" d="M652 438 H724"/>
-  <path class="line" d="M952 438 H1024"/>
-  <path class="feedback" d="M1120 390 V296 C1120 272 1096 258 1052 258 H457 C432 258 417 245 417 224"/>
+  <rect class="repair" x="650" y="425" width="190" height="86"/>
+  <text class="label" x="745" y="458" text-anchor="middle">Repair Skill</text>
+  <text class="small" x="745" y="486" text-anchor="middle">生成 SQL+ patch</text>
 
-  <rect x="186" y="584" width="908" height="56" fill="#faebeb" stroke="#b22626" stroke-width="2" rx="8"/>
-  <text class="focus" x="640" y="620" text-anchor="middle">核心：不整条重写 SQL，把错误压回 SQL+ 的局部步骤中修</text>
+  <rect class="repair" x="910" y="425" width="190" height="86"/>
+  <text class="label" x="1005" y="458" text-anchor="middle">Re-executor</text>
+  <text class="small" x="1005" y="486" text-anchor="middle">验证修复结果</text>
+
+  <path class="line" d="M320 468 H382"/>
+  <path class="line" d="M580 468 H642"/>
+  <path class="line" d="M840 468 H902"/>
+
+  <path class="feedback" d="M1105 247 V323 C1105 350 1080 360 1042 360 H225 V417"/>
+  <text class="small" x="740" y="338" text-anchor="middle" fill="#8a1f1f">执行错误或异常结果</text>
+
+  <path class="dash" d="M1005 425 V318 C1005 292 982 280 940 280 H665 V255"/>
+  <text class="small" x="850" y="306" text-anchor="middle" fill="#8a1f1f">修复后的 SQL+ 回到转换执行</text>
+
+  <rect x="205" y="610" width="870" height="52" fill="#fffafa" stroke="#8a1f1f" stroke-width="2" rx="8"/>
+  <text class="note" x="640" y="643" text-anchor="middle">核心：不整条重写 SQL，而是在 SQL+ 的局部步骤中诊断和修复</text>
 </svg>
