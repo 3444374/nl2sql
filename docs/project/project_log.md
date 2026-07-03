@@ -1328,3 +1328,8 @@ Boundary:
 - 按页面安全区域等比例缩小并居中上述图片，保留原始比例，不裁剪、不拉伸；复检结果为 `bad_pictures []`。
 - 根据页面内容与备注对应性检查，修订第 4 页备注，使其严格对应 PPT 中四个阶段框：Benchmark 与复杂 schema、中间表示与 schema linking、SQL 扩展与执行反馈、Agentic NL2SQL。
 - 复检备注文本，未发现大量问号乱码；本次为 PPT 展示材料修订，不涉及新增实验运行，未写入 `experiment_log.md`。
+## 2026-07-03 GitHub sync preparation
+- Prepared the current opening-material updates for GitHub synchronization from local `main`.
+- Included `opening_ppt_template_version_v6_long_notes.pptx`, the opening report Word template, and this project process log update.
+- Excluded the Office temporary file `docs/opening/.~opening_ppt_template_version_v6_long_notes.pptx` from staging.
+- This was a repository synchronization step only. No new experiment was run and no metric changed.
